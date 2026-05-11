@@ -1255,7 +1255,7 @@ export default function App() {
         </button>
       </div>
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(280px,1fr))", gap: 16 }}>
-        {clsData.map(cls => {
+        {clsData.filter(cls => cls.sts.length > 0).map(cls => {
           const band = Object.entries(BANDS).find(([k]) => k === cls.nm.replace("반", ""));
           const bColor = band ? band[1].c : X.ac;
           const bBg = band ? band[1].bg : X.abg;
