@@ -591,6 +591,7 @@ export default function App() {
   };
 
   /* ─── STUDENT ADD MODAL STATE ─── */
+  const [wlIdx, setWlIdx] = useState(0);
   const [showAddModal, setShowAddModal] = useState(false);
   const [addName, setAddName] = useState("");
   const [addCId, setAddCId] = useState("");
@@ -839,6 +840,7 @@ export default function App() {
   const cR = () => {
     uP(sSt, sArt, "r");
     setSv("wl");
+    setWlIdx(0);
     setVa({});
     setVd(false);
   };
@@ -1570,67 +1572,87 @@ export default function App() {
     );
   };
 
-  /* ─── STUDENT WORD LIST (단어보기) ─── */
+  /* ─── STUDENT WORD LIST (단어보기 — 플래시카드) ─── */
   const SWl = () => {
     if (!cA) return null;
     const words = cW.filter((w) => w.pid).sort((a, b) => Number(a.i) - Number(b.i));
+    if (words.length === 0) return (
+      <div>
+        <Bt v="ghost" onClick={bk} style={{ marginBottom: 12 }}>← 과제 목록</Bt>
+        <Cd style={{ maxWidth: 560, margin: "0 auto", textAlign: "center", padding: 40 }}>
+          <p style={{ color: X.mt, fontSize: 13 }}>표시할 단어가 없습니다.</p>
+        </Cd>
+      </div>
+    );
+    const idx = Math.min(wlIdx, words.length - 1);
+    const w = words[idx];
+    const isLast = idx === words.length - 1;
+    const isFirst = idx === 0;
     return (
       <div>
         <Bt v="ghost" onClick={bk} style={{ marginBottom: 12 }}>← 과제 목록</Bt>
-        <Cd style={{ maxWidth: 800, margin: "0 auto" }}>
-          <h2 style={{ fontFamily: F.h, fontWeight: 800, fontSize: 20, marginBottom: 4 }}>단어 보기</h2>
-          <p style={{ fontSize: 13, color: X.sub, marginBottom: 20 }}>기사에 나오는 단어를 먼저 살펴보세요.</p>
-          <div style={{ display: "grid", gap: 10, marginBottom: 24 }}>
-            {words.length === 0 && (
-              <div style={{ fontSize: 13, color: X.mt, padding: 16, textAlign: "center" }}>표시할 단어가 없습니다.</div>
-            )}
-            {words.map((w) => (
-              <div
-                key={w.i}
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "space-between",
-                  gap: 12,
-                  padding: "12px 14px",
-                  borderRadius: 10,
-                  border: `1px solid ${X.bdr}`,
-                  background: "#fafbfd",
-                }}
-              >
-                <div style={{ minWidth: 0 }}>
-                  <div style={{ fontWeight: 700, fontSize: 15, color: X.tx }}>{w.en}</div>
-                  <div style={{ fontSize: 13, color: X.sub, marginTop: 2 }}>{w.kr}</div>
-                </div>
-                {w.mp3 && (
-                  <button
-                    type="button"
-                    onClick={() => playWordAudio(cA.seq, w.mp3)}
-                    style={{
-                      flexShrink: 0,
-                      display: "inline-flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      width: 34,
-                      height: 34,
-                      borderRadius: 8,
-                      border: `1px solid ${X.bdr}`,
-                      background: "#fff",
-                      cursor: "pointer",
-                      fontSize: 15,
-                    }}
-                    title="발음 듣기"
-                  >
-                    🔊
-                  </button>
-                )}
-              </div>
+        <div style={{ maxWidth: 560, margin: "0 auto" }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
+            <h2 style={{ fontFamily: F.h, fontWeight: 800, fontSize: 20 }}>단어 보기</h2>
+            <span style={{ fontSize: 13, color: X.sub, fontWeight: 600 }}>{idx + 1} / {words.length}</span>
+          </div>
+
+          {/* 진행 바 */}
+          <div style={{ height: 4, borderRadius: 2, background: X.bdr, marginBottom: 28, overflow: "hidden" }}>
+            <div style={{ height: "100%", borderRadius: 2, background: X.ac, width: `${((idx + 1) / words.length) * 100}%`, transition: "width .3s" }} />
+          </div>
+
+          {/* 카드 + 화살표 */}
+          <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+            {/* 이전 화살표 */}
+            <button
+              onClick={() => setWlIdx(i => Math.max(0, i - 1))}
+              disabled={isFirst}
+              style={{ flexShrink: 0, width: 44, height: 44, borderRadius: 12, border: `1px solid ${X.bdr}`, background: isFirst ? "#f8f9fa" : "#fff", color: isFirst ? X.mt : X.tx, fontSize: 20, cursor: isFirst ? "default" : "pointer", display: "flex", alignItems: "center", justifyContent: "center", transition: "all .15s" }}
+            >‹</button>
+
+            {/* 플래시카드 */}
+            <div style={{ flex: 1, borderRadius: 20, border: `1px solid ${X.bdr}`, background: "#fff", boxShadow: "0 4px 24px rgba(0,0,0,.07)", padding: "40px 32px", textAlign: "center", minHeight: 200, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 16 }}>
+              <div style={{ fontFamily: F.h, fontWeight: 800, fontSize: 32, color: X.tx, letterSpacing: "-0.5px" }}>{w.en}</div>
+              <div style={{ width: 40, height: 2, borderRadius: 1, background: X.bdr }} />
+              <div style={{ fontSize: 18, color: X.sub, fontWeight: 500 }}>{w.kr}</div>
+              {w.mp3 && (
+                <button
+                  type="button"
+                  onClick={() => playWordAudio(cA.seq, w.mp3)}
+                  style={{ marginTop: 8, display: "inline-flex", alignItems: "center", gap: 6, padding: "7px 16px", borderRadius: 20, border: `1px solid ${X.bdr}`, background: "#f8f9fa", cursor: "pointer", fontSize: 13, color: X.sub, fontFamily: F.b }}
+                >
+                  🔊 발음 듣기
+                </button>
+              )}
+            </div>
+
+            {/* 다음 화살표 */}
+            <button
+              onClick={() => setWlIdx(i => Math.min(words.length - 1, i + 1))}
+              disabled={isLast}
+              style={{ flexShrink: 0, width: 44, height: 44, borderRadius: 12, border: `1px solid ${X.bdr}`, background: isLast ? "#f8f9fa" : "#fff", color: isLast ? X.mt : X.tx, fontSize: 20, cursor: isLast ? "default" : "pointer", display: "flex", alignItems: "center", justifyContent: "center", transition: "all .15s" }}
+            >›</button>
+          </div>
+
+          {/* 하단 점 내비게이션 */}
+          <div style={{ display: "flex", justifyContent: "center", gap: 6, marginTop: 20 }}>
+            {words.map((_, i) => (
+              <button
+                key={i}
+                onClick={() => setWlIdx(i)}
+                style={{ width: i === idx ? 20 : 8, height: 8, borderRadius: 4, border: "none", background: i === idx ? X.ac : X.bdr, cursor: "pointer", padding: 0, transition: "all .25s" }}
+              />
             ))}
           </div>
-          <div style={{ textAlign: "center" }}>
-            <Bt v="success" size="lg" onClick={goWlToVoc}>단어 확인 완료 → 단어퀴즈</Bt>
-          </div>
-        </Cd>
+
+          {/* 마지막 카드에서만 완료 버튼 노출 */}
+          {isLast && (
+            <div style={{ marginTop: 28, textAlign: "center" }}>
+              <Bt v="success" size="lg" onClick={goWlToVoc}>단어 확인 완료 → 단어퀴즈</Bt>
+            </div>
+          )}
+        </div>
       </div>
     );
   };
