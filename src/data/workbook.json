@@ -1,0 +1,331 @@
+{
+  "schemaVersion": "1.0",
+  "contentType": "workbook_quiz",
+  "notes": [
+    "Converted from uploaded workbook DOCX files into structured JSON."
+  ],
+  "items": [
+    {
+      "articleSeq": "121",
+      "articleTitle": "‘The King’s Warden’",
+      "sourceFile": "121_Junior_Workbook_f.docx",
+      "mappingStatus": "matched",
+      "pageInfo": "p.06",
+      "sectionLabel": "Sports & Entertainment",
+      "instruction": "Read the article “The King’s Warden” and answer the questions.",
+      "activities": [
+        {
+          "type": "word_choice",
+          "title": "A. Check the correct words.",
+          "questions": [
+            {
+              "id": "A1",
+              "prompt": "It is the first _______ film by director Jang Hangjun.",
+              "options": [
+                "historical",
+                "present"
+              ],
+              "answer": "historical"
+            },
+            {
+              "id": "A2",
+              "prompt": "The movie is _______ in the Joseon Dynasty during the 15th century.",
+              "options": [
+                "supported",
+                "set"
+              ],
+              "answer": "set"
+            },
+            {
+              "id": "A3",
+              "prompt": "The village chief plays an especially _______ role in the king's life.",
+              "options": [
+                "important",
+                "improved"
+              ],
+              "answer": "important"
+            }
+          ]
+        },
+        {
+          "type": "multiple_choice",
+          "title": "B. Answer the questions.",
+          "questions": [
+            {
+              "id": "B1",
+              "prompt": "Who directed “The King’s Warden”?",
+              "options": {
+                "a": "Jang Hang-jun",
+                "b": "Yoo Hae-jin",
+                "c": "Park Ji-hoon"
+              },
+              "answer": "a"
+            },
+            {
+              "id": "B2",
+              "prompt": "What is the film about?",
+              "options": {
+                "a": "A dangerous mountain located near a village",
+                "b": "A village chief who adopts many young children",
+                "c": "A young king who gets sent away to a village"
+              },
+              "answer": "c"
+            }
+          ]
+        },
+        {
+          "type": "short_answer",
+          "title": "Answer the following questions.",
+          "questions": [
+            "What is “The King’s Warden” about?",
+            "What has the response to the film been like?"
+          ]
+        },
+        {
+          "type": "discussion",
+          "title": "Discuss the following questions.",
+          "questions": [
+            "Do you like watching historical films? Why or why not?",
+            "Would you like to watch “The King’s Warden”? Why or why not?"
+          ]
+        }
+      ]
+    },
+    {
+      "articleSeq": "122",
+      "articleTitle": "April Fools’ Day Pranks",
+      "sourceFile": "122_Junior_Workbook_f.docx",
+      "mappingStatus": "matched",
+      "pageInfo": "p.05",
+      "sectionLabel": "Lifestyle & Culture",
+      "instruction": "Read the article “April Fools’ Day Pranks” and answer the questions.",
+      "activities": [
+        {
+          "type": "unscramble",
+          "title": "A. Unscramble and complete the words.",
+          "questions": [
+            {
+              "id": "A1",
+              "jumbled": "h s a v r e t",
+              "answer": "harvest"
+            },
+            {
+              "id": "A2",
+              "jumbled": "a s e t o n r o m r",
+              "answer": "astronomer"
+            },
+            {
+              "id": "A3",
+              "jumbled": "g a t v r i y",
+              "answer": "gravity"
+            }
+          ]
+        },
+        {
+          "type": "matching",
+          "title": "B. Match and complete the sentences.",
+          "leftItems": [
+            "Here are some well-known",
+            "Many viewers were fooled and",
+            "The astronomer encouraged listeners to"
+          ],
+          "rightItems": {
+            "a": "jump to experience the reduced gravity.",
+            "b": "April Fools’ Day pranks.",
+            "c": "wanted to grow their own “spaghetti trees.”"
+          },
+          "answers": {
+            "1": "b",
+            "2": "c",
+            "3": "a"
+          }
+        },
+        {
+          "type": "short_answer",
+          "title": "Answer the following questions.",
+          "questions": [
+            "What happens on April Fools’ Day?",
+            "What happened during each of the pranks?"
+          ]
+        },
+        {
+          "type": "discussion",
+          "title": "Discuss the following questions.",
+          "questions": [
+            "Have you ever played an April Fools’ Day prank? What happened?",
+            "Do you think pranks are harmless or harmful? Why?"
+          ]
+        }
+      ]
+    },
+    {
+      "articleSeq": "785",
+      "articleTitle": "Caring for Our Earth",
+      "sourceFile": "kids_studyzone_785.docx",
+      "mappingStatus": "matched",
+      "pageInfo": "pp.10-11",
+      "sectionLabel": "What’s Hot",
+      "levelLabel": "L3",
+      "instruction": "Read the article “Caring for Our Earth” and answer the questions.",
+      "activities": [
+        {
+          "type": "vocabulary_puzzle",
+          "title": "A. Complete the puzzle.",
+          "questions": [
+            {
+              "id": "A1",
+              "direction": "Down",
+              "prompt": "to make something smaller or less",
+              "answer": "reduce"
+            },
+            {
+              "id": "A2",
+              "direction": "Down",
+              "prompt": "to put a seed in the ground so it can grow",
+              "answer": "plant"
+            },
+            {
+              "id": "A3",
+              "direction": "Across",
+              "prompt": "to keep someone or something safe",
+              "answer": "protect"
+            },
+            {
+              "id": "A4",
+              "direction": "Across",
+              "prompt": "to help someone remember something",
+              "answer": "remind"
+            }
+          ]
+        },
+        {
+          "type": "multiple_choice",
+          "title": "B. Choose the correct answers.",
+          "questions": [
+            {
+              "id": "B1",
+              "prompt": "On this day, people turn off their lights for one hour to __________ energy.",
+              "options": {
+                "a": "save",
+                "b": "use",
+                "c": "burn"
+              },
+              "answer": "a"
+            },
+            {
+              "id": "B2",
+              "prompt": "__________ off lights can reduce pollution and protect animal homes.",
+              "options": {
+                "a": "Turn",
+                "b": "Turned",
+                "c": "Turning"
+              },
+              "answer": "c"
+            },
+            {
+              "id": "B3",
+              "prompt": "Earth Day encourages everyone to take __________ for a greener future.",
+              "options": {
+                "a": "rest",
+                "b": "control",
+                "c": "action"
+              },
+              "answer": "c"
+            }
+          ]
+        },
+        {
+          "type": "speak_out",
+          "title": "Speak Out",
+          "questions": [
+            "What do people do during Earth Hour?",
+            "What activities do people do on Earth Day?",
+            "What actions can students take to protect the Earth?"
+          ]
+        }
+      ]
+    },
+    {
+      "articleSeq": "786",
+      "articleTitle": "Firefighting Robot",
+      "sourceFile": "kids_studyzone_785,786.docx",
+      "mappingStatus": "matched",
+      "pageInfo": "p.5",
+      "sectionLabel": "Science & Nature",
+      "levelLabel": "L2L",
+      "instruction": "Read the article “Firefighting Robot” and answer the questions.",
+      "activities": [
+        {
+          "type": "word_search_vocabulary",
+          "title": "A. Find the words and write down its Korean meanings.",
+          "wordGrid": "uqkcreatescsoobstacleeeheathcclimbhprenterdcjoprotectyesprayddpdonatedgko",
+          "questions": [
+            {
+              "word": "create",
+              "meaning_kr": "만들다"
+            },
+            {
+              "word": "spray",
+              "meaning_kr": "뿌리다"
+            },
+            {
+              "word": "enter",
+              "meaning_kr": "들어가다"
+            },
+            {
+              "word": "obstacle",
+              "meaning_kr": "장애물"
+            },
+            {
+              "word": "protect",
+              "meaning_kr": "보호하다"
+            },
+            {
+              "word": "heat",
+              "meaning_kr": "열"
+            },
+            {
+              "word": "donate",
+              "meaning_kr": "기부하다"
+            },
+            {
+              "word": "climb",
+              "meaning_kr": "오르다"
+            }
+          ]
+        },
+        {
+          "type": "true_false",
+          "title": "B. Check T for true or F for false.",
+          "questions": [
+            {
+              "id": "B1",
+              "prompt": "Hyundai created a firefighting robot.",
+              "answer": "T"
+            },
+            {
+              "id": "B2",
+              "prompt": "The robot can climb mountains.",
+              "answer": "F"
+            },
+            {
+              "id": "B3",
+              "prompt": "The robots often release dangerous gases.",
+              "answer": "F"
+            }
+          ]
+        },
+        {
+          "type": "speak_out",
+          "title": "Speak Out",
+          "questions": [
+            "What did Hyundai create?",
+            "Why is the robot useful in dangerous buildings?",
+            "What kinds of robots would you like to build?"
+          ]
+        }
+      ]
+    }
+  ],
+  "unmatchedFiles": []
+}

@@ -1,0 +1,1290 @@
+{
+  "schemaVersion": "1.0",
+  "contentType": "article_words_bundle",
+  "matchKey": "articleSeq",
+  "count": 4,
+  "items": [
+    {
+      "articleSeq": "121",
+      "wordCount": 16,
+      "words": [
+        {
+          "wordIndex": 1,
+          "english": "warden",
+          "meaning_kr": "교도관, 관리인",
+          "mp3File": "001.mp3",
+          "pid": "S1P1"
+        },
+        {
+          "wordIndex": 2,
+          "english": "historical",
+          "meaning_kr": "역사적인",
+          "mp3File": "002.mp3",
+          "pid": "S1P1"
+        },
+        {
+          "wordIndex": 3,
+          "english": "director",
+          "meaning_kr": "감독",
+          "mp3File": "003.mp3",
+          "pid": "S1P1"
+        },
+        {
+          "wordIndex": 4,
+          "english": "be set in",
+          "meaning_kr": "~을 배경으로 하다",
+          "mp3File": "004.mp3",
+          "pid": "S1P2"
+        },
+        {
+          "wordIndex": 5,
+          "english": "exile",
+          "meaning_kr": "유배",
+          "mp3File": "005.mp3",
+          "pid": "S1P2"
+        },
+        {
+          "wordIndex": 6,
+          "english": "remove",
+          "meaning_kr": "제거하다",
+          "mp3File": "006.mp3",
+          "pid": "S1P2"
+        },
+        {
+          "wordIndex": 7,
+          "english": "throne",
+          "meaning_kr": "왕위",
+          "mp3File": "007.mp3",
+          "pid": "S1P2"
+        },
+        {
+          "wordIndex": 8,
+          "english": "village",
+          "meaning_kr": "마을",
+          "mp3File": "008.mp3",
+          "pid": "S1P2"
+        },
+        {
+          "wordIndex": 9,
+          "english": "take care of",
+          "meaning_kr": "~을 돌보다",
+          "mp3File": "009.mp3",
+          "pid": "S1P2"
+        },
+        {
+          "wordIndex": 10,
+          "english": "village chief",
+          "meaning_kr": "촌장",
+          "mp3File": "010.mp3",
+          "pid": "S1P2"
+        },
+        {
+          "wordIndex": 11,
+          "english": "role",
+          "meaning_kr": "역할",
+          "mp3File": "011.mp3",
+          "pid": "S1P2"
+        },
+        {
+          "wordIndex": 12,
+          "english": "include",
+          "meaning_kr": "포함하다",
+          "mp3File": "012.mp3",
+          "pid": "S1P3"
+        },
+        {
+          "wordIndex": 13,
+          "english": "leading role",
+          "meaning_kr": "주연",
+          "mp3File": "013.mp3",
+          "pid": "S1P3"
+        },
+        {
+          "wordIndex": 14,
+          "english": "appear",
+          "meaning_kr": "출연하다",
+          "mp3File": "014.mp3",
+          "pid": "S1P3"
+        },
+        {
+          "wordIndex": 15,
+          "english": "box-office success",
+          "meaning_kr": "흥행 성공",
+          "mp3File": "015.mp3",
+          "pid": "S1P4"
+        },
+        {
+          "wordIndex": 16,
+          "english": "reach",
+          "meaning_kr": "~에 이르다",
+          "mp3File": "016.mp3",
+          "pid": "S1P4"
+        }
+      ]
+    },
+    {
+      "articleSeq": "122",
+      "wordCount": 26,
+      "words": [
+        {
+          "wordIndex": 1,
+          "english": "prank",
+          "meaning_kr": "장난, 짓궂은 장난",
+          "mp3File": "001.mp3",
+          "pid": "S1P1"
+        },
+        {
+          "wordIndex": 2,
+          "english": "hilarious",
+          "meaning_kr": "매우 웃긴",
+          "mp3File": "002.mp3",
+          "pid": "S1P2"
+        },
+        {
+          "wordIndex": 3,
+          "english": "broadcast",
+          "meaning_kr": "방송",
+          "mp3File": "003.mp3",
+          "pid": "S1P2"
+        },
+        {
+          "wordIndex": 4,
+          "english": "announce",
+          "meaning_kr": "발표하다, 알리다",
+          "mp3File": "004.mp3",
+          "pid": "S1P2"
+        },
+        {
+          "wordIndex": 5,
+          "english": "bountiful",
+          "meaning_kr": "풍성한",
+          "mp3File": "005.mp3",
+          "pid": "S1P2"
+        },
+        {
+          "wordIndex": 6,
+          "english": "harvest",
+          "meaning_kr": "수확",
+          "mp3File": "006.mp3",
+          "pid": "S1P2"
+        },
+        {
+          "wordIndex": 7,
+          "english": "pluck",
+          "meaning_kr": "뽑다, 잡아당기다",
+          "mp3File": "007.mp3",
+          "pid": "S1P2"
+        },
+        {
+          "wordIndex": 8,
+          "english": "strand",
+          "meaning_kr": "가닥, 줄기",
+          "mp3File": "008.mp3",
+          "pid": "S1P2"
+        },
+        {
+          "wordIndex": 9,
+          "english": "fool",
+          "meaning_kr": "속이다",
+          "mp3File": "009.mp3",
+          "pid": "S1P1"
+        },
+        {
+          "wordIndex": 10,
+          "english": "law",
+          "meaning_kr": "법",
+          "mp3File": "010.mp3",
+          "pid": "S1P3"
+        },
+        {
+          "wordIndex": 11,
+          "english": "require",
+          "meaning_kr": "요구하다, 의무화하다",
+          "mp3File": "011.mp3",
+          "pid": "S1P3"
+        },
+        {
+          "wordIndex": 12,
+          "english": "immediately",
+          "meaning_kr": "즉시, 곧바로",
+          "mp3File": "012.mp3",
+          "pid": "S1P3"
+        },
+        {
+          "wordIndex": 13,
+          "english": "oppose",
+          "meaning_kr": "반대하다",
+          "mp3File": "013.mp3",
+          "pid": "S1P3"
+        },
+        {
+          "wordIndex": 14,
+          "english": "realize",
+          "meaning_kr": "깨닫다",
+          "mp3File": "014.mp3",
+          "pid": "S1P3"
+        },
+        {
+          "wordIndex": 15,
+          "english": "in fact",
+          "meaning_kr": "사실은, 실제로",
+          "mp3File": "015.mp3",
+          "pid": "S1P3"
+        },
+        {
+          "wordIndex": 16,
+          "english": "memorable",
+          "meaning_kr": "기억에 남는",
+          "mp3File": "016.mp3",
+          "pid": "S1P4"
+        },
+        {
+          "wordIndex": 17,
+          "english": "invent",
+          "meaning_kr": "(사실이 아닌 것을) 지어내다",
+          "mp3File": "017.mp3",
+          "pid": "S1P4"
+        },
+        {
+          "wordIndex": 18,
+          "english": "astronomer",
+          "meaning_kr": "천문학자",
+          "mp3File": "018.mp3",
+          "pid": "S1P4"
+        },
+        {
+          "wordIndex": 19,
+          "english": "claim",
+          "meaning_kr": "주장하다",
+          "mp3File": "019.mp3",
+          "pid": "S1P4"
+        },
+        {
+          "wordIndex": 20,
+          "english": "phenomenon",
+          "meaning_kr": "현상",
+          "mp3File": "020.mp3",
+          "pid": "S1P4"
+        },
+        {
+          "wordIndex": 21,
+          "english": "affect",
+          "meaning_kr": "영향을 미치다",
+          "mp3File": "021.mp3",
+          "pid": "S1P4"
+        },
+        {
+          "wordIndex": 22,
+          "english": "gravity",
+          "meaning_kr": "중력",
+          "mp3File": "022.mp3",
+          "pid": "S1P4"
+        },
+        {
+          "wordIndex": 23,
+          "english": "encourage",
+          "meaning_kr": "장려하다, 권하다",
+          "mp3File": "023.mp3",
+          "pid": "S1P4"
+        },
+        {
+          "wordIndex": 24,
+          "english": "experience",
+          "meaning_kr": "경험하다, 체험하다",
+          "mp3File": "024.mp3",
+          "pid": "S1P4"
+        },
+        {
+          "wordIndex": 25,
+          "english": "reduced",
+          "meaning_kr": "줄어든, 감소된",
+          "mp3File": "025.mp3",
+          "pid": "S1P4"
+        },
+        {
+          "wordIndex": 26,
+          "english": "out of the ordinary",
+          "meaning_kr": "평범하지 않은, 이례적인",
+          "mp3File": "026.mp3",
+          "pid": "S1P4"
+        }
+      ]
+    },
+    {
+      "articleSeq": "785",
+      "wordCount": 26,
+      "words": [
+        {
+          "wordIndex": 1,
+          "english": "care for",
+          "meaning_kr": "~을 보살피다",
+          "mp3File": "001.mp3",
+          "pid": null
+        },
+        {
+          "wordIndex": 2,
+          "english": "Earth",
+          "meaning_kr": "지구",
+          "mp3File": "002.mp3",
+          "pid": "S1P3"
+        },
+        {
+          "wordIndex": 3,
+          "english": "care about",
+          "meaning_kr": "~에 관심을 가지다",
+          "mp3File": "003.mp3",
+          "pid": "S1P1"
+        },
+        {
+          "wordIndex": 4,
+          "english": "environment",
+          "meaning_kr": "환경",
+          "mp3File": "004.mp3",
+          "pid": "S1P1"
+        },
+        {
+          "wordIndex": 5,
+          "english": "special",
+          "meaning_kr": "특별한",
+          "mp3File": "005.mp3",
+          "pid": "S1P1"
+        },
+        {
+          "wordIndex": 6,
+          "english": "protect",
+          "meaning_kr": "보호하다",
+          "mp3File": "006.mp3",
+          "pid": "S1P1"
+        },
+        {
+          "wordIndex": 7,
+          "english": "living",
+          "meaning_kr": "살아있는",
+          "mp3File": "007.mp3",
+          "pid": "S1P1"
+        },
+        {
+          "wordIndex": 8,
+          "english": "March",
+          "meaning_kr": "3월",
+          "mp3File": "008.mp3",
+          "pid": "S1P4"
+        },
+        {
+          "wordIndex": 9,
+          "english": "turn off",
+          "meaning_kr": "끄다",
+          "mp3File": "009.mp3",
+          "pid": "S1P4"
+        },
+        {
+          "wordIndex": 10,
+          "english": "light",
+          "meaning_kr": "불빛, 조명",
+          "mp3File": "010.mp3",
+          "pid": "S1P4"
+        },
+        {
+          "wordIndex": 11,
+          "english": "save",
+          "meaning_kr": "절약하다",
+          "mp3File": "011.mp3",
+          "pid": "S1P4"
+        },
+        {
+          "wordIndex": 12,
+          "english": "millions of",
+          "meaning_kr": "수백만의",
+          "mp3File": "012.mp3",
+          "pid": "S1P5"
+        },
+        {
+          "wordIndex": 13,
+          "english": "take part",
+          "meaning_kr": "참여하다",
+          "mp3File": "013.mp3",
+          "pid": "S1P5"
+        },
+        {
+          "wordIndex": 14,
+          "english": "reduce",
+          "meaning_kr": "줄이다",
+          "mp3File": "014.mp3",
+          "pid": "S1P5"
+        },
+        {
+          "wordIndex": 15,
+          "english": "pollution",
+          "meaning_kr": "오염",
+          "mp3File": "015.mp3",
+          "pid": "S1P5"
+        },
+        {
+          "wordIndex": 16,
+          "english": "join",
+          "meaning_kr": "참여하다",
+          "mp3File": "016.mp3",
+          "pid": "S1P6"
+        },
+        {
+          "wordIndex": 17,
+          "english": "nature",
+          "meaning_kr": "자연",
+          "mp3File": "017.mp3",
+          "pid": "S1P6"
+        },
+        {
+          "wordIndex": 18,
+          "english": "remind",
+          "meaning_kr": "상기시키다",
+          "mp3File": "018.mp3",
+          "pid": "S1P6"
+        },
+        {
+          "wordIndex": 19,
+          "english": "be celebrated",
+          "meaning_kr": "기념되다 (celebrate 기념하다)",
+          "mp3File": "019.mp3",
+          "pid": "S1P8"
+        },
+        {
+          "wordIndex": 20,
+          "english": "April",
+          "meaning_kr": "4월",
+          "mp3File": "020.mp3",
+          "pid": "S1P8"
+        },
+        {
+          "wordIndex": 21,
+          "english": "planet",
+          "meaning_kr": "행성, 지구",
+          "mp3File": "021.mp3",
+          "pid": "S1P1"
+        },
+        {
+          "wordIndex": 22,
+          "english": "plant",
+          "meaning_kr": "심다",
+          "mp3File": "022.mp3",
+          "pid": "S1P9"
+        },
+        {
+          "wordIndex": 23,
+          "english": "encourage",
+          "meaning_kr": "격려하다",
+          "mp3File": "023.mp3",
+          "pid": "S1P10"
+        },
+        {
+          "wordIndex": 24,
+          "english": "take action",
+          "meaning_kr": "행동하다",
+          "mp3File": "024.mp3",
+          "pid": "S1P10"
+        },
+        {
+          "wordIndex": 25,
+          "english": "greener",
+          "meaning_kr": "더 푸른, 더욱 친환경적인 (green 푸른)",
+          "mp3File": "025.mp3",
+          "pid": "S1P10"
+        },
+        {
+          "wordIndex": 26,
+          "english": "future",
+          "meaning_kr": "미래",
+          "mp3File": "026.mp3",
+          "pid": "S1P10"
+        }
+      ]
+    },
+    {
+      "articleSeq": "786",
+      "wordCount": 20,
+      "words": [
+        {
+          "wordIndex": 1,
+          "english": "firefighting",
+          "meaning_kr": "소방의 (firefighter 소방관)",
+          "mp3File": "001.mp3",
+          "pid": "S1P1"
+        },
+        {
+          "wordIndex": 2,
+          "english": "motor",
+          "meaning_kr": "자동차의",
+          "mp3File": "002.mp3",
+          "pid": "S1P1"
+        },
+        {
+          "wordIndex": 3,
+          "english": "company",
+          "meaning_kr": "회사",
+          "mp3File": "003.mp3",
+          "pid": "S1P1"
+        },
+        {
+          "wordIndex": 4,
+          "english": "recently",
+          "meaning_kr": "최근에",
+          "mp3File": "004.mp3",
+          "pid": "S1P1"
+        },
+        {
+          "wordIndex": 5,
+          "english": "create",
+          "meaning_kr": "만들다",
+          "mp3File": "005.mp3",
+          "pid": "S1P1"
+        },
+        {
+          "wordIndex": 6,
+          "english": "tank",
+          "meaning_kr": "탱크",
+          "mp3File": "006.mp3",
+          "pid": "S1P2"
+        },
+        {
+          "wordIndex": 7,
+          "english": "spray",
+          "meaning_kr": "뿌리다",
+          "mp3File": "007.mp3",
+          "pid": "S1P2"
+        },
+        {
+          "wordIndex": 8,
+          "english": "put out",
+          "meaning_kr": "(불을) 끄다",
+          "mp3File": "008.mp3",
+          "pid": "S1P2"
+        },
+        {
+          "wordIndex": 9,
+          "english": "protect",
+          "meaning_kr": "보호하다",
+          "mp3File": "009.mp3",
+          "pid": "S1P2"
+        },
+        {
+          "wordIndex": 10,
+          "english": "heat",
+          "meaning_kr": "열",
+          "mp3File": "010.mp3",
+          "pid": "S1P2"
+        },
+        {
+          "wordIndex": 11,
+          "english": "climb",
+          "meaning_kr": "오르다",
+          "mp3File": "011.mp3",
+          "pid": "S1P2"
+        },
+        {
+          "wordIndex": 12,
+          "english": "obstacle",
+          "meaning_kr": "장애물",
+          "mp3File": "012.mp3",
+          "pid": "S1P2"
+        },
+        {
+          "wordIndex": 13,
+          "english": "way",
+          "meaning_kr": "방법",
+          "mp3File": "013.mp3",
+          "pid": "S1P3"
+        },
+        {
+          "wordIndex": 14,
+          "english": "enter",
+          "meaning_kr": "들어가다",
+          "mp3File": "014.mp3",
+          "pid": "S1P3"
+        },
+        {
+          "wordIndex": 15,
+          "english": "dangerous",
+          "meaning_kr": "위험한",
+          "mp3File": "015.mp3",
+          "pid": "S1P3"
+        },
+        {
+          "wordIndex": 16,
+          "english": "filled with",
+          "meaning_kr": "~로 가득 찬",
+          "mp3File": "016.mp3",
+          "pid": "S1P3"
+        },
+        {
+          "wordIndex": 17,
+          "english": "toxic gas",
+          "meaning_kr": "유독가스",
+          "mp3File": "017.mp3",
+          "pid": "S1P3"
+        },
+        {
+          "wordIndex": 18,
+          "english": "donate",
+          "meaning_kr": "기부하다",
+          "mp3File": "018.mp3",
+          "pid": "S1P4"
+        },
+        {
+          "wordIndex": 19,
+          "english": "safer",
+          "meaning_kr": "더 안전한 (safe 안전한)",
+          "mp3File": "019.mp3",
+          "pid": "S1P4"
+        },
+        {
+          "wordIndex": 20,
+          "english": "rescue",
+          "meaning_kr": "구조",
+          "mp3File": "020.mp3",
+          "pid": "S1P4"
+        }
+      ]
+    }
+  ],
+  "byArticleSeq": {
+    "121": {
+      "articleSeq": "121",
+      "wordCount": 16,
+      "words": [
+        {
+          "wordIndex": 1,
+          "english": "warden",
+          "meaning_kr": "교도관, 관리인",
+          "mp3File": "001.mp3",
+          "pid": "S1P1"
+        },
+        {
+          "wordIndex": 2,
+          "english": "historical",
+          "meaning_kr": "역사적인",
+          "mp3File": "002.mp3",
+          "pid": "S1P1"
+        },
+        {
+          "wordIndex": 3,
+          "english": "director",
+          "meaning_kr": "감독",
+          "mp3File": "003.mp3",
+          "pid": "S1P1"
+        },
+        {
+          "wordIndex": 4,
+          "english": "be set in",
+          "meaning_kr": "~을 배경으로 하다",
+          "mp3File": "004.mp3",
+          "pid": "S1P2"
+        },
+        {
+          "wordIndex": 5,
+          "english": "exile",
+          "meaning_kr": "유배",
+          "mp3File": "005.mp3",
+          "pid": "S1P2"
+        },
+        {
+          "wordIndex": 6,
+          "english": "remove",
+          "meaning_kr": "제거하다",
+          "mp3File": "006.mp3",
+          "pid": "S1P2"
+        },
+        {
+          "wordIndex": 7,
+          "english": "throne",
+          "meaning_kr": "왕위",
+          "mp3File": "007.mp3",
+          "pid": "S1P2"
+        },
+        {
+          "wordIndex": 8,
+          "english": "village",
+          "meaning_kr": "마을",
+          "mp3File": "008.mp3",
+          "pid": "S1P2"
+        },
+        {
+          "wordIndex": 9,
+          "english": "take care of",
+          "meaning_kr": "~을 돌보다",
+          "mp3File": "009.mp3",
+          "pid": "S1P2"
+        },
+        {
+          "wordIndex": 10,
+          "english": "village chief",
+          "meaning_kr": "촌장",
+          "mp3File": "010.mp3",
+          "pid": "S1P2"
+        },
+        {
+          "wordIndex": 11,
+          "english": "role",
+          "meaning_kr": "역할",
+          "mp3File": "011.mp3",
+          "pid": "S1P2"
+        },
+        {
+          "wordIndex": 12,
+          "english": "include",
+          "meaning_kr": "포함하다",
+          "mp3File": "012.mp3",
+          "pid": "S1P3"
+        },
+        {
+          "wordIndex": 13,
+          "english": "leading role",
+          "meaning_kr": "주연",
+          "mp3File": "013.mp3",
+          "pid": "S1P3"
+        },
+        {
+          "wordIndex": 14,
+          "english": "appear",
+          "meaning_kr": "출연하다",
+          "mp3File": "014.mp3",
+          "pid": "S1P3"
+        },
+        {
+          "wordIndex": 15,
+          "english": "box-office success",
+          "meaning_kr": "흥행 성공",
+          "mp3File": "015.mp3",
+          "pid": "S1P4"
+        },
+        {
+          "wordIndex": 16,
+          "english": "reach",
+          "meaning_kr": "~에 이르다",
+          "mp3File": "016.mp3",
+          "pid": "S1P4"
+        }
+      ]
+    },
+    "122": {
+      "articleSeq": "122",
+      "wordCount": 26,
+      "words": [
+        {
+          "wordIndex": 1,
+          "english": "prank",
+          "meaning_kr": "장난, 짓궂은 장난",
+          "mp3File": "001.mp3",
+          "pid": "S1P1"
+        },
+        {
+          "wordIndex": 2,
+          "english": "hilarious",
+          "meaning_kr": "매우 웃긴",
+          "mp3File": "002.mp3",
+          "pid": "S1P2"
+        },
+        {
+          "wordIndex": 3,
+          "english": "broadcast",
+          "meaning_kr": "방송",
+          "mp3File": "003.mp3",
+          "pid": "S1P2"
+        },
+        {
+          "wordIndex": 4,
+          "english": "announce",
+          "meaning_kr": "발표하다, 알리다",
+          "mp3File": "004.mp3",
+          "pid": "S1P2"
+        },
+        {
+          "wordIndex": 5,
+          "english": "bountiful",
+          "meaning_kr": "풍성한",
+          "mp3File": "005.mp3",
+          "pid": "S1P2"
+        },
+        {
+          "wordIndex": 6,
+          "english": "harvest",
+          "meaning_kr": "수확",
+          "mp3File": "006.mp3",
+          "pid": "S1P2"
+        },
+        {
+          "wordIndex": 7,
+          "english": "pluck",
+          "meaning_kr": "뽑다, 잡아당기다",
+          "mp3File": "007.mp3",
+          "pid": "S1P2"
+        },
+        {
+          "wordIndex": 8,
+          "english": "strand",
+          "meaning_kr": "가닥, 줄기",
+          "mp3File": "008.mp3",
+          "pid": "S1P2"
+        },
+        {
+          "wordIndex": 9,
+          "english": "fool",
+          "meaning_kr": "속이다",
+          "mp3File": "009.mp3",
+          "pid": "S1P1"
+        },
+        {
+          "wordIndex": 10,
+          "english": "law",
+          "meaning_kr": "법",
+          "mp3File": "010.mp3",
+          "pid": "S1P3"
+        },
+        {
+          "wordIndex": 11,
+          "english": "require",
+          "meaning_kr": "요구하다, 의무화하다",
+          "mp3File": "011.mp3",
+          "pid": "S1P3"
+        },
+        {
+          "wordIndex": 12,
+          "english": "immediately",
+          "meaning_kr": "즉시, 곧바로",
+          "mp3File": "012.mp3",
+          "pid": "S1P3"
+        },
+        {
+          "wordIndex": 13,
+          "english": "oppose",
+          "meaning_kr": "반대하다",
+          "mp3File": "013.mp3",
+          "pid": "S1P3"
+        },
+        {
+          "wordIndex": 14,
+          "english": "realize",
+          "meaning_kr": "깨닫다",
+          "mp3File": "014.mp3",
+          "pid": "S1P3"
+        },
+        {
+          "wordIndex": 15,
+          "english": "in fact",
+          "meaning_kr": "사실은, 실제로",
+          "mp3File": "015.mp3",
+          "pid": "S1P3"
+        },
+        {
+          "wordIndex": 16,
+          "english": "memorable",
+          "meaning_kr": "기억에 남는",
+          "mp3File": "016.mp3",
+          "pid": "S1P4"
+        },
+        {
+          "wordIndex": 17,
+          "english": "invent",
+          "meaning_kr": "(사실이 아닌 것을) 지어내다",
+          "mp3File": "017.mp3",
+          "pid": "S1P4"
+        },
+        {
+          "wordIndex": 18,
+          "english": "astronomer",
+          "meaning_kr": "천문학자",
+          "mp3File": "018.mp3",
+          "pid": "S1P4"
+        },
+        {
+          "wordIndex": 19,
+          "english": "claim",
+          "meaning_kr": "주장하다",
+          "mp3File": "019.mp3",
+          "pid": "S1P4"
+        },
+        {
+          "wordIndex": 20,
+          "english": "phenomenon",
+          "meaning_kr": "현상",
+          "mp3File": "020.mp3",
+          "pid": "S1P4"
+        },
+        {
+          "wordIndex": 21,
+          "english": "affect",
+          "meaning_kr": "영향을 미치다",
+          "mp3File": "021.mp3",
+          "pid": "S1P4"
+        },
+        {
+          "wordIndex": 22,
+          "english": "gravity",
+          "meaning_kr": "중력",
+          "mp3File": "022.mp3",
+          "pid": "S1P4"
+        },
+        {
+          "wordIndex": 23,
+          "english": "encourage",
+          "meaning_kr": "장려하다, 권하다",
+          "mp3File": "023.mp3",
+          "pid": "S1P4"
+        },
+        {
+          "wordIndex": 24,
+          "english": "experience",
+          "meaning_kr": "경험하다, 체험하다",
+          "mp3File": "024.mp3",
+          "pid": "S1P4"
+        },
+        {
+          "wordIndex": 25,
+          "english": "reduced",
+          "meaning_kr": "줄어든, 감소된",
+          "mp3File": "025.mp3",
+          "pid": "S1P4"
+        },
+        {
+          "wordIndex": 26,
+          "english": "out of the ordinary",
+          "meaning_kr": "평범하지 않은, 이례적인",
+          "mp3File": "026.mp3",
+          "pid": "S1P4"
+        }
+      ]
+    },
+    "785": {
+      "articleSeq": "785",
+      "wordCount": 26,
+      "words": [
+        {
+          "wordIndex": 1,
+          "english": "care for",
+          "meaning_kr": "~을 보살피다",
+          "mp3File": "001.mp3",
+          "pid": null
+        },
+        {
+          "wordIndex": 2,
+          "english": "Earth",
+          "meaning_kr": "지구",
+          "mp3File": "002.mp3",
+          "pid": "S1P3"
+        },
+        {
+          "wordIndex": 3,
+          "english": "care about",
+          "meaning_kr": "~에 관심을 가지다",
+          "mp3File": "003.mp3",
+          "pid": "S1P1"
+        },
+        {
+          "wordIndex": 4,
+          "english": "environment",
+          "meaning_kr": "환경",
+          "mp3File": "004.mp3",
+          "pid": "S1P1"
+        },
+        {
+          "wordIndex": 5,
+          "english": "special",
+          "meaning_kr": "특별한",
+          "mp3File": "005.mp3",
+          "pid": "S1P1"
+        },
+        {
+          "wordIndex": 6,
+          "english": "protect",
+          "meaning_kr": "보호하다",
+          "mp3File": "006.mp3",
+          "pid": "S1P1"
+        },
+        {
+          "wordIndex": 7,
+          "english": "living",
+          "meaning_kr": "살아있는",
+          "mp3File": "007.mp3",
+          "pid": "S1P1"
+        },
+        {
+          "wordIndex": 8,
+          "english": "March",
+          "meaning_kr": "3월",
+          "mp3File": "008.mp3",
+          "pid": "S1P4"
+        },
+        {
+          "wordIndex": 9,
+          "english": "turn off",
+          "meaning_kr": "끄다",
+          "mp3File": "009.mp3",
+          "pid": "S1P4"
+        },
+        {
+          "wordIndex": 10,
+          "english": "light",
+          "meaning_kr": "불빛, 조명",
+          "mp3File": "010.mp3",
+          "pid": "S1P4"
+        },
+        {
+          "wordIndex": 11,
+          "english": "save",
+          "meaning_kr": "절약하다",
+          "mp3File": "011.mp3",
+          "pid": "S1P4"
+        },
+        {
+          "wordIndex": 12,
+          "english": "millions of",
+          "meaning_kr": "수백만의",
+          "mp3File": "012.mp3",
+          "pid": "S1P5"
+        },
+        {
+          "wordIndex": 13,
+          "english": "take part",
+          "meaning_kr": "참여하다",
+          "mp3File": "013.mp3",
+          "pid": "S1P5"
+        },
+        {
+          "wordIndex": 14,
+          "english": "reduce",
+          "meaning_kr": "줄이다",
+          "mp3File": "014.mp3",
+          "pid": "S1P5"
+        },
+        {
+          "wordIndex": 15,
+          "english": "pollution",
+          "meaning_kr": "오염",
+          "mp3File": "015.mp3",
+          "pid": "S1P5"
+        },
+        {
+          "wordIndex": 16,
+          "english": "join",
+          "meaning_kr": "참여하다",
+          "mp3File": "016.mp3",
+          "pid": "S1P6"
+        },
+        {
+          "wordIndex": 17,
+          "english": "nature",
+          "meaning_kr": "자연",
+          "mp3File": "017.mp3",
+          "pid": "S1P6"
+        },
+        {
+          "wordIndex": 18,
+          "english": "remind",
+          "meaning_kr": "상기시키다",
+          "mp3File": "018.mp3",
+          "pid": "S1P6"
+        },
+        {
+          "wordIndex": 19,
+          "english": "be celebrated",
+          "meaning_kr": "기념되다 (celebrate 기념하다)",
+          "mp3File": "019.mp3",
+          "pid": "S1P8"
+        },
+        {
+          "wordIndex": 20,
+          "english": "April",
+          "meaning_kr": "4월",
+          "mp3File": "020.mp3",
+          "pid": "S1P8"
+        },
+        {
+          "wordIndex": 21,
+          "english": "planet",
+          "meaning_kr": "행성, 지구",
+          "mp3File": "021.mp3",
+          "pid": "S1P1"
+        },
+        {
+          "wordIndex": 22,
+          "english": "plant",
+          "meaning_kr": "심다",
+          "mp3File": "022.mp3",
+          "pid": "S1P9"
+        },
+        {
+          "wordIndex": 23,
+          "english": "encourage",
+          "meaning_kr": "격려하다",
+          "mp3File": "023.mp3",
+          "pid": "S1P10"
+        },
+        {
+          "wordIndex": 24,
+          "english": "take action",
+          "meaning_kr": "행동하다",
+          "mp3File": "024.mp3",
+          "pid": "S1P10"
+        },
+        {
+          "wordIndex": 25,
+          "english": "greener",
+          "meaning_kr": "더 푸른, 더욱 친환경적인 (green 푸른)",
+          "mp3File": "025.mp3",
+          "pid": "S1P10"
+        },
+        {
+          "wordIndex": 26,
+          "english": "future",
+          "meaning_kr": "미래",
+          "mp3File": "026.mp3",
+          "pid": "S1P10"
+        }
+      ]
+    },
+    "786": {
+      "articleSeq": "786",
+      "wordCount": 20,
+      "words": [
+        {
+          "wordIndex": 1,
+          "english": "firefighting",
+          "meaning_kr": "소방의 (firefighter 소방관)",
+          "mp3File": "001.mp3",
+          "pid": "S1P1"
+        },
+        {
+          "wordIndex": 2,
+          "english": "motor",
+          "meaning_kr": "자동차의",
+          "mp3File": "002.mp3",
+          "pid": "S1P1"
+        },
+        {
+          "wordIndex": 3,
+          "english": "company",
+          "meaning_kr": "회사",
+          "mp3File": "003.mp3",
+          "pid": "S1P1"
+        },
+        {
+          "wordIndex": 4,
+          "english": "recently",
+          "meaning_kr": "최근에",
+          "mp3File": "004.mp3",
+          "pid": "S1P1"
+        },
+        {
+          "wordIndex": 5,
+          "english": "create",
+          "meaning_kr": "만들다",
+          "mp3File": "005.mp3",
+          "pid": "S1P1"
+        },
+        {
+          "wordIndex": 6,
+          "english": "tank",
+          "meaning_kr": "탱크",
+          "mp3File": "006.mp3",
+          "pid": "S1P2"
+        },
+        {
+          "wordIndex": 7,
+          "english": "spray",
+          "meaning_kr": "뿌리다",
+          "mp3File": "007.mp3",
+          "pid": "S1P2"
+        },
+        {
+          "wordIndex": 8,
+          "english": "put out",
+          "meaning_kr": "(불을) 끄다",
+          "mp3File": "008.mp3",
+          "pid": "S1P2"
+        },
+        {
+          "wordIndex": 9,
+          "english": "protect",
+          "meaning_kr": "보호하다",
+          "mp3File": "009.mp3",
+          "pid": "S1P2"
+        },
+        {
+          "wordIndex": 10,
+          "english": "heat",
+          "meaning_kr": "열",
+          "mp3File": "010.mp3",
+          "pid": "S1P2"
+        },
+        {
+          "wordIndex": 11,
+          "english": "climb",
+          "meaning_kr": "오르다",
+          "mp3File": "011.mp3",
+          "pid": "S1P2"
+        },
+        {
+          "wordIndex": 12,
+          "english": "obstacle",
+          "meaning_kr": "장애물",
+          "mp3File": "012.mp3",
+          "pid": "S1P2"
+        },
+        {
+          "wordIndex": 13,
+          "english": "way",
+          "meaning_kr": "방법",
+          "mp3File": "013.mp3",
+          "pid": "S1P3"
+        },
+        {
+          "wordIndex": 14,
+          "english": "enter",
+          "meaning_kr": "들어가다",
+          "mp3File": "014.mp3",
+          "pid": "S1P3"
+        },
+        {
+          "wordIndex": 15,
+          "english": "dangerous",
+          "meaning_kr": "위험한",
+          "mp3File": "015.mp3",
+          "pid": "S1P3"
+        },
+        {
+          "wordIndex": 16,
+          "english": "filled with",
+          "meaning_kr": "~로 가득 찬",
+          "mp3File": "016.mp3",
+          "pid": "S1P3"
+        },
+        {
+          "wordIndex": 17,
+          "english": "toxic gas",
+          "meaning_kr": "유독가스",
+          "mp3File": "017.mp3",
+          "pid": "S1P3"
+        },
+        {
+          "wordIndex": 18,
+          "english": "donate",
+          "meaning_kr": "기부하다",
+          "mp3File": "018.mp3",
+          "pid": "S1P4"
+        },
+        {
+          "wordIndex": 19,
+          "english": "safer",
+          "meaning_kr": "더 안전한 (safe 안전한)",
+          "mp3File": "019.mp3",
+          "pid": "S1P4"
+        },
+        {
+          "wordIndex": 20,
+          "english": "rescue",
+          "meaning_kr": "구조",
+          "mp3File": "020.mp3",
+          "pid": "S1P4"
+        }
+      ]
+    }
+  }
+}
