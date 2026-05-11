@@ -1294,140 +1294,6 @@ export default function App() {
     </div>
   );
 
-  /* ─── STUDENT ADD MODAL ─── */
-  const AddStudentModal = () => {
-    if (!showAddModal) return null;
-    const recLabel = levelPick !== null ? LEVEL_GROUPS[levelPick].label : null;
-    const recCId = levelPick !== null ? recommendCId(levelPick) : null;
-    return (
-      <div
-        style={{ position: "fixed", inset: 0, zIndex: 500, background: "rgba(15,23,42,0.55)", display: "flex", alignItems: "center", justifyContent: "center", padding: 16 }}
-        onClick={e => { if (e.target === e.currentTarget) closeAddModal(); }}
-      >
-        <div style={{ background: "#fff", borderRadius: 20, width: "100%", maxWidth: 520, maxHeight: "90vh", overflow: "auto", boxShadow: "0 24px 60px rgba(0,0,0,.18)" }}>
-          {/* 헤더 */}
-          <div style={{ padding: "20px 24px 16px", borderBottom: `1px solid ${X.bdr}`, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-            <span style={{ fontFamily: F.h, fontWeight: 800, fontSize: 18 }}>학생 등록</span>
-            <button onClick={closeAddModal} style={{ border: "none", background: "none", fontSize: 20, cursor: "pointer", color: X.mt, lineHeight: 1 }}>×</button>
-          </div>
-
-          <div style={{ padding: 24 }}>
-            {/* 이름 */}
-            <div style={{ marginBottom: 20 }}>
-              <label style={{ display: "block", fontSize: 12, fontWeight: 700, color: X.sub, marginBottom: 6 }}>학생 이름</label>
-              <input
-                value={addName}
-                onChange={e => setAddName(e.target.value)}
-                placeholder="이름을 입력하세요"
-                style={{ width: "100%", padding: "10px 14px", borderRadius: 10, border: `1px solid ${X.bdr}`, fontSize: 14, fontFamily: F.b, boxSizing: "border-box", outline: "none" }}
-              />
-            </div>
-
-            {/* 반 지정 방식 토글 */}
-            <div style={{ marginBottom: 16 }}>
-              <label style={{ display: "block", fontSize: 12, fontWeight: 700, color: X.sub, marginBottom: 8 }}>반 지정</label>
-              <div style={{ display: "flex", background: "#f1f5f9", borderRadius: 10, padding: 3, gap: 0, marginBottom: 14 }}>
-                {[["직접 선택", false], ["레벨 테스트로 추천받기", true]].map(([lbl, val]) => (
-                  <button
-                    key={lbl}
-                    onClick={() => { setUseLevel(val); if (!val) setLevelPick(null); }}
-                    style={{ flex: 1, padding: "7px 10px", borderRadius: 8, border: "none", cursor: "pointer", fontSize: 12, fontWeight: 600, fontFamily: F.b, background: useLevel === val ? "#fff" : "transparent", color: useLevel === val ? X.tx : X.mt, boxShadow: useLevel === val ? "0 1px 3px rgba(0,0,0,.1)" : "none", transition: "all .15s" }}
-                  >{lbl}</button>
-                ))}
-              </div>
-
-              {!useLevel ? (
-                /* 직접 선택 */
-                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
-                  {clsData.map(c => {
-                    const band = Object.entries(BANDS).find(([k]) => k === c.nm.replace("반", ""));
-                    const bc = band ? band[1].c : X.ac;
-                    const bbg = band ? band[1].bg : X.abg;
-                    const sel = addCId === c.id;
-                    return (
-                      <button
-                        key={c.id}
-                        onClick={() => setAddCId(c.id)}
-                        style={{ padding: "12px 14px", borderRadius: 10, border: `2px solid ${sel ? bc : X.bdr}`, background: sel ? bbg : "#fff", cursor: "pointer", textAlign: "left", transition: "all .15s" }}
-                      >
-                        <div style={{ fontSize: 13, fontWeight: 700, color: sel ? bc : X.tx, fontFamily: F.h }}>{c.nm}</div>
-                        <div style={{ fontSize: 11, color: X.sub, marginTop: 2 }}>{c.sts.length}명 재학 중</div>
-                      </button>
-                    );
-                  })}
-                </div>
-              ) : (
-                /* 레벨 테스트 */
-                <div>
-                  <p style={{ fontSize: 12, color: X.sub, marginBottom: 12 }}>학생이 편하게 읽을 수 있는 문장 수준을 선택하세요.</p>
-                  <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-                    {LEVEL_GROUPS.map((g, i) => {
-                      const sel = levelPick === i;
-                      return (
-                        <button
-                          key={i}
-                          onClick={() => { setLevelPick(i); setAddCId(recommendCId(i)); }}
-                          style={{ padding: "14px 16px", borderRadius: 12, border: `2px solid ${sel ? g.color : X.bdr}`, background: sel ? g.bg : "#fff", cursor: "pointer", textAlign: "left", transition: "all .15s" }}
-                        >
-                          <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8 }}>
-                            <span style={{ padding: "2px 10px", borderRadius: 20, background: g.color, color: "#fff", fontSize: 11, fontWeight: 700, fontFamily: F.h }}>{g.label}</span>
-                            <span style={{ fontSize: 11, color: X.sub }}>{g.desc}</span>
-                          </div>
-                          <div style={{ display: "flex", flexDirection: "column", gap: 5 }}>
-                            {g.sentences.map((s, si) => (
-                              <div key={si} style={{ display: "flex", alignItems: "flex-start", gap: 8 }}>
-                                <span style={{ fontSize: 11, color: g.color, marginTop: 1, flexShrink: 0 }}>›</span>
-                                <span style={{ fontSize: 13, color: sel ? "#1e293b" : X.tx, fontStyle: "italic" }}>{s}</span>
-                              </div>
-                            ))}
-                          </div>
-                        </button>
-                      );
-                    })}
-                  </div>
-
-                  {/* 추천 결과 */}
-                  {recLabel && (
-                    <div style={{ marginTop: 14, padding: "12px 16px", borderRadius: 10, background: LEVEL_GROUPS[levelPick].bg, border: `1px solid ${LEVEL_GROUPS[levelPick].color}22`, display: "flex", alignItems: "center", gap: 10 }}>
-                      <span style={{ fontSize: 18 }}>✨</span>
-                      <div>
-                        <div style={{ fontSize: 12, fontWeight: 700, color: LEVEL_GROUPS[levelPick].color }}>추천 반: {recLabel}</div>
-                        <div style={{ fontSize: 11, color: X.sub, marginTop: 2 }}>
-                          {recCId && clsData.find(c => c.id === recCId)
-                            ? `현재 클래스에 배정됩니다.`
-                            : `해당 반이 없습니다. 직접 선택 탭에서 반을 지정해 주세요.`}
-                        </div>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              )}
-            </div>
-
-            {/* 최종 선택된 반 표시 */}
-            {addCId && (
-              <div style={{ marginBottom: 20, padding: "10px 14px", borderRadius: 10, background: "#f8f9fa", fontSize: 12, color: X.sub }}>
-                배정될 반: <strong style={{ color: X.tx }}>{clsData.find(c => c.id === addCId)?.nm ?? "미선택"}</strong>
-              </div>
-            )}
-
-            {/* 버튼 */}
-            <div style={{ display: "flex", gap: 10 }}>
-              <button onClick={closeAddModal} style={{ flex: 1, padding: "12px", borderRadius: 10, border: `1px solid ${X.bdr}`, background: "#fff", fontSize: 14, fontWeight: 600, fontFamily: F.b, cursor: "pointer", color: X.sub }}>취소</button>
-              <button
-                onClick={submitAdd}
-                disabled={!addName.trim() || !addCId}
-                style={{ flex: 2, padding: "12px", borderRadius: 10, border: "none", background: addName.trim() && addCId ? X.dk : "#e2e8f0", color: addName.trim() && addCId ? "#fff" : X.mt, fontSize: 14, fontWeight: 700, fontFamily: F.b, cursor: addName.trim() && addCId ? "pointer" : "default", transition: "all .15s" }}
-              >
-                등록 완료
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  };
-
   /* ─── STUDENT TASKS ─── */
   const STasks = () => (
     <div className="fade-up">
@@ -2127,7 +1993,112 @@ export default function App() {
       </div>
 
       {/* 토스트 */}
-      <AddStudentModal />
+      {showAddModal && (() => {
+        const recLabel = levelPick !== null ? LEVEL_GROUPS[levelPick].label : null;
+        const recCId = levelPick !== null ? recommendCId(levelPick) : null;
+        return (
+          <div
+            style={{ position: "fixed", inset: 0, zIndex: 500, background: "rgba(15,23,42,0.55)", display: "flex", alignItems: "center", justifyContent: "center", padding: 16 }}
+            onClick={e => { if (e.target === e.currentTarget) closeAddModal(); }}
+          >
+            <div style={{ background: "#fff", borderRadius: 20, width: "100%", maxWidth: 520, maxHeight: "90vh", overflow: "auto", boxShadow: "0 24px 60px rgba(0,0,0,.18)" }}>
+              <div style={{ padding: "20px 24px 16px", borderBottom: `1px solid ${X.bdr}`, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                <span style={{ fontFamily: F.h, fontWeight: 800, fontSize: 18 }}>학생 등록</span>
+                <button onClick={closeAddModal} style={{ border: "none", background: "none", fontSize: 20, cursor: "pointer", color: X.mt, lineHeight: 1 }}>×</button>
+              </div>
+              <div style={{ padding: 24 }}>
+                <div style={{ marginBottom: 20 }}>
+                  <label style={{ display: "block", fontSize: 12, fontWeight: 700, color: X.sub, marginBottom: 6 }}>학생 이름</label>
+                  <input
+                    value={addName}
+                    onChange={e => setAddName(e.target.value)}
+                    placeholder="이름을 입력하세요"
+                    style={{ width: "100%", padding: "10px 14px", borderRadius: 10, border: `1px solid ${X.bdr}`, fontSize: 14, fontFamily: F.b, boxSizing: "border-box", outline: "none" }}
+                  />
+                </div>
+                <div style={{ marginBottom: 16 }}>
+                  <label style={{ display: "block", fontSize: 12, fontWeight: 700, color: X.sub, marginBottom: 8 }}>반 지정</label>
+                  <div style={{ display: "flex", background: "#f1f5f9", borderRadius: 10, padding: 3, gap: 0, marginBottom: 14 }}>
+                    {[["직접 선택", false], ["레벨 테스트로 추천받기", true]].map(([lbl, val]) => (
+                      <button
+                        key={lbl}
+                        onClick={() => { setUseLevel(val); if (!val) setLevelPick(null); }}
+                        style={{ flex: 1, padding: "7px 10px", borderRadius: 8, border: "none", cursor: "pointer", fontSize: 12, fontWeight: 600, fontFamily: F.b, background: useLevel === val ? "#fff" : "transparent", color: useLevel === val ? X.tx : X.mt, boxShadow: useLevel === val ? "0 1px 3px rgba(0,0,0,.1)" : "none", transition: "all .15s" }}
+                      >{lbl}</button>
+                    ))}
+                  </div>
+                  {!useLevel ? (
+                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
+                      {clsData.map(c => {
+                        const band = Object.entries(BANDS).find(([k]) => k === c.nm.replace("반", ""));
+                        const bc = band ? band[1].c : X.ac;
+                        const bbg = band ? band[1].bg : X.abg;
+                        const sel = addCId === c.id;
+                        return (
+                          <button key={c.id} onClick={() => setAddCId(c.id)}
+                            style={{ padding: "12px 14px", borderRadius: 10, border: `2px solid ${sel ? bc : X.bdr}`, background: sel ? bbg : "#fff", cursor: "pointer", textAlign: "left", transition: "all .15s" }}>
+                            <div style={{ fontSize: 13, fontWeight: 700, color: sel ? bc : X.tx, fontFamily: F.h }}>{c.nm}</div>
+                            <div style={{ fontSize: 11, color: X.sub, marginTop: 2 }}>{c.sts.length}명 재학 중</div>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  ) : (
+                    <div>
+                      <p style={{ fontSize: 12, color: X.sub, marginBottom: 12 }}>학생이 편하게 읽을 수 있는 문장 수준을 선택하세요.</p>
+                      <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+                        {LEVEL_GROUPS.map((g, i) => {
+                          const sel = levelPick === i;
+                          return (
+                            <button key={i} onClick={() => { setLevelPick(i); setAddCId(recommendCId(i)); }}
+                              style={{ padding: "14px 16px", borderRadius: 12, border: `2px solid ${sel ? g.color : X.bdr}`, background: sel ? g.bg : "#fff", cursor: "pointer", textAlign: "left", transition: "all .15s" }}>
+                              <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8 }}>
+                                <span style={{ padding: "2px 10px", borderRadius: 20, background: g.color, color: "#fff", fontSize: 11, fontWeight: 700, fontFamily: F.h }}>{g.label}</span>
+                                <span style={{ fontSize: 11, color: X.sub }}>{g.desc}</span>
+                              </div>
+                              <div style={{ display: "flex", flexDirection: "column", gap: 5 }}>
+                                {g.sentences.map((s, si) => (
+                                  <div key={si} style={{ display: "flex", alignItems: "flex-start", gap: 8 }}>
+                                    <span style={{ fontSize: 11, color: g.color, marginTop: 1, flexShrink: 0 }}>›</span>
+                                    <span style={{ fontSize: 13, color: sel ? "#1e293b" : X.tx, fontStyle: "italic" }}>{s}</span>
+                                  </div>
+                                ))}
+                              </div>
+                            </button>
+                          );
+                        })}
+                      </div>
+                      {recLabel && (
+                        <div style={{ marginTop: 14, padding: "12px 16px", borderRadius: 10, background: LEVEL_GROUPS[levelPick].bg, border: `1px solid ${LEVEL_GROUPS[levelPick].color}22`, display: "flex", alignItems: "center", gap: 10 }}>
+                          <span style={{ fontSize: 18 }}>✨</span>
+                          <div>
+                            <div style={{ fontSize: 12, fontWeight: 700, color: LEVEL_GROUPS[levelPick].color }}>추천 반: {recLabel}</div>
+                            <div style={{ fontSize: 11, color: X.sub, marginTop: 2 }}>
+                              {recCId && clsData.find(c => c.id === recCId) ? "현재 클래스에 배정됩니다." : "해당 반이 없습니다. 직접 선택 탭에서 반을 지정해 주세요."}
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
+                {addCId && (
+                  <div style={{ marginBottom: 20, padding: "10px 14px", borderRadius: 10, background: "#f8f9fa", fontSize: 12, color: X.sub }}>
+                    배정될 반: <strong style={{ color: X.tx }}>{clsData.find(c => c.id === addCId)?.nm ?? "미선택"}</strong>
+                  </div>
+                )}
+                <div style={{ display: "flex", gap: 10 }}>
+                  <button onClick={closeAddModal} style={{ flex: 1, padding: "12px", borderRadius: 10, border: `1px solid ${X.bdr}`, background: "#fff", fontSize: 14, fontWeight: 600, fontFamily: F.b, cursor: "pointer", color: X.sub }}>취소</button>
+                  <button onClick={submitAdd} disabled={!addName.trim() || !addCId}
+                    style={{ flex: 2, padding: "12px", borderRadius: 10, border: "none", background: addName.trim() && addCId ? X.dk : "#e2e8f0", color: addName.trim() && addCId ? "#fff" : X.mt, fontSize: 14, fontWeight: 700, fontFamily: F.b, cursor: addName.trim() && addCId ? "pointer" : "default", transition: "all .15s" }}>
+                    등록 완료
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        );
+      })()}
       {toast && (
         <div className="toast-anim" style={{ position: "fixed", bottom: 32, left: "50%", transform: "translateX(-50%)", zIndex: 999, background: "#0f172a", color: "#fff", borderRadius: 12, padding: "12px 24px", fontSize: 14, fontFamily: F.b, whiteSpace: "nowrap", display: "flex", alignItems: "center", gap: 16 }}>
           <span>{toast}</span>
