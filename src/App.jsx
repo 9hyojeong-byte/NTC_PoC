@@ -563,6 +563,109 @@ export default function App() {
   const toastTimer = useRef(null);
   const [lastAssigned, setLastAssigned] = useState(false);
 
+  /* ─── DYNAMIC STUDENTS ─── */
+  const [clsData, setClsData] = useState(() => {
+    try {
+      const s = localStorage.getItem("ntc_cls_v1");
+      return s ? JSON.parse(s) : CLS;
+    } catch { return CLS; }
+  });
+  const dynALL = useMemo(
+    () => clsData.flatMap(c => c.sts.map(s => ({ ...s, cId: c.id, cNm: c.nm }))),
+    [clsData]
+  );
+  const saveCls = (next) => {
+    setClsData(next);
+    localStorage.setItem("ntc_cls_v1", JSON.stringify(next));
+  };
+  const addStudent = (nm, cId) => {
+    const newId = `s_${Date.now()}`;
+    const next = clsData.map(c =>
+      c.id === cId ? { ...c, sts: [...c.sts, { id: newId, nm }] } : c
+    );
+    saveCls(next);
+  };
+  const removeStudent = (stId) => {
+    const next = clsData.map(c => ({ ...c, sts: c.sts.filter(s => s.id !== stId) }));
+    saveCls(next);
+  };
+
+  /* ─── STUDENT ADD MODAL STATE ─── */
+  const [showAddModal, setShowAddModal] = useState(false);
+  const [addName, setAddName] = useState("");
+  const [addCId, setAddCId] = useState("");
+  const [levelPick, setLevelPick] = useState(null); // 0~3 선택된 레벨 그룹 인덱스
+  const [useLevel, setUseLevel] = useState(false);
+
+  const LEVEL_GROUPS = [
+    {
+      label: "입문반",
+      desc: "유치원 ~ 초등학교 2학년",
+      color: BANDS["입문"].c,
+      bg: BANDS["입문"].bg,
+      sentences: [
+        "I like cats and dogs.",
+        "She has a big red ball.",
+      ],
+    },
+    {
+      label: "기초반",
+      desc: "초등학교 3학년 ~ 6학년",
+      color: BANDS["기초"].c,
+      bg: BANDS["기초"].bg,
+      sentences: [
+        "My family goes to the park every weekend.",
+        "The children learned about animals in science class.",
+      ],
+    },
+    {
+      label: "기본반",
+      desc: "초등학교 고학년 ~ 중학생",
+      color: BANDS["기본"].c,
+      bg: BANDS["기본"].bg,
+      sentences: [
+        "Scientists discovered that plants communicate through underground networks.",
+        "Ancient civilizations built remarkable structures without modern tools.",
+      ],
+    },
+    {
+      label: "심화반",
+      desc: "중학교 3학년 ~ 성인",
+      color: BANDS["심화"].c,
+      bg: BANDS["심화"].bg,
+      sentences: [
+        "The rapid advancement of artificial intelligence has sparked ethical debates worldwide.",
+        "Environmental degradation poses unprecedented challenges to global biodiversity conservation.",
+      ],
+    },
+  ];
+
+  /* 추천 레벨 → clsData 내 매칭되는 반 id */
+  const recommendCId = (lvIdx) => {
+    const lbl = LEVEL_GROUPS[lvIdx].label; // "입문반" etc.
+    const match = clsData.find(c => c.nm === lbl);
+    if (match) return match.id;
+    // 없으면 band 매핑으로 근사
+    if (lvIdx <= 1) return clsData[0]?.id ?? "";
+    return clsData[clsData.length - 1]?.id ?? "";
+  };
+
+  const openAddModal = () => {
+    setAddName("");
+    setAddCId(clsData[0]?.id ?? "");
+    setLevelPick(null);
+    setUseLevel(false);
+    setShowAddModal(true);
+  };
+  const closeAddModal = () => setShowAddModal(false);
+  const submitAdd = () => {
+    const name = addName.trim();
+    if (!name || !addCId) return;
+    addStudent(name, addCId);
+    closeAddModal();
+    showToast(`${name} 학생이 등록되었습니다.`);
+  };
+
   useEffect(() => {
     const id = "ne-times-v2";
     if (!document.getElementById(id)) {
@@ -786,9 +889,9 @@ export default function App() {
   const bk = () => { setSArt(null); setSv("tasks"); setPw(null); };
   // 현재 at 기준 대상 학생 목록 반환
   const getTargetStudents = () => {
-    if (at.t === "students") return ALL.filter(s => (at.ids || []).includes(s.id));
-    if (at.id === "__all__") return ALL;
-    return CLS.find(c => c.id === at.id)?.sts || [];
+    if (at.t === "students") return dynALL.filter(s => (at.ids || []).includes(s.id));
+    if (at.id === "__all__") return dynALL;
+    return clsData.find(c => c.id === at.id)?.sts || [];
   };
 
   const dAR = () => {
@@ -804,9 +907,9 @@ export default function App() {
     setAr(null);
     const art = ARTS.find(a => a.seq === seq);
     const targetLabel = at.t === "students"
-      ? `${(at.ids || []).map(id => ALL.find(s => s.id === id)?.nm).filter(Boolean).join(", ")}에게`
+      ? `${(at.ids || []).map(id => dynALL.find(s => s.id === id)?.nm).filter(Boolean).join(", ")}에게`
       : at.id === "__all__" ? "전체에"
-      : `${CLS.find(c => c.id === at.id)?.nm || ""}에`;
+      : `${clsData.find(c => c.id === at.id)?.nm || ""}에`;
     showToast(`${targetLabel} '${art?.title}' 배정 완료`, true);
   };
 
@@ -832,7 +935,7 @@ export default function App() {
           </div>
           <div style={{ flex: 1 }}>
             <div style={{ fontFamily: F.h, fontWeight: 800, fontSize: 22 }}>박지영 선생님</div>
-            <div style={{ fontSize: 13, color: "#94a3b8", marginTop: 3 }}>NE 영어학원 · 담당 {CLS.length}개 반 · 학생 {ALL.length}명</div>
+            <div style={{ fontSize: 13, color: "#94a3b8", marginTop: 3 }}>NE 영어학원 · 담당 {clsData.length}개 반 · 학생 {dynALL.length}명</div>
           </div>
           <div style={{ textAlign: "right", padding: "8px 16px", background: "rgba(255,255,255,.06)", borderRadius: 12 }}>
             <div style={{ fontSize: 11, color: "#64748b" }}>오늘</div>
@@ -850,7 +953,7 @@ export default function App() {
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
           <div>
             <Hd sub="반별 과제 진행 현황">반 요약</Hd>
-            {CLS.map(cls => {
+            {clsData.map(cls => {
               const all = cls.sts.flatMap(s => (asgn[s.id] || []).map(a => ({ sid: s.id, ...a })));
               const dn = all.filter(a => iD(prog, a.sid, a.seq)).length; const tot = all.length; const pct = tot ? Math.round(dn / tot * 100) : 0;
               const nd = cls.sts.filter(s => (asgn[s.id] || []).some(a => !iD(prog, s.id, a.seq)));
@@ -921,16 +1024,16 @@ export default function App() {
                 }}
               >
                 <option value="__all__">전체</option>
-                {CLS.map(c => <option key={c.id} value={c.id}>{c.nm}</option>)}
+                {clsData.map(c => <option key={c.id} value={c.id}>{c.nm}</option>)}
                 {at.t === "students" && <option value="__individual__">개별 선택 중</option>}
               </select>
             </div>
             {/* 학생 선택 — 반 하이라이트 + 개별 다중 선택 토글 */}
             <div style={{ display: "flex", gap: 6, flexWrap: "wrap", alignItems: "center" }}>
-              {ALL.map(s => {
+              {dynALL.map(s => {
                 const inClass = at.t === "class" && (at.id === "__all__" || at.id === s.cId);
                 const isActive = at.t === "students" && (at.ids || []).includes(s.id);
-                const cls = CLS.find(c => c.id === s.cId);
+                const cls = clsData.find(c => c.id === s.cId);
                 return (
                   <button
                     key={s.id}
@@ -1085,7 +1188,7 @@ export default function App() {
     return (
       <div>
         <p style={{ fontSize: 13, color: X.sub, marginBottom: 14 }}>학생별 학습 단계 진행 상태</p>
-        {CLS.map(cls => (
+        {clsData.map(cls => (
           <Cd key={cls.id} style={{ marginBottom: 20, padding: 0, overflow: "hidden" }}>
             <div style={{ padding: "14px 20px", background: "#fafbfd", borderBottom: `1px solid ${X.bdr}`, fontFamily: F.h, fontWeight: 700, fontSize: 15 }}>{cls.nm}</div>
             <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
@@ -1135,6 +1238,192 @@ export default function App() {
             </table>
           </Cd>
         ))}
+      </div>
+    );
+  };
+
+  /* ─── TEACHER STUDENTS ─── */
+  const TStudents = () => (
+    <div>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
+        <p style={{ fontSize: 13, color: X.sub }}>학생을 등록하고 반을 지정합니다.</p>
+        <button
+          onClick={openAddModal}
+          style={{ display: "flex", alignItems: "center", gap: 6, padding: "8px 18px", borderRadius: 10, border: "none", background: X.dk, color: "#fff", fontSize: 13, fontWeight: 700, fontFamily: F.b, cursor: "pointer" }}
+        >
+          + 학생 등록
+        </button>
+      </div>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(280px,1fr))", gap: 16 }}>
+        {clsData.map(cls => {
+          const band = Object.entries(BANDS).find(([k]) => k === cls.nm.replace("반", ""));
+          const bColor = band ? band[1].c : X.ac;
+          const bBg = band ? band[1].bg : X.abg;
+          return (
+            <Cd key={cls.id} style={{ padding: 0, overflow: "hidden" }}>
+              <div style={{ padding: "12px 16px", background: bBg, borderBottom: `1px solid ${X.bdr}`, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                <span style={{ fontFamily: F.h, fontWeight: 700, fontSize: 15, color: bColor }}>{cls.nm}</span>
+                <span style={{ fontSize: 12, color: bColor, fontWeight: 600 }}>{cls.sts.length}명</span>
+              </div>
+              {cls.sts.length === 0 ? (
+                <div style={{ padding: "20px 16px", color: X.mt, fontSize: 13, textAlign: "center" }}>등록된 학생이 없습니다.</div>
+              ) : (
+                <div style={{ padding: "8px 0" }}>
+                  {cls.sts.map(st => (
+                    <div key={st.id} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "10px 16px", borderBottom: `1px solid #f5f5f7` }}>
+                      <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                        <div style={{ width: 32, height: 32, borderRadius: 10, background: bBg, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 14, color: bColor, fontWeight: 700, fontFamily: F.h }}>
+                          {st.nm[0]}
+                        </div>
+                        <span style={{ fontSize: 14, fontWeight: 600 }}>{st.nm}</span>
+                      </div>
+                      <button
+                        onClick={() => { if (window.confirm(`${st.nm} 학생을 삭제하시겠습니까?`)) removeStudent(st.id); }}
+                        style={{ border: "none", background: "none", cursor: "pointer", fontSize: 12, color: X.mt, padding: "4px 8px", borderRadius: 6 }}
+                      >
+                        삭제
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </Cd>
+          );
+        })}
+      </div>
+    </div>
+  );
+
+  /* ─── STUDENT ADD MODAL ─── */
+  const AddStudentModal = () => {
+    if (!showAddModal) return null;
+    const recLabel = levelPick !== null ? LEVEL_GROUPS[levelPick].label : null;
+    const recCId = levelPick !== null ? recommendCId(levelPick) : null;
+    return (
+      <div
+        style={{ position: "fixed", inset: 0, zIndex: 500, background: "rgba(15,23,42,0.55)", display: "flex", alignItems: "center", justifyContent: "center", padding: 16 }}
+        onClick={e => { if (e.target === e.currentTarget) closeAddModal(); }}
+      >
+        <div style={{ background: "#fff", borderRadius: 20, width: "100%", maxWidth: 520, maxHeight: "90vh", overflow: "auto", boxShadow: "0 24px 60px rgba(0,0,0,.18)" }}>
+          {/* 헤더 */}
+          <div style={{ padding: "20px 24px 16px", borderBottom: `1px solid ${X.bdr}`, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+            <span style={{ fontFamily: F.h, fontWeight: 800, fontSize: 18 }}>학생 등록</span>
+            <button onClick={closeAddModal} style={{ border: "none", background: "none", fontSize: 20, cursor: "pointer", color: X.mt, lineHeight: 1 }}>×</button>
+          </div>
+
+          <div style={{ padding: 24 }}>
+            {/* 이름 */}
+            <div style={{ marginBottom: 20 }}>
+              <label style={{ display: "block", fontSize: 12, fontWeight: 700, color: X.sub, marginBottom: 6 }}>학생 이름</label>
+              <input
+                value={addName}
+                onChange={e => setAddName(e.target.value)}
+                placeholder="이름을 입력하세요"
+                style={{ width: "100%", padding: "10px 14px", borderRadius: 10, border: `1px solid ${X.bdr}`, fontSize: 14, fontFamily: F.b, boxSizing: "border-box", outline: "none" }}
+              />
+            </div>
+
+            {/* 반 지정 방식 토글 */}
+            <div style={{ marginBottom: 16 }}>
+              <label style={{ display: "block", fontSize: 12, fontWeight: 700, color: X.sub, marginBottom: 8 }}>반 지정</label>
+              <div style={{ display: "flex", background: "#f1f5f9", borderRadius: 10, padding: 3, gap: 0, marginBottom: 14 }}>
+                {[["직접 선택", false], ["레벨 테스트로 추천받기", true]].map(([lbl, val]) => (
+                  <button
+                    key={lbl}
+                    onClick={() => { setUseLevel(val); if (!val) setLevelPick(null); }}
+                    style={{ flex: 1, padding: "7px 10px", borderRadius: 8, border: "none", cursor: "pointer", fontSize: 12, fontWeight: 600, fontFamily: F.b, background: useLevel === val ? "#fff" : "transparent", color: useLevel === val ? X.tx : X.mt, boxShadow: useLevel === val ? "0 1px 3px rgba(0,0,0,.1)" : "none", transition: "all .15s" }}
+                  >{lbl}</button>
+                ))}
+              </div>
+
+              {!useLevel ? (
+                /* 직접 선택 */
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
+                  {clsData.map(c => {
+                    const band = Object.entries(BANDS).find(([k]) => k === c.nm.replace("반", ""));
+                    const bc = band ? band[1].c : X.ac;
+                    const bbg = band ? band[1].bg : X.abg;
+                    const sel = addCId === c.id;
+                    return (
+                      <button
+                        key={c.id}
+                        onClick={() => setAddCId(c.id)}
+                        style={{ padding: "12px 14px", borderRadius: 10, border: `2px solid ${sel ? bc : X.bdr}`, background: sel ? bbg : "#fff", cursor: "pointer", textAlign: "left", transition: "all .15s" }}
+                      >
+                        <div style={{ fontSize: 13, fontWeight: 700, color: sel ? bc : X.tx, fontFamily: F.h }}>{c.nm}</div>
+                        <div style={{ fontSize: 11, color: X.sub, marginTop: 2 }}>{c.sts.length}명 재학 중</div>
+                      </button>
+                    );
+                  })}
+                </div>
+              ) : (
+                /* 레벨 테스트 */
+                <div>
+                  <p style={{ fontSize: 12, color: X.sub, marginBottom: 12 }}>학생이 편하게 읽을 수 있는 문장 수준을 선택하세요.</p>
+                  <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+                    {LEVEL_GROUPS.map((g, i) => {
+                      const sel = levelPick === i;
+                      return (
+                        <button
+                          key={i}
+                          onClick={() => { setLevelPick(i); setAddCId(recommendCId(i)); }}
+                          style={{ padding: "14px 16px", borderRadius: 12, border: `2px solid ${sel ? g.color : X.bdr}`, background: sel ? g.bg : "#fff", cursor: "pointer", textAlign: "left", transition: "all .15s" }}
+                        >
+                          <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8 }}>
+                            <span style={{ padding: "2px 10px", borderRadius: 20, background: g.color, color: "#fff", fontSize: 11, fontWeight: 700, fontFamily: F.h }}>{g.label}</span>
+                            <span style={{ fontSize: 11, color: X.sub }}>{g.desc}</span>
+                          </div>
+                          <div style={{ display: "flex", flexDirection: "column", gap: 5 }}>
+                            {g.sentences.map((s, si) => (
+                              <div key={si} style={{ display: "flex", alignItems: "flex-start", gap: 8 }}>
+                                <span style={{ fontSize: 11, color: g.color, marginTop: 1, flexShrink: 0 }}>›</span>
+                                <span style={{ fontSize: 13, color: sel ? "#1e293b" : X.tx, fontStyle: "italic" }}>{s}</span>
+                              </div>
+                            ))}
+                          </div>
+                        </button>
+                      );
+                    })}
+                  </div>
+
+                  {/* 추천 결과 */}
+                  {recLabel && (
+                    <div style={{ marginTop: 14, padding: "12px 16px", borderRadius: 10, background: LEVEL_GROUPS[levelPick].bg, border: `1px solid ${LEVEL_GROUPS[levelPick].color}22`, display: "flex", alignItems: "center", gap: 10 }}>
+                      <span style={{ fontSize: 18 }}>✨</span>
+                      <div>
+                        <div style={{ fontSize: 12, fontWeight: 700, color: LEVEL_GROUPS[levelPick].color }}>추천 반: {recLabel}</div>
+                        <div style={{ fontSize: 11, color: X.sub, marginTop: 2 }}>
+                          {recCId && clsData.find(c => c.id === recCId)
+                            ? `현재 클래스에 배정됩니다.`
+                            : `해당 반이 없습니다. 직접 선택 탭에서 반을 지정해 주세요.`}
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+
+            {/* 최종 선택된 반 표시 */}
+            {addCId && (
+              <div style={{ marginBottom: 20, padding: "10px 14px", borderRadius: 10, background: "#f8f9fa", fontSize: 12, color: X.sub }}>
+                배정될 반: <strong style={{ color: X.tx }}>{clsData.find(c => c.id === addCId)?.nm ?? "미선택"}</strong>
+              </div>
+            )}
+
+            {/* 버튼 */}
+            <div style={{ display: "flex", gap: 10 }}>
+              <button onClick={closeAddModal} style={{ flex: 1, padding: "12px", borderRadius: 10, border: `1px solid ${X.bdr}`, background: "#fff", fontSize: 14, fontWeight: 600, fontFamily: F.b, cursor: "pointer", color: X.sub }}>취소</button>
+              <button
+                onClick={submitAdd}
+                disabled={!addName.trim() || !addCId}
+                style={{ flex: 2, padding: "12px", borderRadius: 10, border: "none", background: addName.trim() && addCId ? X.dk : "#e2e8f0", color: addName.trim() && addCId ? "#fff" : X.mt, fontSize: 14, fontWeight: 700, fontFamily: F.b, cursor: addName.trim() && addCId ? "pointer" : "default", transition: "all .15s" }}
+              >
+                등록 완료
+              </button>
+            </div>
+          </div>
+        </div>
       </div>
     );
   };
@@ -1728,7 +2017,7 @@ export default function App() {
   };
 
   /* ─── MAIN RENDER ─── */
-  const secRefs = { dash: useRef(null), assign: useRef(null), progress: useRef(null) };
+  const secRefs = { dash: useRef(null), assign: useRef(null), progress: useRef(null), students: useRef(null) };
   const [tAct, setTAct] = useState("dash");
 
   const scrollTo = (key) => {
@@ -1764,7 +2053,7 @@ export default function App() {
         <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
           {role === "student" && (
             <select style={{ padding: "5px 10px", borderRadius: 8, border: `1px solid ${X.bdr}`, fontSize: 12, fontFamily: F.b }} value={sSt} onChange={e => { setSSt(e.target.value); setSArt(null); setSv("tasks"); }}>
-              {ALL.map(s => <option key={s.id} value={s.id}>{s.nm} ({s.cNm})</option>)}
+              {dynALL.map(s => <option key={s.id} value={s.id}>{s.nm} ({s.cNm})</option>)}
             </select>
           )}
           <div style={{ display: "flex", background: "#f1f5f9", borderRadius: 10, padding: 3 }}>
@@ -1782,7 +2071,7 @@ export default function App() {
       {role === "teacher" && (
         <div style={{ position: "sticky", top: 56, zIndex: 40, background: X.card, borderBottom: `1px solid ${X.bdr}`, padding: "0 24px" }}>
           <div style={{ maxWidth: 1280, margin: "0 auto", display: "flex", gap: 0 }}>
-            {[["dash", "대시보드"], ["assign", "기사 배정"], ["progress", "학습 현황"]].map(([v, l]) => (
+            {[["dash", "대시보드"], ["assign", "기사 배정"], ["progress", "학습 현황"], ["students", "학생 관리"]].map(([v, l]) => (
               <button key={v} onClick={() => scrollTo(v)}
                 style={{ padding: "12px 22px", border: "none", borderBottom: tAct === v ? `2px solid ${X.dk}` : "2px solid transparent", cursor: "pointer", fontSize: 13, fontWeight: 600, fontFamily: F.b, background: "transparent", color: tAct === v ? X.tx : X.sub, transition: "all .15s" }}>
                 {l}
@@ -1820,6 +2109,13 @@ export default function App() {
               </div>
               <TProg />
             </div>
+            <div ref={secRefs.students} style={{ scrollMarginTop: 100, marginBottom: 56 }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 20 }}>
+                <span style={{ width: 4, height: 22, borderRadius: 2, background: X.am, display: "inline-block" }} />
+                <h2 style={{ fontFamily: F.h, fontWeight: 800, fontSize: 24, color: X.tx }}>학생 관리</h2>
+              </div>
+              <TStudents />
+            </div>
           </div>
         ) : (
           <>
@@ -1831,6 +2127,7 @@ export default function App() {
       </div>
 
       {/* 토스트 */}
+      <AddStudentModal />
       {toast && (
         <div className="toast-anim" style={{ position: "fixed", bottom: 32, left: "50%", transform: "translateX(-50%)", zIndex: 999, background: "#0f172a", color: "#fff", borderRadius: 12, padding: "12px 24px", fontSize: 14, fontFamily: F.b, whiteSpace: "nowrap", display: "flex", alignItems: "center", gap: 16 }}>
           <span>{toast}</span>
@@ -1838,9 +2135,9 @@ export default function App() {
             <button
               onClick={() => {
                 const sid = at.t === "students"
-          ? ((at.ids || [])[0] || ALL[0]?.id || "s1")
-          : at.id === "__all__" ? (ALL[0]?.id || "s1")
-          : (CLS.find(c => c.id === at.id)?.sts[0]?.id || "s1");
+          ? ((at.ids || [])[0] || dynALL[0]?.id || "s1")
+          : at.id === "__all__" ? (dynALL[0]?.id || "s1")
+          : (clsData.find(c => c.id === at.id)?.sts[0]?.id || "s1");
                 setRole("student"); setSSt(sid); setSArt(null); setSv("tasks"); setToast(null);
               }}
               style={{ background: "rgba(255,255,255,.15)", border: "1px solid rgba(255,255,255,.3)", color: "#fff", borderRadius: 8, padding: "4px 12px", fontSize: 12, fontWeight: 600, fontFamily: F.b, cursor: "pointer", whiteSpace: "nowrap" }}>
