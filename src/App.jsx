@@ -566,7 +566,7 @@ export default function App() {
   /* ─── DYNAMIC STUDENTS ─── */
   const [clsData, setClsData] = useState(() => {
     try {
-      const s = localStorage.getItem("ntc_cls_v1");
+      const s = localStorage.getItem("ntc_cls_v2");
       return s ? JSON.parse(s) : CLS;
     } catch { return CLS; }
   });
@@ -576,7 +576,7 @@ export default function App() {
   );
   const saveCls = (next) => {
     setClsData(next);
-    localStorage.setItem("ntc_cls_v1", JSON.stringify(next));
+    localStorage.setItem("ntc_cls_v2", JSON.stringify(next));
   };
   const addStudent = (nm, cId) => {
     const newId = `s_${Date.now()}`;
@@ -977,7 +977,7 @@ export default function App() {
             })}
             <Hd sub="오늘의 추천 할 일">할 일</Hd>
             <Cd style={{ padding: 16 }}>
-              {[{ d: false, t: "초급반 미완료 학생 리마인드" }, { d: false, t: "중급반 새 기사 배정" }, { d: true, t: "지난주 학습 현황 확인" }].map((td, i) =>
+              {[{ d: false, t: "입문반 미완료 학생 리마인드" }, { d: false, t: "기본반 새 기사 배정" }, { d: true, t: "지난주 학습 현황 확인" }].map((td, i) =>
                 <div key={i} style={{ display: "flex", alignItems: "center", gap: 10, padding: "8px 0", borderBottom: i < 2 ? `1px solid ${X.bdr}` : "none" }}>
                   <span style={{ width: 20, height: 20, borderRadius: 6, border: `2px solid ${td.d ? X.gn : X.bdr}`, background: td.d ? X.gbg : "#fff", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 11, color: X.gn }}>{td.d ? "✓" : ""}</span>
                   <span style={{ fontSize: 13, color: td.d ? X.mt : X.tx, textDecoration: td.d ? "line-through" : "none" }}>{td.t}</span>

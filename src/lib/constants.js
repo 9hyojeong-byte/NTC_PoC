@@ -45,7 +45,7 @@ export const BM = {
 export const CLS = [
   {
     id: "c1",
-    nm: "초급반",
+    nm: "입문반",
     sts: [
       { id: "s1", nm: "김민준" },
       { id: "s2", nm: "이서윤" },
@@ -55,13 +55,23 @@ export const CLS = [
   },
   {
     id: "c2",
-    nm: "중급반",
+    nm: "기초반",
+    sts: [],
+  },
+  {
+    id: "c3",
+    nm: "기본반",
     sts: [
       { id: "s5", nm: "정예준" },
       { id: "s6", nm: "한지우" },
       { id: "s7", nm: "오시우" },
       { id: "s8", nm: "윤채원" },
     ],
+  },
+  {
+    id: "c4",
+    nm: "심화반",
+    sts: [],
   },
 ];
 
@@ -99,8 +109,8 @@ export const TL = [
   { t: "10분 전", m: "김민준 — Firefighting Robot 전체 완료", ic: "✅" },
   { t: "1시간 전", m: "이서윤 — Firefighting Robot 단어 퀴즈 완료", ic: "📝" },
   { t: "2시간 전", m: "한지우 — The King's Warden 전체 완료", ic: "🎉" },
-  { t: "어제", m: "초급반에 Caring for Our Earth 배정", ic: "📋" },
-  { t: "2일 전", m: "중급반에 April Fools' Day Pranks 배정", ic: "📋" },
+  { t: "어제", m: "입문반에 Caring for Our Earth 배정", ic: "📋" },
+  { t: "2일 전", m: "기본반에 April Fools' Day Pranks 배정", ic: "📋" },
 ];
 
 /* CSS (글로벌 인젝션용) */
