@@ -262,11 +262,11 @@ function StudentRecordingStep({ sSt, sArt, sentenceRows, onSubmit, onBack }) {
   const [recErr, setRecErr] = useState(null);
   const [activeRecKey, setActiveRecKey] = useState(null);
   const [playingRecKey, setPlayingRecKey] = useState(null);
+  const [recIdx, setRecIdx] = useState(0);
   const streamRef = useRef(null);
   const mrRef = useRef(null);
   const chunksRef = useRef([]);
   const playingAudioRef = useRef(null);
-  /** true면 MediaRecorder stop 시 파일로 저장하지 않고 버림 */
   const discardOnStopRef = useRef(false);
 
   const cleanupMedia = () => {
@@ -277,11 +277,7 @@ function StudentRecordingStep({ sSt, sArt, sentenceRows, onSubmit, onBack }) {
     }
     setPlayingRecKey(null);
     if (mrRef.current && mrRef.current.state !== "inactive") {
-      try {
-        mrRef.current.stop();
-      } catch {
-        /* ignore */
-      }
+      try { mrRef.current.stop(); } catch { /* ignore */ }
     }
     if (streamRef.current) {
       streamRef.current.getTracks().forEach((t) => t.stop());
@@ -296,11 +292,10 @@ function StudentRecordingStep({ sSt, sArt, sentenceRows, onSubmit, onBack }) {
     if (!sArt) return;
     setRecMap(loadRecMap(sSt, sArt));
     setRecErr(null);
+    setRecIdx(0);
   }, [sSt, sArt]);
 
-  useEffect(() => () => {
-    cleanupMedia();
-  }, []);
+  useEffect(() => () => { cleanupMedia(); }, []);
 
   const startRec = async (key) => {
     if (activeRecKey && activeRecKey !== key) return;
@@ -323,24 +318,18 @@ function StudentRecordingStep({ sSt, sArt, sentenceRows, onSubmit, onBack }) {
       const mr = new MediaRecorder(stream, mime ? { mimeType: mime } : undefined);
       mrRef.current = mr;
       chunksRef.current = [];
-      mr.ondataavailable = (e) => {
-        if (e.data && e.data.size) chunksRef.current.push(e.data);
-      };
+      mr.ondataavailable = (e) => { if (e.data && e.data.size) chunksRef.current.push(e.data); };
       mr.onstop = () => {
         const streamNow = streamRef.current;
         const blob = new Blob(chunksRef.current, { type: mr.mimeType || "audio/webm" });
         chunksRef.current = [];
         mrRef.current = null;
-        if (streamNow) {
-          streamNow.getTracks().forEach((t) => t.stop());
-        }
+        if (streamNow) streamNow.getTracks().forEach((t) => t.stop());
         streamRef.current = null;
         const shouldDiscard = discardOnStopRef.current;
         discardOnStopRef.current = false;
         setActiveRecKey(null);
-        if (shouldDiscard || blob.size === 0) {
-          return;
-        }
+        if (shouldDiscard || blob.size === 0) return;
         const reader = new FileReader();
         reader.onloadend = () => {
           const dataUrl = reader.result;
@@ -363,22 +352,14 @@ function StudentRecordingStep({ sSt, sArt, sentenceRows, onSubmit, onBack }) {
   const cancelRecording = () => {
     discardOnStopRef.current = true;
     if (mrRef.current && mrRef.current.state === "recording") {
-      try {
-        mrRef.current.stop();
-      } catch {
-        /* ignore */
-      }
+      try { mrRef.current.stop(); } catch { /* ignore */ }
     }
   };
 
   const completeRecording = () => {
     discardOnStopRef.current = false;
     if (mrRef.current && mrRef.current.state === "recording") {
-      try {
-        mrRef.current.stop();
-      } catch {
-        /* ignore */
-      }
+      try { mrRef.current.stop(); } catch { /* ignore */ }
     }
   };
 
@@ -400,125 +381,177 @@ function StudentRecordingStep({ sSt, sArt, sentenceRows, onSubmit, onBack }) {
     };
     a.onended = finish;
     a.onerror = finish;
-    a.play().catch(() => {
-      finish();
-    });
+    a.play().catch(() => { finish(); });
+  };
+
+  const goTo = (i) => {
+    if (activeRecKey) return;
+    if (playingAudioRef.current) {
+      playingAudioRef.current.pause();
+      playingAudioRef.current = null;
+      setPlayingRecKey(null);
+    }
+    setRecIdx(i);
+    setRecErr(null);
   };
 
   const nRec = rows.filter((r) => recMap[r.key]).length;
   const allDone = rows.length === 0 || nRec === rows.length;
+  const row = rows[recIdx] || null;
+  const isRec = row ? activeRecKey === row.key : false;
+  const isPlaying = row ? playingRecKey === row.key : false;
+  const has = row ? !!recMap[row.key] : false;
+  const isLast = recIdx === rows.length - 1;
 
   return (
     <div>
       <Bt v="ghost" onClick={onBack} style={{ marginBottom: 12 }}>← 과제 목록</Bt>
-      <Cd style={{ maxWidth: 800, margin: "0 auto" }}>
-        <h2 style={{ fontFamily: F.h, fontWeight: 800, fontSize: 20, marginBottom: 4 }}>녹음하기</h2>
-        <p style={{ fontSize: 13, color: X.sub, marginBottom: 8 }}>문장마다 영어로 녹음해 보세요. 모든 문장을 한 번씩 녹음해야 제출할 수 있습니다.</p>
-        <div style={{ fontSize: 12, color: X.ac, marginBottom: 16 }}>
-          녹음 진행: {rows.length ? `${nRec} / ${rows.length}` : "0 / 0"}
-        </div>
-        {recErr && (
-          <div style={{ fontSize: 12, color: X.rd, marginBottom: 12, padding: "8px 10px", background: X.rbg, borderRadius: 8 }}>
-            {recErr}
-          </div>
-        )}
-        <div style={{ display: "grid", gap: 14, marginBottom: 24 }}>
-          {rows.map((row, idx) => {
-            const has = !!recMap[row.key];
-            const isRec = activeRecKey === row.key;
-            const isPlaying = playingRecKey === row.key;
+      <Cd style={{ maxWidth: 640, margin: "0 auto" }}>
+        <h2 style={{ fontFamily: F.h, fontWeight: 800, fontSize: 20, marginBottom: 12 }}>녹음하기</h2>
+
+        {/* 프로그래스바 */}
+        <div style={{ display: "flex", gap: 5, marginBottom: 20 }}>
+          {rows.map((r, i) => {
+            const done = !!recMap[r.key];
+            const cur = i === recIdx;
             return (
               <div
-                key={row.key}
+                key={r.key}
+                onClick={() => goTo(i)}
                 style={{
-                  padding: 16,
-                  borderRadius: 12,
-                  border: `1px solid ${X.bdr}`,
-                  background: "#fafbfd",
+                  position: "relative",
+                  flex: 1,
+                  height: 8,
+                  borderRadius: 4,
+                  cursor: activeRecKey ? "default" : "pointer",
+                  background: done ? "#a7f3d0" : cur ? X.ac : "#f1f5f9",
+                  border: cur ? `2px solid ${X.ac}` : "2px solid transparent",
+                  transition: "background .2s",
                 }}
               >
-                <div style={{ fontSize: 11, fontWeight: 700, color: X.sub, marginBottom: 6 }}>문장 {idx + 1}</div>
-                <p style={{ fontSize: 15, lineHeight: 1.75, color: X.tx, marginBottom: 12 }}>{row.text}</p>
-                {isPlaying && (
-                  <div
-                    className="ntc-play-pulse"
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      gap: 8,
-                      marginBottom: 10,
-                      padding: "8px 12px",
-                      borderRadius: 10,
-                      background: "#eff6ff",
-                      border: "1px solid #bfdbfe",
-                    }}
-                  >
-                    <span style={{ fontSize: 12, fontWeight: 800, color: "#1d4ed8", letterSpacing: 0.2 }}>▶ 현재 재생중</span>
-                    <span style={{ width: 8, height: 8, borderRadius: "50%", background: "#2563eb", flexShrink: 0 }} aria-hidden />
-                  </div>
+                {!done && !cur && (
+                  <span style={{
+                    position: "absolute",
+                    top: -3,
+                    right: -2,
+                    width: 6,
+                    height: 6,
+                    borderRadius: "50%",
+                    background: X.rd,
+                    border: "1px solid #fff",
+                  }} />
                 )}
-                <div style={{ display: "flex", flexWrap: "wrap", gap: 8, alignItems: "center" }}>
-                  {!isRec && (
-                    <Bt
-                      v="primary"
-                      onClick={() => startRec(row.key)}
-                      disabled={!!activeRecKey && activeRecKey !== row.key}
-                    >
-                      녹음 시작
-                    </Bt>
-                  )}
-                  {isRec && (
-                    <div style={{ display: "flex", flexDirection: "column", gap: 10, width: "100%" }}>
-                      <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "8px 12px", borderRadius: 10, background: "#fef2f2", border: "1px solid #fecaca" }}>
-                        <span style={{ fontWeight: 800, fontSize: 14, color: "#b91c1c", letterSpacing: 0.3 }}>녹음중</span>
-                        <span className="ntc-rec-dot" aria-hidden title="녹음 표시등" />
-                      </div>
-                      <div style={{ display: "flex", flexWrap: "wrap", gap: 8, alignItems: "center" }}>
-                        <Bt
-                          v="outline"
-                          onClick={cancelRecording}
-                          style={{ display: "inline-flex", alignItems: "center", gap: 6, color: X.rd, borderColor: "#fecaca" }}
-                          title="방금 녹음 취소"
-                        >
-                          <span aria-hidden style={{ fontSize: 16 }}>🗑</span>
-                          녹음취소
-                        </Bt>
-                        <Bt v="success" onClick={completeRecording} title="녹음 저장">
-                          녹음완료
-                        </Bt>
-                      </div>
-                    </div>
-                  )}
-                  {!isRec && (
-                    <Bt
-                      v="outline"
-                      disabled={!has}
-                      onClick={() => playRec(row.key)}
-                      style={
-                        isPlaying
-                          ? {
-                              border: "2px solid #2563eb",
-                              background: "#eff6ff",
-                              color: "#1d4ed8",
-                              fontWeight: 700,
-                            }
-                          : undefined
-                      }
-                    >
-                      {isPlaying ? "🔊 재생중…" : "내 녹음 듣기"}
-                    </Bt>
-                  )}
-                  {has && <span style={{ fontSize: 12, color: X.gn, fontWeight: 600 }}>✓ 녹음됨</span>}
-                </div>
               </div>
             );
           })}
         </div>
-        <div style={{ textAlign: "center" }}>
-          <Bt v="success" size="lg" disabled={!allDone} onClick={onSubmit}>제출하고 완료하기</Bt>
-          {!allDone && rows.length > 0 && (
-            <p style={{ fontSize: 12, color: X.mt, marginTop: 10 }}>모든 문장을 녹음하면 제출할 수 있습니다.</p>
+
+        {/* 문장 카드 */}
+        {row && (
+          <div className="fade-up" key={recIdx} style={{ marginBottom: 20 }}>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 10 }}>
+              <span style={{ fontSize: 12, fontWeight: 700, color: X.sub }}>
+                문장 {recIdx + 1} / {rows.length}
+              </span>
+              {has && <span style={{ fontSize: 12, color: X.gn, fontWeight: 700 }}>✓ 녹음됨</span>}
+            </div>
+
+            <div style={{
+              padding: "20px 22px",
+              borderRadius: 14,
+              background: "#fafbfd",
+              border: `1px solid ${isRec ? "#fecaca" : has ? "#a7f3d0" : X.bdr}`,
+              marginBottom: 16,
+            }}>
+              <p style={{ fontSize: 16, lineHeight: 1.8, color: X.tx, margin: 0 }}>{row.text}</p>
+            </div>
+
+            {recErr && (
+              <div style={{ fontSize: 12, color: X.rd, marginBottom: 12, padding: "8px 10px", background: X.rbg, borderRadius: 8 }}>
+                {recErr}
+              </div>
+            )}
+
+            {/* 녹음중 상태 표시 */}
+            {isRec && (
+              <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "10px 14px", borderRadius: 10, background: "#fef2f2", border: "1px solid #fecaca", marginBottom: 12 }}>
+                <span className="ntc-rec-dot" aria-hidden />
+                <span style={{ fontWeight: 800, fontSize: 14, color: "#b91c1c", letterSpacing: 0.3 }}>녹음중</span>
+              </div>
+            )}
+
+            {/* 재생중 표시 */}
+            {isPlaying && !isRec && (
+              <div className="ntc-play-pulse" style={{ display: "flex", alignItems: "center", gap: 8, padding: "8px 14px", borderRadius: 10, background: "#eff6ff", border: "1px solid #bfdbfe", marginBottom: 12 }}>
+                <span style={{ width: 8, height: 8, borderRadius: "50%", background: "#2563eb", flexShrink: 0 }} aria-hidden />
+                <span style={{ fontSize: 12, fontWeight: 800, color: "#1d4ed8" }}>▶ 재생중</span>
+              </div>
+            )}
+
+            {/* 버튼 그룹 */}
+            <div style={{ display: "flex", flexWrap: "wrap", gap: 10 }}>
+              {!isRec && (
+                <Bt v="primary" onClick={() => startRec(row.key)}>
+                  🎤 {has ? "다시 녹음" : "녹음 시작"}
+                </Bt>
+              )}
+              {isRec && (
+                <>
+                  <Bt v="outline" onClick={cancelRecording} style={{ color: X.rd, borderColor: "#fecaca" }}>
+                    🗑 녹음취소
+                  </Bt>
+                  <Bt v="success" onClick={completeRecording}>
+                    ✓ 녹음완료
+                  </Bt>
+                </>
+              )}
+              {!isRec && has && (
+                <Bt
+                  v="outline"
+                  onClick={() => playRec(row.key)}
+                  style={isPlaying ? { border: "2px solid #2563eb", background: "#eff6ff", color: "#1d4ed8", fontWeight: 700 } : undefined}
+                >
+                  {isPlaying ? "🔊 재생중…" : "🔊 내 녹음 듣기"}
+                </Bt>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* 이전 / 다음 네비게이션 */}
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 4 }}>
+          <Bt
+            v="outline"
+            disabled={recIdx === 0 || !!activeRecKey}
+            onClick={() => goTo(recIdx - 1)}
+          >
+            ← 이전 문장
+          </Bt>
+
+          {isLast ? (
+            <div style={{ textAlign: "center" }}>
+              <Bt v="success" size="lg" disabled={!allDone} onClick={onSubmit}>
+                제출하고 완료하기
+              </Bt>
+              {!allDone && (
+                <p style={{ fontSize: 11, color: X.mt, marginTop: 6 }}>
+                  모든 문장을 녹음해야 제출할 수 있습니다 ({nRec}/{rows.length})
+                </p>
+              )}
+            </div>
+          ) : (
+            <span style={{ fontSize: 12, color: X.sub }}>
+              {nRec} / {rows.length} 녹음 완료
+            </span>
           )}
+
+          <Bt
+            v="outline"
+            disabled={isLast || !!activeRecKey}
+            onClick={() => goTo(recIdx + 1)}
+          >
+            다음 문장 →
+          </Bt>
         </div>
       </Cd>
     </div>
