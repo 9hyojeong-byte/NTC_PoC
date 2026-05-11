@@ -592,6 +592,7 @@ export default function App() {
 
   /* ─── STUDENT ADD MODAL STATE ─── */
   const [wlIdx, setWlIdx] = useState(0);
+  const [vocIdx, setVocIdx] = useState(0);
   const [showAddModal, setShowAddModal] = useState(false);
   const [addName, setAddName] = useState("");
   const [addCId, setAddCId] = useState("");
@@ -844,18 +845,21 @@ export default function App() {
     setVa({});
     setVd(false);
   };
-  const goWlToVoc = () => {
-    uP(sSt, sArt, "wl");
-    const ws = cW.filter(w => w.pid).slice(0, 8);
-    const ak = cW.filter(w => w.pid).map(w => w.kr);
+  const initVocOptions = (wordList) => {
+    const ak = wordList.map(w => w.kr);
     const o = {};
-    ws.forEach((w) => {
+    wordList.forEach((w) => {
       const wr = ak.filter((k) => k !== w.kr).sort(() => Math.random() - 0.5).slice(0, 2);
       o[w.i] = [w.kr, ...wr].sort(() => Math.random() - 0.5);
     });
     setVo(o);
     setVa({});
     setVd(false);
+    setVocIdx(0);
+  };
+  const goWlToVoc = () => {
+    uP(sSt, sArt, "wl");
+    initVocOptions(cW.filter(w => w.pid).slice(0, 8));
     setSv("voc");
   };
   const cV = () => {
@@ -1317,7 +1321,7 @@ export default function App() {
                     setSArt(seq);
                     if (d) setSv("dn");
                     else if (pg.r && pg.wl && pg.v && !pg.w) setSv("rec");
-                    else if (pg.r && pg.wl && !pg.v) setSv("voc");
+                    else if (pg.r && pg.wl && !pg.v) { initVocOptions((W[seq] || []).filter(w => w.pid).slice(0, 8)); setSv("voc"); }
                     else if (pg.r && !pg.wl) setSv("wl");
                     else setSv("rd");
                     setVa({});
@@ -1663,52 +1667,150 @@ export default function App() {
     const ws = cW.filter(w => w.pid).slice(0, 8);
     const cor = ws.filter(w => va[w.i] === w.kr).length;
     const vocPass = ws.length > 0 && cor / ws.length >= 0.8;
+    const allAnswered = ws.every(w => va[w.i]);
+    const isLast = vocIdx >= ws.length - 1;
+
+    /* 결과 화면 */
+    if (vd) {
+      return (
+        <div>
+          <Bt v="ghost" onClick={bk} style={{ marginBottom: 12 }}>← 과제 목록</Bt>
+          <div style={{ maxWidth: 560, margin: "0 auto" }}>
+            {/* 결과 요약 */}
+            <div style={{ textAlign: "center", padding: "32px 24px", marginBottom: 20, borderRadius: 20, background: "#fff", border: `1px solid ${X.bdr}`, boxShadow: "0 4px 24px rgba(0,0,0,.07)" }}>
+              <div style={{ fontSize: 40, marginBottom: 12 }}>{cor === ws.length ? "🎉" : cor >= ws.length * 0.8 ? "👍" : "📚"}</div>
+              <div style={{ fontFamily: F.h, fontWeight: 800, fontSize: 32, color: cor === ws.length ? X.gn : X.am, marginBottom: 4 }}>{cor} / {ws.length}</div>
+              <div style={{ fontSize: 14, color: X.sub }}>정답</div>
+            </div>
+            {/* 문항별 결과 */}
+            <div style={{ display: "flex", flexDirection: "column", gap: 10, marginBottom: 24 }}>
+              {ws.map((w, i) => {
+                const sel = va[w.i]; const ok = sel === w.kr;
+                return (
+                  <div key={w.i} style={{ padding: "14px 16px", borderRadius: 12, background: ok ? "#f0fdf4" : "#fef2f2", border: `1px solid ${ok ? "#a7f3d0" : "#fecaca"}`, display: "flex", alignItems: "center", gap: 12 }}>
+                    <span style={{ fontWeight: 700, fontSize: 13, color: ok ? X.gn : X.rd, flexShrink: 0 }}>{ok ? "✓" : "✗"}</span>
+                    <div style={{ flex: 1 }}>
+                      <div style={{ fontWeight: 700, fontSize: 14 }}>{i + 1}. {w.en}</div>
+                      {!ok && <div style={{ fontSize: 12, color: X.sub, marginTop: 2 }}>내 답: <span style={{ color: X.rd }}>{sel || "미선택"}</span> / 정답: <span style={{ color: X.gn, fontWeight: 600 }}>{w.kr}</span></div>}
+                    </div>
+                    {w.mp3 && <button onClick={() => playWordAudio(cA.seq, w.mp3)} style={{ border: `1px solid ${X.bdr}`, background: "#fff", borderRadius: 7, width: 28, height: 28, cursor: "pointer", fontSize: 13 }}>🔊</button>}
+                  </div>
+                );
+              })}
+            </div>
+            <div style={{ textAlign: "center" }}>
+              {vocPass
+                ? <Bt v="success" size="lg" onClick={cV}>단어 완료 → 녹음하기</Bt>
+                : <Bt v="outline" size="lg" onClick={() => { setVd(false); setVa({}); setVocIdx(0); }}>다시 풀어보기</Bt>}
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    /* 퀴즈 화면 */
+    const w = ws[vocIdx];
+    const opts = w ? (vo[w.i] || [w.kr]) : [];
+    const sel = w ? va[w.i] : null;
+
     return (
       <div>
         <Bt v="ghost" onClick={bk} style={{ marginBottom: 12 }}>← 과제 목록</Bt>
-        <Cd style={{ maxWidth: 800, margin: "0 auto" }}>
-          <h2 style={{ fontFamily: F.h, fontWeight: 800, fontSize: 20, marginBottom: 4 }}>단어 퀴즈</h2>
-          <p style={{ fontSize: 13, color: X.sub, marginBottom: 24 }}>영어 단어의 알맞은 뜻을 선택하세요.</p>
-          {ws.map((w, idx) => {
-            const opts = vo[w.i] || [w.kr]; const sel = va[w.i]; const ok = vd && sel === w.kr; const bad = vd && sel && sel !== w.kr;
-            return (
-              <div key={w.i} style={{ marginBottom: 14, padding: 16, background: vd ? (ok ? "#f0fdf4" : bad ? "#fef2f2" : "#fafbfd") : "#fafbfd", borderRadius: 12, border: `1px solid ${vd ? (ok ? "#a7f3d0" : bad ? "#fecaca" : X.bdr) : X.bdr}` }}>
-                <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10 }}>
-                  <span style={{ fontWeight: 700, fontSize: 16 }}>{idx + 1}. {w.en}</span>
-                  {w.mp3 && (
-                    <button
-                      onClick={e => { e.stopPropagation(); playWordAudio(cA.seq, w.mp3); }}
-                      style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", width: 28, height: 28, borderRadius: 7, border: `1px solid ${X.bdr}`, background: "#fff", cursor: "pointer", fontSize: 14, flexShrink: 0 }}
-                      title="단어 듣기"
-                    >
-                      🔊
-                    </button>
-                  )}
-                </div>
-                <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-                  {opts.map((o, oi) => (
-                    <Bt key={oi} v={sel === o ? "primary" : "outline"} disabled={vd} style={{ border: vd && o === w.kr ? `2px solid ${X.gn}` : undefined, opacity: vd && o !== w.kr && o !== sel ? .35 : 1 }} onClick={() => setVa(p => ({ ...p, [w.i]: o }))}>
-                      {o}
-                    </Bt>
-                  ))}
-                </div>
-              </div>
-            );
-          })}
-          <div style={{ textAlign: "center", marginTop: 20 }}>
-            {!vd
-              ? <Bt v="primary" size="lg" onClick={() => setVd(true)} disabled={ws.some(w => !va[w.i])}>채점하기</Bt>
-              : (
-                <div>
-                  <div style={{ fontFamily: F.h, fontWeight: 800, fontSize: 22, marginBottom: 12, color: cor === ws.length ? X.gn : X.am }}>{cor} / {ws.length} 정답</div>
-                  {vocPass
-                    ? <Bt v="success" size="lg" onClick={cV}>단어 완료 → 녹음하기</Bt>
-                    : <Bt v="outline" size="lg" onClick={() => { setVd(false); setVa({}); }}>다시 풀어보기</Bt>}
-                </div>
-              )
-            }
+        <div style={{ maxWidth: 560, margin: "0 auto" }}>
+          {/* 헤더 */}
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 14 }}>
+            <h2 style={{ fontFamily: F.h, fontWeight: 800, fontSize: 20 }}>단어 퀴즈</h2>
+            <span style={{ fontSize: 13, color: X.sub, fontWeight: 600 }}>{vocIdx + 1} / {ws.length}</span>
           </div>
-        </Cd>
+
+          {/* 프로그래스바 — 문항별 슬롯 */}
+          <div style={{ display: "flex", gap: 4, marginBottom: 28 }}>
+            {ws.map((ww, i) => {
+              const answered = !!va[ww.i];
+              const isCur = i === vocIdx;
+              const bg = isCur
+                ? X.ac                        /* 현재 문항: 파랑 */
+                : answered
+                  ? "#a7f3d0"                 /* 답 선택됨: 연초록 */
+                  : "#f1f5f9";                /* 미선택: 연회색 */
+              const border = !answered && !isCur ? `1px solid ${X.bdr}` : "none";
+              return (
+                <button key={i} onClick={() => setVocIdx(i)}
+                  style={{ flex: 1, height: 8, borderRadius: 4, border, background: bg, cursor: "pointer", padding: 0, transition: "background .2s", position: "relative" }}>
+                  {/* 미선택 문항에 빨간 점 */}
+                  {!answered && !isCur && (
+                    <span style={{ position: "absolute", top: -5, right: -2, width: 6, height: 6, borderRadius: "50%", background: X.rd, border: "1px solid #fff" }} />
+                  )}
+                </button>
+              );
+            })}
+          </div>
+
+          {/* 문제 카드 */}
+          {w && (
+            <div style={{ background: "#fff", borderRadius: 20, border: `1px solid ${X.bdr}`, boxShadow: "0 4px 24px rgba(0,0,0,.07)", padding: "32px 28px", marginBottom: 20 }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 24, justifyContent: "center" }}>
+                <span style={{ fontFamily: F.h, fontWeight: 800, fontSize: 28, color: X.tx }}>{w.en}</span>
+                {w.mp3 && (
+                  <button onClick={() => playWordAudio(cA.seq, w.mp3)}
+                    style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", width: 32, height: 32, borderRadius: 8, border: `1px solid ${X.bdr}`, background: "#f8f9fa", cursor: "pointer", fontSize: 15, flexShrink: 0 }}>
+                    🔊
+                  </button>
+                )}
+              </div>
+              <p style={{ fontSize: 13, color: X.sub, textAlign: "center", marginBottom: 20 }}>알맞은 뜻을 선택하세요.</p>
+              {/* 선택지 버튼 */}
+              <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+                {opts.map((o, oi) => {
+                  const isSelected = sel === o;
+                  return (
+                    <button key={oi} onClick={() => setVa(p => ({ ...p, [w.i]: o }))}
+                      style={{
+                        padding: "14px 20px", borderRadius: 12, border: `2px solid ${isSelected ? X.ac : X.bdr}`,
+                        background: isSelected ? X.abg : "#fff", color: isSelected ? X.ac : X.tx,
+                        fontFamily: F.b, fontSize: 15, fontWeight: isSelected ? 700 : 400,
+                        cursor: "pointer", textAlign: "left", transition: "all .15s",
+                        display: "flex", alignItems: "center", gap: 10,
+                      }}>
+                      <span style={{ width: 22, height: 22, borderRadius: "50%", border: `2px solid ${isSelected ? X.ac : X.bdr}`, background: isSelected ? X.ac : "#fff", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, fontSize: 11, color: "#fff", fontWeight: 700 }}>
+                        {isSelected ? "✓" : String.fromCharCode(65 + oi)}
+                      </span>
+                      {o}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
+          {/* 하단 버튼 */}
+          <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
+            {vocIdx > 0 && (
+              <button onClick={() => setVocIdx(i => i - 1)}
+                style={{ padding: "12px 18px", borderRadius: 10, border: `1px solid ${X.bdr}`, background: "#fff", fontSize: 14, fontWeight: 600, fontFamily: F.b, cursor: "pointer", color: X.sub }}>
+                ← 이전
+              </button>
+            )}
+            {!isLast ? (
+              <button onClick={() => setVocIdx(i => i + 1)}
+                style={{ flex: 1, padding: "13px", borderRadius: 10, border: "none", background: X.dk, color: "#fff", fontSize: 14, fontWeight: 700, fontFamily: F.b, cursor: "pointer" }}>
+                다음 문제 →
+              </button>
+            ) : (
+              <button onClick={() => setVd(true)} disabled={!allAnswered}
+                style={{ flex: 1, padding: "13px", borderRadius: 10, border: "none", background: allAnswered ? X.gn : "#e2e8f0", color: allAnswered ? "#fff" : X.mt, fontSize: 14, fontWeight: 700, fontFamily: F.b, cursor: allAnswered ? "pointer" : "default", transition: "all .2s" }}>
+                {allAnswered ? "정답 확인 →" : `정답 확인 (${ws.filter(ww => !va[ww.i]).length}문제 미선택)`}
+              </button>
+            )}
+          </div>
+
+          {/* 전체 진행 요약 */}
+          {ws.some(ww => !va[ww.i]) && (
+            <p style={{ textAlign: "center", fontSize: 12, color: X.mt, marginTop: 12 }}>
+              미선택 문항: {ws.map((ww, i) => !va[ww.i] ? i + 1 : null).filter(Boolean).join(", ")}번
+            </p>
+          )}
+        </div>
       </div>
     );
   };
