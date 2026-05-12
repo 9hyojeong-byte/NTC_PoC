@@ -604,6 +604,20 @@ export default function App() {
   useEffect(() => { localStorage.setItem("ntc_prog_v1", JSON.stringify(prog)); }, [prog]);
   useEffect(() => { localStorage.setItem("ntc_scores_v1", JSON.stringify(scores)); }, [scores]);
 
+  const [reviewed, setReviewed] = useState(() => {
+    try { const s = localStorage.getItem("ntc_reviewed_v1"); return s ? JSON.parse(s) : {}; } catch { return {}; }
+  });
+  useEffect(() => { localStorage.setItem("ntc_reviewed_v1", JSON.stringify(reviewed)); }, [reviewed]);
+
+  const [reviewModal, setReviewModal] = useState(null); // { stId, stNm, seq, artTitle }
+
+  const confirmReview = () => {
+    if (!reviewModal) return;
+    const { stId, seq } = reviewModal;
+    setReviewed(p => ({ ...p, [`${stId}_${seq}`]: true }));
+    setReviewModal(null);
+  };
+
   const [useSeed, setUseSeed] = useState(true);
   const effProg = useSeed ? { ...IP, ...prog } : prog;
 
@@ -613,6 +627,7 @@ export default function App() {
     setAsgn(IA);
     setProg(IP);
     setScores({});
+    setReviewed({});
     setSArt(null);
     setSv("tasks");
   };
@@ -1276,20 +1291,22 @@ export default function App() {
             <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
               <thead>
                 <tr style={{ borderBottom: `1px solid ${X.bdr}` }}>
-                  {["학생", "기사", "읽기", "단어보기", "단어퀴즈", "녹음", "상태"].map(h => (
+                  {["학생", "기사", "읽기", "단어보기", "단어퀴즈", "녹음", "상태", ""].map(h => (
                     <th key={h} style={{ textAlign: h === "학생" || h === "기사" ? "left" : "center", padding: "10px 16px", color: X.sub, fontWeight: 600, fontSize: 12 }}>{h}</th>
                   ))}
                 </tr>
               </thead>
               <tbody>
                 {cls.sts.flatMap(st => {
-                  const sa = asgn[st.id] || [];
-                  if (!sa.length) return [
+                  const allSa = asgn[st.id] || [];
+                  const sa = allSa.filter(a => !reviewed[`${st.id}_${a.seq}`]);
+                  if (!allSa.length) return [
                     <tr key={st.id} style={{ borderBottom: `1px solid #f5f5f7` }}>
                       <td style={{ padding: "12px 16px", fontWeight: 600 }}>{st.nm}</td>
-                      <td colSpan={6} style={{ padding: "12px 16px", color: X.mt }}>배정 없음</td>
+                      <td colSpan={7} style={{ padding: "12px 16px", color: X.mt }}>배정 없음</td>
                     </tr>
                   ];
+                  if (!sa.length) return [];
                   return sa.map((a, idx) => {
                     const ax = ARTS.find(x => x.seq === a.seq);
                     const p = gP(effProg, st.id, a.seq);
@@ -1311,6 +1328,16 @@ export default function App() {
                           <span style={{ padding: "4px 12px", borderRadius: 20, fontSize: 11, fontWeight: 600, color: d ? X.gn : s > 0 ? X.am : X.mt, background: d ? X.gbg : s > 0 ? X.abg2 : "#f8f9fa" }}>
                             {d ? "✓ 완료" : s > 0 ? `진행중 ${s}/4` : "미시작"}
                           </span>
+                        </td>
+                        <td style={{ textAlign: "center", padding: "8px 12px" }}>
+                          {d && (
+                            <button
+                              onClick={() => setReviewModal({ stId: st.id, stNm: st.nm, seq: a.seq, artTitle: ax?.title || "" })}
+                              style={{ padding: "5px 12px", borderRadius: 8, border: `1px solid ${X.ac}`, background: X.abg, color: X.ac, fontSize: 11, fontWeight: 700, cursor: "pointer", fontFamily: F.b, whiteSpace: "nowrap" }}
+                            >
+                              선생님 확인
+                            </button>
+                          )}
                         </td>
                       </tr>
                     );
@@ -2256,6 +2283,38 @@ export default function App() {
           </div>
         );
       })()}
+
+      {/* 선생님 확인 모달 */}
+      {reviewModal && (
+        <div
+          style={{ position: "fixed", inset: 0, zIndex: 500, background: "rgba(15,23,42,0.55)", display: "flex", alignItems: "center", justifyContent: "center", padding: 16 }}
+          onClick={e => { if (e.target === e.currentTarget) setReviewModal(null); }}
+        >
+          <div className="fade-up" style={{ background: "#fff", borderRadius: 20, width: "100%", maxWidth: 400, boxShadow: "0 24px 60px rgba(0,0,0,.18)", overflow: "hidden" }}>
+            <div style={{ padding: "18px 22px 16px", borderBottom: `1px solid ${X.bdr}`, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+              <span style={{ fontFamily: F.h, fontWeight: 800, fontSize: 17 }}>선생님 확인</span>
+              <button onClick={() => setReviewModal(null)} style={{ border: "none", background: "none", fontSize: 20, cursor: "pointer", color: X.mt, lineHeight: 1 }}>×</button>
+            </div>
+            <div style={{ padding: "22px 22px 20px" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 18 }}>
+                <span style={{ fontSize: 28 }}>✅</span>
+                <div>
+                  <div style={{ fontWeight: 700, fontSize: 14, color: X.tx }}>{reviewModal.stNm} 학생</div>
+                  <div style={{ fontSize: 12, color: X.sub, marginTop: 2 }}>{reviewModal.artTitle}</div>
+                </div>
+              </div>
+              <p style={{ fontSize: 14, color: X.tx, lineHeight: 1.7, marginBottom: 22 }}>
+                이 과제를 <strong>확인 완료</strong> 처리할까요?<br />
+                <span style={{ fontSize: 12, color: X.sub }}>학습 현황 목록에서 제거되며, 수행 데이터는 유지됩니다.</span>
+              </p>
+              <div style={{ display: "flex", gap: 10, justifyContent: "flex-end" }}>
+                <Bt v="outline" onClick={() => setReviewModal(null)}>취소</Bt>
+                <Bt v="success" onClick={confirmReview}>확인 완료</Bt>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* 토스트 */}
       {showAddModal && (() => {
