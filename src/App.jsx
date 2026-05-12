@@ -976,9 +976,23 @@ export default function App() {
   const isAssigned = (seq) => {
     const ts = getTargetStudents();
     if (!ts.length) return false;
-    // 개별 다중 선택: 선택된 모든 학생에게 배정된 경우만 "배정됨"
     if (at.t === "students") return ts.every(s => (asgn[s.id] || []).some(a => a.seq === seq));
     return ts.every(s => (asgn[s.id] || []).some(a => a.seq === seq));
+  };
+
+  const revokeAsgn = (seq) => {
+    const ts = getTargetStudents();
+    const targets = ts.filter(s => (asgn[s.id] || []).some(a => a.seq === seq));
+    if (!targets.length) return;
+    const art = ARTS.find(a => a.seq === seq);
+    const names = targets.map(s => s.nm).join(", ");
+    if (!window.confirm(`${names} 학생에게서\n'${art?.title}' 기사를 회수할까요?`)) return;
+    setAsgn(p => {
+      const n = { ...p };
+      targets.forEach(s => { n[s.id] = (n[s.id] || []).filter(a => a.seq !== seq); });
+      return n;
+    });
+    showToast(`'${art?.title}' 회수 완료`);
   };
 
   /* ─── TEACHER DASHBOARD ─── */
@@ -1192,7 +1206,7 @@ export default function App() {
                   <div style={{ display: "flex", gap: 6 }}><Bd b={BM[a.seq]} /><Tp t={a.topic} /></div>
                 </div>
                 {assigned
-                  ? <Bt v="outline" disabled style={{ color: X.gn, borderColor: "#a7f3d0", background: X.gbg }}>배정됨 ✓</Bt>
+                  ? <Bt v="outline" onClick={() => revokeAsgn(a.seq)} style={{ color: X.gn, borderColor: "#a7f3d0", background: X.gbg }}>배정됨 ✓</Bt>
                   : <Bt v="primary" onClick={() => dAs(a.seq)}>배정</Bt>
                 }
               </Cd>
