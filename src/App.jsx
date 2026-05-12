@@ -1297,16 +1297,17 @@ export default function App() {
                 </tr>
               </thead>
               <tbody>
-                {cls.sts.flatMap(st => {
+                {[...cls.sts].sort((a, b) => a.nm.localeCompare(b.nm, "ko")).flatMap(st => {
                   const allSa = asgn[st.id] || [];
                   const sa = allSa.filter(a => !reviewed[`${st.id}_${a.seq}`]);
-                  if (!allSa.length) return [
+                  if (!allSa.length || !sa.length) return [
                     <tr key={st.id} style={{ borderBottom: `1px solid #f5f5f7` }}>
                       <td style={{ padding: "12px 16px", fontWeight: 600 }}>{st.nm}</td>
-                      <td colSpan={7} style={{ padding: "12px 16px", color: X.mt }}>배정 없음</td>
+                      <td colSpan={7} style={{ padding: "12px 16px", color: X.mt }}>
+                        {!allSa.length ? "배정 없음" : "확인 완료"}
+                      </td>
                     </tr>
                   ];
-                  if (!sa.length) return [];
                   return sa.map((a, idx) => {
                     const ax = ARTS.find(x => x.seq === a.seq);
                     const p = gP(effProg, st.id, a.seq);
