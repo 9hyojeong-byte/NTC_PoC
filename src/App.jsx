@@ -1249,7 +1249,7 @@ export default function App() {
     return (
       <div>
         <p style={{ fontSize: 13, color: X.sub, marginBottom: 14 }}>학생별 학습 단계 진행 상태</p>
-        {clsData.map(cls => (
+        {clsData.filter(cls => cls.sts.length > 0).map(cls => (
           <Cd key={cls.id} style={{ marginBottom: 20, padding: 0, overflow: "hidden" }}>
             <div style={{ padding: "14px 20px", background: "#fafbfd", borderBottom: `1px solid ${X.bdr}`, fontFamily: F.h, fontWeight: 700, fontSize: 15 }}>{cls.nm}</div>
             <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
