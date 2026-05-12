@@ -604,6 +604,9 @@ export default function App() {
   useEffect(() => { localStorage.setItem("ntc_prog_v1", JSON.stringify(prog)); }, [prog]);
   useEffect(() => { localStorage.setItem("ntc_scores_v1", JSON.stringify(scores)); }, [scores]);
 
+  const [useSeed, setUseSeed] = useState(true);
+  const effProg = useSeed ? { ...IP, ...prog } : prog;
+
   const resetAll = () => {
     if (!window.confirm("모든 학습 진행 데이터를 초기화하시겠습니까?\n(배정 내역, 진행 상태, 녹음 파일이 모두 삭제됩니다)")) return;
     Object.keys(localStorage).filter(k => k.startsWith("ntc_") && k !== "ntc_cls_v2").forEach(k => localStorage.removeItem(k));
@@ -981,8 +984,8 @@ export default function App() {
   /* ─── TEACHER DASHBOARD ─── */
   const TDash = () => {
     const tA = Object.values(asgn).flat().length;
-    const tD = Object.entries(prog).filter(([, v]) => v.r && v.wl && v.v && v.w).length;
-    const tP = Object.entries(prog).filter(([, v]) => (v.r || v.wl || v.v || v.w) && !(v.r && v.wl && v.v && v.w)).length;
+    const tD = Object.entries(effProg).filter(([, v]) => v.r && v.wl && v.v && v.w).length;
+    const tP = Object.entries(effProg).filter(([, v]) => (v.r || v.wl || v.v || v.w) && !(v.r && v.wl && v.v && v.w)).length;
     const tN = tA - tD - tP;
     return (
       <div>
@@ -1012,8 +1015,8 @@ export default function App() {
             <Hd sub="반별 과제 진행 현황">반 요약</Hd>
             {clsData.map(cls => {
               const all = cls.sts.flatMap(s => (asgn[s.id] || []).map(a => ({ sid: s.id, ...a })));
-              const dn = all.filter(a => iD(prog, a.sid, a.seq)).length; const tot = all.length; const pct = tot ? Math.round(dn / tot * 100) : 0;
-              const nd = cls.sts.filter(s => (asgn[s.id] || []).some(a => !iD(prog, s.id, a.seq)));
+              const dn = all.filter(a => iD(effProg, a.sid, a.seq)).length; const tot = all.length; const pct = tot ? Math.round(dn / tot * 100) : 0;
+              const nd = cls.sts.filter(s => (asgn[s.id] || []).some(a => !iD(effProg, s.id, a.seq)));
               return (
                 <Cd key={cls.id} style={{ marginBottom: 12, padding: 16 }}>
                   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10 }}>
@@ -1267,7 +1270,7 @@ export default function App() {
                   ];
                   return sa.map((a, idx) => {
                     const ax = ARTS.find(x => x.seq === a.seq);
-                    const p = gP(prog, st.id, a.seq);
+                    const p = gP(effProg, st.id, a.seq);
                     const d = p.r && p.wl && p.v && p.w;
                     const s = [p.r, p.wl, p.v, p.w].filter(Boolean).length;
                     const sc = scores[`${st.id}_${a.seq}`] || {};
@@ -2097,6 +2100,16 @@ export default function App() {
               {dynALL.map(s => <option key={s.id} value={s.id}>{s.nm} ({s.cNm})</option>)}
             </select>
           )}
+          <button
+            onClick={() => setUseSeed(v => !v)}
+            title={useSeed ? "시드데이터 사용 중 (클릭 시 OFF)" : "실데이터만 사용 중 (클릭 시 ON)"}
+            style={{ padding: "6px 12px", borderRadius: 8, border: `1px solid ${useSeed ? "#a7f3d0" : X.bdr}`, cursor: "pointer", fontSize: 12, fontWeight: 600, fontFamily: F.b, background: useSeed ? "#ecfdf5" : "#fff", color: useSeed ? "#059669" : X.mt, display: "flex", alignItems: "center", gap: 5, transition: "all .15s" }}
+          >
+            <span style={{ width: 28, height: 16, borderRadius: 8, background: useSeed ? "#10b981" : "#d1d5db", display: "inline-flex", alignItems: "center", padding: "0 2px", transition: "background .2s", flexShrink: 0 }}>
+              <span style={{ width: 12, height: 12, borderRadius: "50%", background: "#fff", transform: useSeed ? "translateX(12px)" : "translateX(0)", transition: "transform .2s", display: "block" }} />
+            </span>
+            시드데이터
+          </button>
           <button
             onClick={resetAll}
             title="학습 데이터 초기화"
