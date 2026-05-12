@@ -1015,6 +1015,7 @@ export default function App() {
             <Hd sub="반별 과제 진행 현황">반 요약</Hd>
             {clsData.map(cls => {
               const all = cls.sts.flatMap(s => (asgn[s.id] || []).map(a => ({ sid: s.id, ...a })));
+              if (all.length === 0) return null;
               const dn = all.filter(a => iD(effProg, a.sid, a.seq)).length; const tot = all.length; const pct = tot ? Math.round(dn / tot * 100) : 0;
               const nd = cls.sts.filter(s => (asgn[s.id] || []).some(a => !iD(effProg, s.id, a.seq)));
               return (
