@@ -1303,9 +1303,7 @@ export default function App() {
                   if (!allSa.length || !sa.length) return [
                     <tr key={st.id} style={{ borderBottom: `1px solid #f5f5f7` }}>
                       <td style={{ padding: "12px 16px", fontWeight: 600 }}>{st.nm}</td>
-                      <td colSpan={7} style={{ padding: "12px 16px", color: X.mt }}>
-                        {!allSa.length ? "배정 없음" : "확인 완료"}
-                      </td>
+                      <td colSpan={7} style={{ padding: "12px 16px", color: X.mt }}>현재 진행중인 기사 없음</td>
                     </tr>
                   ];
                   return sa.map((a, idx) => {
