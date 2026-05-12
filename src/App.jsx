@@ -1303,7 +1303,17 @@ export default function App() {
                   if (!allSa.length || !sa.length) return [
                     <tr key={st.id} style={{ borderBottom: `1px solid #f5f5f7` }}>
                       <td style={{ padding: "12px 16px", fontWeight: 600 }}>{st.nm}</td>
-                      <td colSpan={7} style={{ padding: "12px 16px", color: X.mt }}>현재 진행중인 기사 없음</td>
+                      <td colSpan={7} style={{ padding: "12px 16px" }}>
+                        <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                          <span style={{ color: X.mt, fontSize: 13 }}>현재 진행중인 기사 없음</span>
+                          <button
+                            onClick={() => { setAt({ t: "students", ids: [st.id] }); scrollTo("assign"); }}
+                            style={{ padding: "4px 12px", borderRadius: 7, border: `1px solid ${X.ac}`, background: X.abg, color: X.ac, fontSize: 12, fontWeight: 700, cursor: "pointer", fontFamily: F.b, whiteSpace: "nowrap" }}
+                          >
+                            기사 배정하기
+                          </button>
+                        </div>
+                      </td>
                     </tr>
                   ];
                   return sa.map((a, idx) => {
