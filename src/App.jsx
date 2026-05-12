@@ -566,8 +566,12 @@ export default function App() {
   const [sv, setSv] = useState("tasks");
   const [sSt, setSSt] = useState("s1");
   const [sArt, setSArt] = useState(null);
-  const [asgn, setAsgn] = useState(IA);
-  const [prog, setProg] = useState(IP);
+  const [asgn, setAsgn] = useState(() => {
+    try { const s = localStorage.getItem("ntc_asgn_v1"); return s ? JSON.parse(s) : IA; } catch { return IA; }
+  });
+  const [prog, setProg] = useState(() => {
+    try { const s = localStorage.getItem("ntc_prog_v1"); return s ? JSON.parse(s) : IP; } catch { return IP; }
+  });
   const [lF, setLF] = useState(null);
   const [tF, setTF] = useState(null);
   const [kr, setKr] = useState(false);
@@ -585,9 +589,8 @@ export default function App() {
   const [vo, setVo] = useState({});
   const [wa, setWa] = useState({});
   const [wd, setWd] = useState(false);
-  const [scores, setScores] = useState({
-    "s1_786": { voc: { cor: 5, tot: 8 }, wb: { cor: 2, tot: 3 } },
-    "s2_786": { voc: { cor: 7, tot: 8 } },
+  const [scores, setScores] = useState(() => {
+    try { const s = localStorage.getItem("ntc_scores_v1"); return s ? JSON.parse(s) : {}; } catch { return {}; }
   });
   // at: { t: "class", id: "c1"|"__all__" } | { t: "students", ids: string[] }
   const [at, setAt] = useState({ t: "class", id: "c1" });
@@ -595,6 +598,21 @@ export default function App() {
   const [toast, setToast] = useState(null);
   const toastTimer = useRef(null);
   const [lastAssigned, setLastAssigned] = useState(false);
+
+  /* ─── PERSIST STATE ─── */
+  useEffect(() => { localStorage.setItem("ntc_asgn_v1", JSON.stringify(asgn)); }, [asgn]);
+  useEffect(() => { localStorage.setItem("ntc_prog_v1", JSON.stringify(prog)); }, [prog]);
+  useEffect(() => { localStorage.setItem("ntc_scores_v1", JSON.stringify(scores)); }, [scores]);
+
+  const resetAll = () => {
+    if (!window.confirm("모든 학습 진행 데이터를 초기화하시겠습니까?\n(배정 내역, 진행 상태, 녹음 파일이 모두 삭제됩니다)")) return;
+    Object.keys(localStorage).filter(k => k.startsWith("ntc_") && k !== "ntc_cls_v2").forEach(k => localStorage.removeItem(k));
+    setAsgn(IA);
+    setProg(IP);
+    setScores({});
+    setSArt(null);
+    setSv("tasks");
+  };
 
   /* ─── DYNAMIC STUDENTS ─── */
   const [clsData, setClsData] = useState(() => {
@@ -2079,6 +2097,15 @@ export default function App() {
               {dynALL.map(s => <option key={s.id} value={s.id}>{s.nm} ({s.cNm})</option>)}
             </select>
           )}
+          <button
+            onClick={resetAll}
+            title="학습 데이터 초기화"
+            style={{ padding: "6px 12px", borderRadius: 8, border: `1px solid ${X.bdr}`, cursor: "pointer", fontSize: 12, fontWeight: 600, fontFamily: F.b, background: "#fff", color: X.sub, display: "flex", alignItems: "center", gap: 5, transition: "border-color .15s, color .15s" }}
+            onMouseEnter={e => { e.currentTarget.style.borderColor = X.rd; e.currentTarget.style.color = X.rd; }}
+            onMouseLeave={e => { e.currentTarget.style.borderColor = X.bdr; e.currentTarget.style.color = X.sub; }}
+          >
+            <span style={{ fontSize: 14 }}>↺</span> 초기화
+          </button>
           <div style={{ display: "flex", background: "#f1f5f9", borderRadius: 10, padding: 3 }}>
             {[["teacher", "👩‍🏫 선생님"], ["student", "👨‍🎓 학생"]].map(([r, l]) => (
               <button key={r} onClick={() => { setRole(r); setPw(null); if (r === "student") { setSArt(null); setSv("tasks"); } }}
