@@ -980,18 +980,25 @@ export default function App() {
     return ts.every(s => (asgn[s.id] || []).some(a => a.seq === seq));
   };
 
+  const [revokeModal, setRevokeModal] = useState(null); // { seq, art, targets }
+
   const revokeAsgn = (seq) => {
     const ts = getTargetStudents();
     const targets = ts.filter(s => (asgn[s.id] || []).some(a => a.seq === seq));
     if (!targets.length) return;
     const art = ARTS.find(a => a.seq === seq);
-    const names = targets.map(s => s.nm).join(", ");
-    if (!window.confirm(`${names} 학생에게서\n'${art?.title}' 기사를 회수할까요?`)) return;
+    setRevokeModal({ seq, art, targets });
+  };
+
+  const confirmRevoke = () => {
+    if (!revokeModal) return;
+    const { seq, art, targets } = revokeModal;
     setAsgn(p => {
       const n = { ...p };
       targets.forEach(s => { n[s.id] = (n[s.id] || []).filter(a => a.seq !== seq); });
       return n;
     });
+    setRevokeModal(null);
     showToast(`'${art?.title}' 회수 완료`);
   };
 
@@ -2203,6 +2210,52 @@ export default function App() {
           </>
         )}
       </div>
+
+      {/* 기사 회수 확인 모달 */}
+      {revokeModal && (() => {
+        const { art, targets } = revokeModal;
+        const band = BANDS[BM[art?.seq]];
+        return (
+          <div
+            style={{ position: "fixed", inset: 0, zIndex: 500, background: "rgba(15,23,42,0.55)", display: "flex", alignItems: "center", justifyContent: "center", padding: 16 }}
+            onClick={e => { if (e.target === e.currentTarget) setRevokeModal(null); }}
+          >
+            <div className="fade-up" style={{ background: "#fff", borderRadius: 20, width: "100%", maxWidth: 420, boxShadow: "0 24px 60px rgba(0,0,0,.18)", overflow: "hidden" }}>
+              {/* 헤더 */}
+              <div style={{ padding: "18px 22px 16px", borderBottom: `1px solid ${X.bdr}`, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                <span style={{ fontFamily: F.h, fontWeight: 800, fontSize: 17 }}>기사 회수</span>
+                <button onClick={() => setRevokeModal(null)} style={{ border: "none", background: "none", fontSize: 20, cursor: "pointer", color: X.mt, lineHeight: 1 }}>×</button>
+              </div>
+              {/* 기사 정보 */}
+              <div style={{ padding: "20px 22px 0" }}>
+                <div style={{ display: "flex", gap: 14, alignItems: "center", padding: 14, borderRadius: 12, background: "#f8fafc", border: `1px solid ${X.bdr}`, marginBottom: 20 }}>
+                  {art?.img && <img src={art.img} style={{ width: 72, height: 50, objectFit: "cover", borderRadius: 8, flexShrink: 0 }} alt="" />}
+                  <div>
+                    <div style={{ fontWeight: 700, fontSize: 14, color: X.tx, marginBottom: 4 }}>{art?.title}</div>
+                    {band && (
+                      <span style={{ display: "inline-flex", alignItems: "center", gap: 4, padding: "2px 8px", borderRadius: 20, fontSize: 11, fontWeight: 600, color: band.c, background: band.bg, border: `1px solid ${band.r}` }}>
+                        <span style={{ width: 5, height: 5, borderRadius: "50%", background: band.c }} />{BM[art?.seq]}
+                      </span>
+                    )}
+                  </div>
+                </div>
+                {/* 대상 학생 */}
+                <p style={{ fontSize: 13, color: X.sub, marginBottom: 10 }}>아래 학생에게서 이 기사를 회수합니다.</p>
+                <div style={{ display: "flex", flexWrap: "wrap", gap: 7, marginBottom: 24 }}>
+                  {targets.map(s => (
+                    <span key={s.id} style={{ padding: "5px 13px", borderRadius: 20, fontSize: 13, fontWeight: 600, background: X.rbg, color: X.rd, border: "1px solid #fecaca" }}>{s.nm}</span>
+                  ))}
+                </div>
+              </div>
+              {/* 액션 버튼 */}
+              <div style={{ padding: "0 22px 20px", display: "flex", gap: 10, justifyContent: "flex-end" }}>
+                <Bt v="outline" onClick={() => setRevokeModal(null)}>취소</Bt>
+                <Bt v="primary" style={{ background: X.rd }} onClick={confirmRevoke}>회수하기</Bt>
+              </div>
+            </div>
+          </div>
+        );
+      })()}
 
       {/* 토스트 */}
       {showAddModal && (() => {
