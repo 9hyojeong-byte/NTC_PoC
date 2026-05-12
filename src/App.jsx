@@ -225,7 +225,7 @@ const Bd = ({ b }) => {
   const d = BANDS[b]; if (!d) return null;
   return (
     <span style={{ display: "inline-flex", alignItems: "center", gap: 4, padding: "3px 10px", borderRadius: 20, fontSize: 11, fontWeight: 600, color: d.c, background: d.bg, border: `1px solid ${d.r}` }}>
-      <span style={{ width: 5, height: 5, borderRadius: "50%", background: d.c }} />{b} · {d.min}L–{d.max}L
+      <span style={{ width: 5, height: 5, borderRadius: "50%", background: d.c }} />{b}
     </span>
   );
 };
