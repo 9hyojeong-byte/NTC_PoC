@@ -46,6 +46,7 @@ export const CLS = [
   {
     id: "c1",
     nm: "입문반",
+    level: "입문",
     sts: [
       { id: "s1", nm: "김민준" },
       { id: "s2", nm: "이서윤" },
@@ -56,6 +57,7 @@ export const CLS = [
   {
     id: "c3",
     nm: "기본반",
+    level: "기본",
     sts: [
       { id: "s5", nm: "정예준" },
       { id: "s6", nm: "한지우" },

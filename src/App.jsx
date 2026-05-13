@@ -1080,7 +1080,11 @@ export default function App() {
   const [clsData, setClsData] = useState(() => {
     try {
       const s = localStorage.getItem("ntc_cls_v2");
-      return s ? JSON.parse(s) : CLS;
+      const data = s ? JSON.parse(s) : CLS;
+      const defaults = { c1: "입문", c3: "기본" };
+      return data
+        .filter(c => c.id !== "c2" && c.id !== "c4")
+        .map(c => defaults[c.id] && !c.level ? { ...c, level: defaults[c.id] } : c);
     } catch { return CLS; }
   });
   const dynALL = useMemo(
@@ -1492,6 +1496,7 @@ export default function App() {
   const [studentDetailModal, setStudentDetailModal] = useState(null); // { st, cls, artSeqs }
   const [assignModal, setAssignModal] = useState(null); // { cls }
   const [freqModal, setFreqModal] = useState(null); // { cId, nm, cur }
+  const [clsSettingsModal, setClsSettingsModal] = useState(null); // { cls, nm, level, freq }
 
   const revokeAsgn = (seq) => {
     const ts = getTargetStudents();
@@ -1770,18 +1775,24 @@ export default function App() {
         </div>
       </div>
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(280px,1fr))", gap: 16 }}>
-        {clsData.filter(cls => cls.sts.length > 0).map(cls => {
-          const band = Object.entries(BANDS).find(([k]) => k === cls.level || cls.nm.replace("반", ""));
-          const bColor = band ? band[1].c : X.ac;
-          const bBg = band ? band[1].bg : X.abg;
+        {clsData.map(cls => {
+          const levelKey = cls.level || cls.nm.replace("반", "");
+          const band = BANDS[levelKey] || { c: X.ac, bg: X.abg, r: "#bfdbfe" };
+          const bColor = band.c;
+          const bBg = band.bg;
           return (
             <Cd key={cls.id} style={{ padding: 0, overflow: "hidden" }}>
               <div style={{ padding: "12px 16px", background: bBg, borderBottom: `1px solid ${X.bdr}`, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                <div style={{ display: "flex", alignItems: "center", gap: 7 }}>
-                  <span style={{ fontFamily: F.h, fontWeight: 700, fontSize: 15, color: bColor }}>{cls.nm}</span>
-                  <button onClick={() => setFreqModal({ cId: cls.id, nm: cls.nm, sel: clsFreq[cls.id] || "주2회" })} style={{ fontSize: 11, fontWeight: 700, color: bColor, background: "rgba(255,255,255,0.75)", borderRadius: 20, padding: "2px 9px", border: "1px solid rgba(0,0,0,0.08)", cursor: "pointer", fontFamily: F.b }}>[{clsFreq[cls.id] || "주2회"}]</button>
+                <div style={{ display: "flex", alignItems: "center", gap: 7, minWidth: 0 }}>
+                  <span style={{ fontFamily: F.h, fontWeight: 700, fontSize: 15, color: bColor, whiteSpace: "nowrap" }}>{cls.nm}</span>
+                  {levelKey && BANDS[levelKey] && <span style={{ fontSize: 10, fontWeight: 700, color: bColor, background: "rgba(255,255,255,0.7)", border: `1px solid ${band.r}`, borderRadius: 20, padding: "1px 7px", whiteSpace: "nowrap" }}>{levelKey}</span>}
+                  <span style={{ fontSize: 10, fontWeight: 600, color: bColor, background: "rgba(255,255,255,0.5)", borderRadius: 20, padding: "1px 7px", whiteSpace: "nowrap" }}>{clsFreq[cls.id] || "주2회"}</span>
                 </div>
-                <span style={{ fontSize: 12, color: bColor, fontWeight: 600 }}>{cls.sts.length}명</span>
+                <div style={{ display: "flex", alignItems: "center", gap: 6, flexShrink: 0 }}>
+                  <span style={{ fontSize: 12, color: bColor, fontWeight: 600 }}>{cls.sts.length}명</span>
+                  <button onClick={() => setClsSettingsModal({ cls, nm: cls.nm, level: cls.level || "", freq: clsFreq[cls.id] || "주2회" })}
+                    style={{ border: "none", background: "rgba(255,255,255,0.6)", borderRadius: 8, width: 26, height: 26, display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", fontSize: 14, color: bColor }}>⚙</button>
+                </div>
               </div>
               {cls.sts.length === 0 ? (
                 <div style={{ padding: "20px 16px", color: X.mt, fontSize: 13, textAlign: "center" }}>등록된 학생이 없습니다.</div>
@@ -2581,25 +2592,6 @@ export default function App() {
               {dynALL.map(s => <option key={s.id} value={s.id}>{s.nm} ({s.cNm})</option>)}
             </select>
           )}
-          <button
-            onClick={() => setUseSeed(v => !v)}
-            title={useSeed ? "시드데이터 사용 중 (클릭 시 OFF)" : "실데이터만 사용 중 (클릭 시 ON)"}
-            style={{ padding: "6px 12px", borderRadius: 8, border: `1px solid ${useSeed ? "#a7f3d0" : X.bdr}`, cursor: "pointer", fontSize: 12, fontWeight: 600, fontFamily: F.b, background: useSeed ? "#ecfdf5" : "#fff", color: useSeed ? "#059669" : X.mt, display: "flex", alignItems: "center", gap: 5, transition: "all .15s" }}
-          >
-            <span style={{ width: 28, height: 16, borderRadius: 8, background: useSeed ? "#10b981" : "#d1d5db", display: "inline-flex", alignItems: "center", padding: "0 2px", transition: "background .2s", flexShrink: 0 }}>
-              <span style={{ width: 12, height: 12, borderRadius: "50%", background: "#fff", transform: useSeed ? "translateX(12px)" : "translateX(0)", transition: "transform .2s", display: "block" }} />
-            </span>
-            시드데이터
-          </button>
-          <button
-            onClick={resetAll}
-            title="학습 데이터 초기화"
-            style={{ padding: "6px 12px", borderRadius: 8, border: `1px solid ${X.bdr}`, cursor: "pointer", fontSize: 12, fontWeight: 600, fontFamily: F.b, background: "#fff", color: X.sub, display: "flex", alignItems: "center", gap: 5, transition: "border-color .15s, color .15s" }}
-            onMouseEnter={e => { e.currentTarget.style.borderColor = X.rd; e.currentTarget.style.color = X.rd; }}
-            onMouseLeave={e => { e.currentTarget.style.borderColor = X.bdr; e.currentTarget.style.color = X.sub; }}
-          >
-            <span style={{ fontSize: 14 }}>↺</span> 초기화
-          </button>
           <div style={{ display: "flex", background: "#f1f5f9", borderRadius: 10, padding: 3 }}>
             {[["teacher", "👩‍🏫 선생님"], ["student", "👨‍🎓 학생"]].map(([r, l]) => (
               <button key={r} onClick={() => { setRole(r); setPw(null); if (r === "student") { setSArt(null); setSv("tasks"); } }}
@@ -2895,8 +2887,8 @@ export default function App() {
                         <div style={{ fontFamily: F.h, fontWeight: 700, fontSize: 14, marginBottom: 2 }}>{a.title}</div>
                         <div style={{ fontSize: 11, color: X.sub, marginBottom: 5 }}>{a.tkr}</div>
                         <div style={{ display: "flex", gap: 5 }}>
-                          {b && <span style={{ fontSize: 10, fontWeight: 700, color: b.c, background: b.bg, borderRadius: 4, padding: "1px 5px" }}>{BM[a.seq]}</span>}
-                          <span style={{ fontSize: 10, color: X.sub, background: "#f1f5f9", borderRadius: 4, padding: "1px 5px" }}>{a.topic}</span>
+                          {b && <span style={{ fontSize: 10, fontWeight: 500, color: X.sub }}>{b.min}L–{b.max}L</span>}
+                          <span style={{ fontSize: 10, fontWeight: 600, color: b ? b.c : X.ac, background: b ? b.bg : X.abg, borderRadius: 4, padding: "1px 6px" }}>{a.topic}</span>
                         </div>
                       </div>
                       {assigned
@@ -2907,6 +2899,73 @@ export default function App() {
                   );
                 })}
                 {!fl.length && <div style={{ textAlign: "center", color: X.mt, padding: 40, fontSize: 13 }}>해당 조건의 기사가 없습니다.</div>}
+              </div>
+            </div>
+          </div>
+        );
+      })()}
+
+      {/* 반 설정 모달 */}
+      {clsSettingsModal && (() => {
+        const { cls, nm, level, freq } = clsSettingsModal;
+        const lk = level || cls.nm.replace("반", "");
+        const band = BANDS[lk] || { c: X.ac, bg: X.abg, r: "#bfdbfe" };
+        const save = () => {
+          if (!nm.trim()) return;
+          const next = clsData.map(c => c.id === cls.id ? { ...c, nm: nm.trim(), level } : c);
+          saveCls(next);
+          setFreq(cls.id, freq);
+          setClsSettingsModal(null);
+          showToast(`${nm.trim()} 설정이 저장되었습니다.`);
+        };
+        return (
+          <div style={{ position: "fixed", inset: 0, zIndex: 500, background: "rgba(15,23,42,0.55)", display: "flex", alignItems: "center", justifyContent: "center", padding: 16 }}
+            onClick={e => { if (e.target === e.currentTarget) setClsSettingsModal(null); }}>
+            <div className="fade-up" style={{ background: "#fff", borderRadius: 20, width: "100%", maxWidth: 460, boxShadow: "0 24px 60px rgba(0,0,0,.18)", overflow: "hidden" }}>
+              <div style={{ padding: "18px 22px 16px", borderBottom: `1px solid ${X.bdr}`, display: "flex", justifyContent: "space-between", alignItems: "center", background: band.bg }}>
+                <span style={{ fontFamily: F.h, fontWeight: 800, fontSize: 17, color: band.c }}>반 설정</span>
+                <button onClick={() => setClsSettingsModal(null)} style={{ border: "none", background: "none", fontSize: 22, cursor: "pointer", color: band.c, opacity: 0.6, lineHeight: 1 }}>×</button>
+              </div>
+              <div style={{ padding: 24 }}>
+                <div style={{ marginBottom: 20 }}>
+                  <label style={{ display: "block", fontSize: 12, fontWeight: 700, color: X.sub, marginBottom: 8 }}>반 이름</label>
+                  <input value={nm} onChange={e => setClsSettingsModal(p => ({ ...p, nm: e.target.value }))}
+                    style={{ width: "100%", padding: "10px 14px", borderRadius: 10, border: `1px solid ${X.bdr}`, fontSize: 14, fontFamily: F.b, boxSizing: "border-box", outline: "none" }} />
+                </div>
+                <div style={{ marginBottom: 20 }}>
+                  <label style={{ display: "block", fontSize: 12, fontWeight: 700, color: X.sub, marginBottom: 8 }}>난이도</label>
+                  <div style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: 8 }}>
+                    {CLS_LEVEL_OPTIONS.map(opt => {
+                      const ob = BANDS[opt.level] || { c: X.ac, bg: X.abg };
+                      const sel = level === opt.level;
+                      return (
+                        <button key={opt.key} onClick={() => setClsSettingsModal(p => ({ ...p, level: opt.level }))}
+                          style={{ padding: "10px 6px", borderRadius: 10, border: `2px solid ${sel ? ob.c : X.bdr}`, background: sel ? ob.bg : "#fff", cursor: "pointer", textAlign: "center", transition: "all .15s" }}>
+                          <div style={{ fontSize: 12, fontWeight: 700, color: sel ? ob.c : X.tx, fontFamily: F.h }}>{opt.key}</div>
+                          <div style={{ fontSize: 10, color: sel ? ob.c : X.mt, marginTop: 2 }}>{opt.level}</div>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+                <div style={{ marginBottom: 24 }}>
+                  <label style={{ display: "block", fontSize: 12, fontWeight: 700, color: X.sub, marginBottom: 8 }}>수업 주기</label>
+                  <div style={{ display: "flex", gap: 8 }}>
+                    {["주2회", "주3회", "주5회"].map(f => (
+                      <button key={f} onClick={() => setClsSettingsModal(p => ({ ...p, freq: f }))}
+                        style={{ flex: 1, padding: "10px", borderRadius: 10, border: `2px solid ${freq === f ? X.dk : X.bdr}`, background: freq === f ? X.dk : "#fff", color: freq === f ? "#fff" : X.tx, fontSize: 13, fontWeight: 700, fontFamily: F.b, cursor: "pointer", transition: "all .15s" }}>
+                        {f.replace("주", "주 ").replace("회", " 회")}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+                <div style={{ display: "flex", gap: 10 }}>
+                  <button onClick={() => setClsSettingsModal(null)} style={{ flex: 1, padding: "12px", borderRadius: 10, border: `1px solid ${X.bdr}`, background: "#fff", fontSize: 14, fontWeight: 600, fontFamily: F.b, cursor: "pointer", color: X.sub }}>취소</button>
+                  <button onClick={save} disabled={!nm.trim()}
+                    style={{ flex: 2, padding: "12px", borderRadius: 10, border: "none", background: nm.trim() ? X.dk : "#e2e8f0", color: nm.trim() ? "#fff" : X.mt, fontSize: 14, fontWeight: 700, fontFamily: F.b, cursor: nm.trim() ? "pointer" : "default", transition: "all .15s" }}>
+                    저장
+                  </button>
+                </div>
               </div>
             </div>
           </div>
