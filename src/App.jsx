@@ -1,7 +1,7 @@
 import React, { useState, useMemo, useEffect, useRef } from "react";
 
 /* ── lib imports ── */
-import { GLOBAL_CSS, BANDS, BM, CLS, ALL, IA, IP, TL, F, X, CLASS_DEFAULT_SEQ, CLASS_DEFAULT_AT } from "./lib/constants.js";
+import { GLOBAL_CSS, BANDS, BM, CLS, ALL, IA, IP, TL, F, X, CLASS_DEFAULT_SEQS } from "./lib/constants.js";
 import { ARTS, W, WB } from "./lib/selectors.js";
 import { playWordAudio } from "./lib/audio.js";
 
@@ -710,11 +710,9 @@ function ProgDetailModal({ modal, onClose, effProg, label = "직전 과제" }) {
   const [playingKey, setPlayingKey] = useState(null);
   const audioRef = useRef(null);
 
-  const { cls, prevAtStr, prevStudents } = modal;
+  const { cls, prevStudents } = modal;
   const levelKey = cls.nm.replace("반", "");
   const band = BANDS[levelKey] || { c: X.ac, bg: X.abg, r: "#bfdbfe" };
-  const [mm, dd] = prevAtStr.split("-");
-  const fmtDate = `${parseInt(mm)}/${parseInt(dd)} 배정`;
 
   const stepKeys = ["wl", "r", "v", "sb", "w"];
   const stepLabels = { wl: "단어보기", r: "읽기", v: "단어퀴즈", sb: "문장만들기", w: "녹음" };
@@ -748,7 +746,7 @@ function ProgDetailModal({ modal, onClose, effProg, label = "직전 과제" }) {
         <div style={{ padding: "18px 22px 16px", borderBottom: `1px solid ${band.r}`, display: "flex", justifyContent: "space-between", alignItems: "flex-start", background: band.bg, borderRadius: "20px 20px 0 0", flexShrink: 0 }}>
           <div>
             <div style={{ fontFamily: F.h, fontWeight: 800, fontSize: 17, color: band.c }}>{cls.nm}</div>
-            <div style={{ fontSize: 12, color: band.c, opacity: 0.75, marginTop: 2 }}>{label} · {fmtDate}</div>
+            <div style={{ fontSize: 12, color: band.c, opacity: 0.75, marginTop: 2 }}>{label}</div>
           </div>
           <button onClick={onClose} style={{ border: "none", background: "none", fontSize: 22, cursor: "pointer", color: band.c, opacity: 0.6, lineHeight: 1, marginLeft: 12 }}>×</button>
         </div>
@@ -925,7 +923,7 @@ export default function App() {
     [clsData]
   );
   const [clsFreq, setClsFreq] = useState(() => {
-    try { const s = localStorage.getItem("ntc_freq_v1"); const stored = s ? JSON.parse(s) : {}; return { c1: "주3회", c3: "주2회", ...stored }; } catch { return { c1: "주3회", c3: "주2회" }; }
+    try { const s = localStorage.getItem("ntc_freq_v1"); const stored = s ? JSON.parse(s) : {}; return { c1: "주3회", c2: "주2회", c3: "주2회", c4: "주3회", ...stored }; } catch { return { c1: "주3회", c2: "주2회", c3: "주2회", c4: "주3회" }; }
   });
   const setFreq = (cId, val) => {
     const next = { ...clsFreq, [cId]: val };
@@ -944,10 +942,9 @@ export default function App() {
       c.id === cId ? { ...c, sts: [...c.sts, { id: newId, nm }] } : c
     );
     saveCls(next);
-    const defSeq = CLASS_DEFAULT_SEQ[cId];
-    if (defSeq) {
-      const at = CLASS_DEFAULT_AT[cId] || (() => { const now = new Date(); return `${String(now.getMonth()+1).padStart(2,"0")}-${String(now.getDate()).padStart(2,"0")}`; })();
-      setAsgn(p => ({ ...p, [newId]: [{ seq: defSeq, at }] }));
+    const defSeqs = CLASS_DEFAULT_SEQS[cId];
+    if (defSeqs?.length) {
+      setAsgn(p => ({ ...p, [newId]: defSeqs.map(seq => ({ seq })) }));
     }
   };
   const removeStudent = (stId) => {
@@ -1287,7 +1284,7 @@ export default function App() {
 
   const dAs = (seq) => {
     const ts = getTargetStudents();
-    setAsgn(p => { const n = { ...p }; ts.forEach(s => { if (!n[s.id]) n[s.id] = []; if (!n[s.id].some(a => a.seq === seq)) n[s.id] = [...n[s.id], { seq, at: "04-02" }]; }); return n; });
+    setAsgn(p => { const n = { ...p }; ts.forEach(s => { if (!n[s.id]) n[s.id] = []; if (!n[s.id].some(a => a.seq === seq)) n[s.id] = [...n[s.id], { seq }]; }); return n; });
     setAr(null);
     const art = ARTS.find(a => a.seq === seq);
     const targetLabel = at.t === "students"
@@ -1305,7 +1302,7 @@ export default function App() {
   };
 
   const [revokeModal, setRevokeModal] = useState(null); // { seq, art, targets }
-  const [detailModal, setDetailModal] = useState(null); // { cls, prevAtStr, prevStudents, showComplete }
+  const [detailModal, setDetailModal] = useState(null); // { cls, prevStudents, label }
   const [freqModal, setFreqModal] = useState(null); // { cId, nm, cur }
 
   const revokeAsgn = (seq) => {
@@ -1349,14 +1346,6 @@ export default function App() {
             <div style={{ fontFamily: F.h, fontWeight: 700, fontSize: 14 }}>2026. 4. 2.</div>
           </div>
         </Cd>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: 12, marginBottom: 24 }}>
-          {[{ l: "전체 배정", v: tA, co: X.ac }, { l: "학습 완료", v: tD, co: X.gn }, { l: "진행 중", v: tP, co: X.am }, { l: "미시작", v: tN, co: X.rd }].map((k, i) =>
-            <Cd key={i} style={{ textAlign: "center", padding: "20px 12px" }}>
-              <div style={{ fontFamily: F.h, fontWeight: 800, fontSize: 30, color: k.co, lineHeight: 1 }}>{k.v}</div>
-              <div style={{ fontSize: 12, color: X.sub, marginTop: 6 }}>{k.l}</div>
-            </Cd>
-          )}
-        </div>
       </div>
     );
   };
@@ -1504,30 +1493,15 @@ export default function App() {
   };
 
   /* ─── TEACHER PROGRESS ─── */
-  const fmtMD = (at) => { const [m, d] = at.split("-"); return `${parseInt(m)}/${parseInt(d)}`; };
-
   const TProg = () => {
     return (
       <div>
-        <p style={{ fontSize: 13, color: X.sub, marginBottom: 16 }}>반별 학습 운영 현황</p>
+        <p style={{ fontSize: 13, color: X.sub, marginBottom: 16 }}>이번 주에 발행된 콘텐츠의 학습 현황입니다.</p>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(300px,1fr))", gap: 16 }}>
           {clsData.filter(cls => cls.sts.length > 0).map(cls => {
             const levelKey = cls.nm.replace("반", "");
             const band = BANDS[levelKey] || { c: X.ac, bg: X.abg, r: "#bfdbfe" };
-            const allAtDates = [...new Set(
-              cls.sts.flatMap(st => (asgn[st.id] || []).map(a => a.at))
-            )].sort();
-            const curAtStr = allAtDates.length > 0 ? allAtDates[allAtDates.length - 1] : null;
-            const prevAtStr = allAtDates.length > 1 ? allAtDates[allAtDates.length - 2] : null;
-            const prevStudents = prevAtStr ? cls.sts
-              .filter(st => (asgn[st.id] || []).some(a => a.at === prevAtStr))
-              .map(st => {
-                const arts = (asgn[st.id] || []).filter(a => a.at === prevAtStr);
-                const done = arts.every(a => iD(effProg, st.id, a.seq));
-                return { st, done, arts };
-              }) : [];
-            const prevDoneCount = prevStudents.filter(x => x.done).length;
-            const curStudents = curAtStr ? cls.sts.filter(st => (asgn[st.id] || []).some(a => a.at === curAtStr)) : [];
+            const allSeqs = CLASS_DEFAULT_SEQS[cls.id] || [...new Set(cls.sts.flatMap(st => (asgn[st.id] || []).map(a => a.seq)))];
 
             const CardHeader = () => (
               <div style={{ padding: "14px 18px", background: band.bg, borderBottom: `1px solid ${band.r}`, display: "flex", alignItems: "center", gap: 8 }}>
@@ -1537,16 +1511,12 @@ export default function App() {
               </div>
             );
 
-            if (!curAtStr) {
+            if (allSeqs.length === 0) {
               return (
                 <Cd key={cls.id} className="card-hover" style={{ padding: 0, overflow: "hidden" }}>
                   <CardHeader />
                   <div style={{ padding: "24px 18px", textAlign: "center" }}>
-                    <p style={{ fontSize: 13, color: X.mt, marginBottom: 12 }}>배정된 과제 없음</p>
-                    <button
-                      onClick={() => { setAt({ t: "class", ids: cls.sts.map(s => s.id) }); scrollTo("assign"); }}
-                      style={{ padding: "6px 16px", borderRadius: 8, border: `1px solid ${X.ac}`, background: X.abg, color: X.ac, fontSize: 12, fontWeight: 700, cursor: "pointer", fontFamily: F.b }}
-                    >기사 배정하기</button>
+                    <p style={{ fontSize: 13, color: X.mt }}>배정된 과제 없음</p>
                   </div>
                 </Cd>
               );
@@ -1555,47 +1525,40 @@ export default function App() {
             return (
               <Cd key={cls.id} className="card-hover" style={{ padding: 0, overflow: "hidden" }}>
                 <CardHeader />
-                <div style={{ padding: "14px 18px", display: "flex", flexDirection: "column", gap: 10 }}>
-                  {prevAtStr && (
-                    <div
-                      onClick={() => setDetailModal({ cls, prevAtStr, prevStudents, showComplete: false })}
-                      style={{ padding: "10px 14px", borderRadius: 10, background: "#f8fafc", border: `1px solid ${X.bdr}`, cursor: "pointer", display: "flex", justifyContent: "space-between", alignItems: "center" }}
-                    >
-                      <div>
-                        <div style={{ fontSize: 11, color: X.mt, fontWeight: 600, marginBottom: 3 }}>직전 과제 · {fmtMD(prevAtStr)} 배정</div>
-                        <div style={{ fontSize: 13, fontWeight: 700, color: X.tx }}>{prevDoneCount}/{prevStudents.length} 완료</div>
+                <div style={{ padding: "10px 14px", display: "flex", flexDirection: "column", gap: 8 }}>
+                  {allSeqs.map(seq => {
+                    const art = ARTS.find(a => a.seq === seq);
+                    const students = cls.sts
+                      .filter(st => (asgn[st.id] || []).some(a => a.seq === seq))
+                      .map(st => ({ st, done: iD(effProg, st.id, seq), arts: [{ seq }] }));
+                    const doneCount = students.filter(x => x.done).length;
+                    const total = students.length;
+                    const allDone = doneCount === total && total > 0;
+                    const bmLabel = BM[seq];
+                    const artBand = bmLabel ? BANDS[bmLabel] : null;
+                    return (
+                      <div
+                        key={seq}
+                        onClick={() => setDetailModal({ cls, prevStudents: students, label: art?.title || seq })}
+                        style={{ padding: "10px 14px", borderRadius: 10, background: "#f8fafc", border: `1px solid ${X.bdr}`, cursor: "pointer", display: "flex", justifyContent: "space-between", alignItems: "center" }}
+                      >
+                        <div style={{ minWidth: 0 }}>
+                          <div style={{ display: "flex", alignItems: "center", gap: 5, marginBottom: 3 }}>
+                            {artBand && <span style={{ fontSize: 10, fontWeight: 700, color: artBand.c, background: artBand.bg, borderRadius: 4, padding: "1px 5px", flexShrink: 0 }}>{bmLabel}</span>}
+                            <div style={{ fontSize: 12, fontWeight: 700, color: X.tx, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{art?.title || seq}</div>
+                          </div>
+                          <div style={{ fontSize: 11, color: X.sub }}>{doneCount}/{total} 완료</div>
+                        </div>
+                        <div style={{ display: "flex", alignItems: "center", gap: 6, flexShrink: 0 }}>
+                          {allDone
+                            ? <span style={{ fontSize: 11, fontWeight: 700, color: X.gn, background: X.gbg, borderRadius: 20, padding: "3px 10px" }}>✓ 전원완료</span>
+                            : <span style={{ fontSize: 11, fontWeight: 700, color: X.am, background: X.abg2, borderRadius: 20, padding: "3px 10px" }}>{total - doneCount}명 미완료</span>
+                          }
+                          <span style={{ fontSize: 16, color: X.mt, lineHeight: 1 }}>›</span>
+                        </div>
                       </div>
-                      <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                        {prevDoneCount === prevStudents.length
-                          ? <span style={{ fontSize: 11, fontWeight: 700, color: X.gn, background: X.gbg, borderRadius: 20, padding: "3px 10px" }}>✓ 전원완료</span>
-                          : <span style={{ fontSize: 11, fontWeight: 700, color: X.am, background: X.abg2, borderRadius: 20, padding: "3px 10px" }}>{prevStudents.length - prevDoneCount}명 미완료</span>
-                        }
-                        <span style={{ fontSize: 16, color: X.mt, lineHeight: 1 }}>›</span>
-                      </div>
-                    </div>
-                  )}
-                  <div
-                    onClick={() => {
-                      const students = cls.sts
-                        .filter(st => (asgn[st.id] || []).some(a => a.at === curAtStr))
-                        .map(st => {
-                          const arts = (asgn[st.id] || []).filter(a => a.at === curAtStr);
-                          const done = arts.every(a => iD(effProg, st.id, a.seq));
-                          return { st, done, arts };
-                        });
-                      setDetailModal({ cls, prevAtStr: curAtStr, prevStudents: students, label: "현재 과제" });
-                    }}
-                    style={{ padding: "10px 14px", borderRadius: 10, background: "#f0f9ff", border: "1px solid #bae6fd", display: "flex", justifyContent: "space-between", alignItems: "center", cursor: "pointer" }}
-                  >
-                    <div>
-                      <div style={{ fontSize: 11, color: "#0284c7", fontWeight: 600, marginBottom: 3 }}>현재 과제 · {fmtMD(curAtStr)} 배정</div>
-                      <div style={{ fontSize: 13, fontWeight: 700, color: X.tx }}>{curStudents.length}명 진행 중</div>
-                    </div>
-                    <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                      <span style={{ fontSize: 11, fontWeight: 700, color: "#0284c7", background: "#e0f2fe", borderRadius: 20, padding: "3px 10px" }}>진행중</span>
-                      <span style={{ fontSize: 16, color: "#0284c7", lineHeight: 1 }}>›</span>
-                    </div>
-                  </div>
+                    );
+                  })}
                 </div>
               </Cd>
             );
