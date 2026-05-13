@@ -79,29 +79,31 @@ export const ALL = CLS.flatMap((c) =>
   c.sts.map((s) => ({ ...s, cId: c.id, cNm: c.nm }))
 );
 
+/* 반별 기본 배정 기사 (반 id → articleSeq) */
+export const CLASS_DEFAULT_SEQ = {
+  c1: "786", // 입문반
+  c3: "121", // 기본반
+};
+
 /* 초기 배정 데이터 */
 export const IA = {
   s1: [{ seq: "786", at: "03-28" }],
-  s2: [
-    { seq: "786", at: "03-28" },
-    { seq: "785", at: "03-29" },
-  ],
+  s2: [{ seq: "786", at: "03-28" }, { seq: "785", at: "03-29" }],
   s3: [{ seq: "785", at: "03-29" }],
+  s4: [{ seq: "786", at: "04-02" }],
   s5: [{ seq: "121", at: "03-28" }],
-  s6: [
-    { seq: "121", at: "03-28" },
-    { seq: "122", at: "03-30" },
-  ],
+  s6: [{ seq: "121", at: "03-28" }, { seq: "122", at: "03-30" }],
   s7: [{ seq: "122", at: "03-30" }],
+  s8: [{ seq: "121", at: "04-02" }],
 };
 
-/* 초기 진행 데이터 (r: 읽기, wl: 단어보기, v: 단어퀴즈, w: 녹음 제출) */
+/* 초기 진행 데이터 (r: 읽기, wl: 단어보기, v: 단어퀴즈, sb: 문장만들기, w: 녹음 제출) */
 export const IP = {
-  s1_786: { r: true, wl: true, v: true, w: true },
-  s2_786: { r: true, wl: true, v: true, w: false },
-  s2_785: { r: false, wl: false, v: false, w: false },
-  s5_121: { r: true, wl: true, v: false, w: false },
-  s6_121: { r: true, wl: true, v: true, w: true },
+  s1_786: { r: true, wl: true, v: true, sb: true, w: true },
+  s2_786: { r: true, wl: true, v: true, sb: true, w: false },
+  s2_785: { r: false, wl: false, v: false, sb: false, w: false },
+  s5_121: { r: true, wl: true, v: false, sb: false, w: false },
+  s6_121: { r: true, wl: true, v: true, sb: true, w: true },
 };
 
 /* 타임라인 로그 */

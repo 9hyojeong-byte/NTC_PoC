@@ -1,7 +1,7 @@
 import React, { useState, useMemo, useEffect, useRef } from "react";
 
 /* ── lib imports ── */
-import { GLOBAL_CSS, BANDS, BM, CLS, ALL, IA, IP, TL, F, X } from "./lib/constants.js";
+import { GLOBAL_CSS, BANDS, BM, CLS, ALL, IA, IP, TL, F, X, CLASS_DEFAULT_SEQ } from "./lib/constants.js";
 import { ARTS, W, WB } from "./lib/selectors.js";
 import { playWordAudio } from "./lib/audio.js";
 
@@ -10,12 +10,12 @@ import { playWordAudio } from "./lib/audio.js";
    ═══════════════════════════════════════════ */
 const gP = (p, s, q) => {
   const x = p[`${s}_${q}`];
-  if (!x) return { r: false, wl: false, v: false, w: false };
-  return { r: !!x.r, wl: !!x.wl, v: !!x.v, w: !!x.w };
+  if (!x) return { r: false, wl: false, v: false, sb: false, w: false };
+  return { r: !!x.r, wl: !!x.wl, v: !!x.v, sb: !!x.sb, w: !!x.w };
 };
 const iD = (p, s, q) => {
   const x = gP(p, s, q);
-  return x.r && x.wl && x.v && x.w;
+  return x.r && x.wl && x.v && x.sb && x.w;
 };
 
 function recStorageKey(stId, artSeq) {
@@ -559,6 +559,299 @@ function StudentRecordingStep({ sSt, sArt, sentenceRows, onSubmit, onBack }) {
 }
 
 /* ═══════════════════════════════════════════
+   SENTENCE BUILD STEP
+   ═══════════════════════════════════════════ */
+function tokenizeSentence(text) {
+  return text.trim().split(/\s+/).filter(Boolean).map((w, i) => ({ w, id: `${i}__${w}` }));
+}
+function shuffleArr(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function SentenceBuildStep({ sentences, onComplete }) {
+  const [idx, setIdx] = useState(0);
+  const [sel, setSel] = useState([]);
+  const [pool, setPool] = useState(() => sentences[0] ? shuffleArr(tokenizeSentence(sentences[0].en)) : []);
+  const [checked, setChecked] = useState(false);
+  const [correct, setCorrect] = useState(false);
+
+  useEffect(() => {
+    if (!sentences[idx]) return;
+    setPool(shuffleArr(tokenizeSentence(sentences[idx].en)));
+    setSel([]);
+    setChecked(false);
+    setCorrect(false);
+  }, [idx, sentences]);
+
+  const cur = sentences[idx];
+  if (!cur) return <div style={{ textAlign: "center", color: X.mt, padding: 40 }}>문장 데이터가 없습니다.</div>;
+
+  const pickWord = (token) => {
+    setPool(p => p.filter(t => t.id !== token.id));
+    setSel(s => [...s, token]);
+  };
+  const unpickWord = (token) => {
+    if (checked) return;
+    setSel(s => s.filter(t => t.id !== token.id));
+    setPool(p => [...p, token]);
+  };
+  const checkAnswer = () => {
+    setCorrect(sel.map(t => t.w).join(" ") === cur.en);
+    setChecked(true);
+  };
+  const nextSentence = () => {
+    if (idx + 1 >= sentences.length) onComplete();
+    else setIdx(i => i + 1);
+  };
+  const retry = () => {
+    setPool(shuffleArr(tokenizeSentence(cur.en)));
+    setSel([]);
+    setChecked(false);
+    setCorrect(false);
+  };
+
+  const allPlaced = pool.length === 0;
+  const isLast = idx === sentences.length - 1;
+
+  return (
+    <div style={{ maxWidth: 640, margin: "0 auto" }}>
+      {/* 헤더 & 진행 */}
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10 }}>
+        <h2 style={{ fontFamily: F.h, fontWeight: 800, fontSize: 20, color: X.tx }}>문장 만들기</h2>
+        <span style={{ fontSize: 13, color: X.sub, fontWeight: 600 }}>{idx + 1} / {sentences.length}</span>
+      </div>
+      <div style={{ display: "flex", gap: 4, marginBottom: 28 }}>
+        {sentences.map((_, i) => {
+          const done = i < idx || (i === idx && checked && correct);
+          const cur_ = i === idx;
+          return (
+            <div key={i} style={{ flex: 1, height: 8, borderRadius: 4, background: done ? "#a855f7" : cur_ ? "#d8b4fe" : X.bdr, transition: "background .3s" }} />
+          );
+        })}
+      </div>
+
+      {/* 한국어 뜻 */}
+      <div style={{ background: "#f5f3ff", border: "1px solid #e9d5ff", borderRadius: 16, padding: "18px 24px", marginBottom: 20, textAlign: "center" }}>
+        <div style={{ fontSize: 11, color: "#9333ea", fontWeight: 700, marginBottom: 8, letterSpacing: "0.05em" }}>뜻</div>
+        <div style={{ fontSize: 16, color: X.tx, fontWeight: 500, lineHeight: 1.7 }}>{cur.kr}</div>
+      </div>
+
+      {/* 선택된 단어 영역 */}
+      <div style={{ minHeight: 72, background: checked ? (correct ? "#f0fdf4" : "#fef2f2") : X.abg, border: `2px dashed ${checked ? (correct ? "#a7f3d0" : "#fecaca") : X.ac}`, borderRadius: 16, padding: "14px 18px", marginBottom: 16, display: "flex", flexWrap: "wrap", gap: 8, alignItems: "flex-start", alignContent: "flex-start" }}>
+        {sel.length === 0 && !checked && (
+          <span style={{ color: X.mt, fontSize: 13 }}>단어를 순서대로 선택하세요</span>
+        )}
+        {sel.map(token => (
+          <button key={token.id} onClick={() => unpickWord(token)}
+            style={{ padding: "6px 14px", borderRadius: 20, border: `1px solid ${checked ? (correct ? "#a7f3d0" : "#fecaca") : X.ac}`, background: checked ? (correct ? "#dcfce7" : "#fee2e2") : "#fff", color: X.tx, fontSize: 14, fontWeight: 600, cursor: checked ? "default" : "pointer", fontFamily: "inherit", transition: "all .15s" }}>
+            {token.w}
+          </button>
+        ))}
+      </div>
+
+      {/* 정답 확인 결과 */}
+      {checked && (
+        <div style={{ marginBottom: 20, padding: "16px 20px", borderRadius: 14, background: correct ? "#f0fdf4" : "#fef2f2", border: `1px solid ${correct ? "#a7f3d0" : "#fecaca"}`, textAlign: "center" }}>
+          <div style={{ fontSize: 18, fontWeight: 700, marginBottom: 6, color: correct ? X.gn : X.rd }}>{correct ? "🎉 정답!" : "❌ 틀렸어요"}</div>
+          {!correct && (
+            <div style={{ fontSize: 13, color: X.sub, marginBottom: 12 }}>
+              <span style={{ fontWeight: 600, color: X.gn }}>정답: </span>{cur.en}
+            </div>
+          )}
+          <div style={{ display: "flex", gap: 10, justifyContent: "center", marginTop: 10 }}>
+            {!correct && (
+              <button onClick={retry} style={{ padding: "9px 20px", borderRadius: 10, border: `1px solid ${X.bdr}`, background: "#fff", color: X.tx, fontSize: 13, fontWeight: 600, cursor: "pointer", fontFamily: "inherit" }}>
+                🔄 다시 해볼게요
+              </button>
+            )}
+            <button onClick={nextSentence} style={{ padding: "9px 24px", borderRadius: 10, border: "none", background: "#a855f7", color: "#fff", fontSize: 13, fontWeight: 700, cursor: "pointer", fontFamily: "inherit" }}>
+              {isLast ? "✅ 완료" : "다음 문장 →"}
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* 단어 풀 */}
+      {!checked && (
+        <div style={{ background: "#fafbfd", borderRadius: 16, padding: "14px 18px", border: `1px solid ${X.bdr}`, display: "flex", flexWrap: "wrap", gap: 8, marginBottom: 20 }}>
+          {pool.map(token => (
+            <button key={token.id} onClick={() => pickWord(token)}
+              style={{ padding: "6px 14px", borderRadius: 20, border: `1px solid ${X.bdr}`, background: "#fff", color: X.tx, fontSize: 14, fontWeight: 600, cursor: "pointer", fontFamily: "inherit", boxShadow: "0 1px 3px rgba(0,0,0,.07)", transition: "all .15s" }}>
+              {token.w}
+            </button>
+          ))}
+          {pool.length === 0 && (
+            <span style={{ color: X.mt, fontSize: 13 }}>모든 단어를 배치했어요 — 문장 확인을 눌러보세요!</span>
+          )}
+        </div>
+      )}
+
+      {/* 확인 버튼 */}
+      {!checked && (
+        <div style={{ textAlign: "center" }}>
+          <button onClick={checkAnswer} disabled={!allPlaced}
+            style={{ padding: "12px 44px", borderRadius: 12, border: "none", background: allPlaced ? "#a855f7" : X.bdr, color: "#fff", fontSize: 15, fontWeight: 700, cursor: allPlaced ? "pointer" : "default", fontFamily: "inherit", transition: "all .2s", opacity: allPlaced ? 1 : 0.6 }}>
+            문장 확인
+          </button>
+        </div>
+      )}
+    </div>
+  );
+}
+
+/* ─── PROG DETAIL MODAL ─── */
+function ProgDetailModal({ modal, onClose, effProg }) {
+  const [recExpanded, setRecExpanded] = useState({});
+  const [playingKey, setPlayingKey] = useState(null);
+  const audioRef = useRef(null);
+
+  const { cls, prevAtStr, prevStudents } = modal;
+  const levelKey = cls.nm.replace("반", "");
+  const band = BANDS[levelKey] || { c: X.ac, bg: X.abg, r: "#bfdbfe" };
+  const [mm, dd] = prevAtStr.split("-");
+  const fmtDate = `${parseInt(mm)}/${parseInt(dd)} 배정`;
+
+  const stepKeys = ["wl", "r", "v", "sb", "w"];
+  const stepLabels = { wl: "단어보기", r: "읽기", v: "단어퀴즈", sb: "문장만들기", w: "녹음" };
+  const artSeqs = [...new Set(prevStudents.flatMap(x => x.arts.map(a => a.seq)))];
+
+  // incomplete first
+  const sorted = [...prevStudents].sort((a, b) => (a.done === b.done ? 0 : a.done ? 1 : -1));
+
+  const stopAudio = () => {
+    if (audioRef.current) { audioRef.current.pause(); audioRef.current = null; }
+    setPlayingKey(null);
+  };
+  const togglePlay = (pKey, url) => {
+    if (playingKey === pKey) { stopAudio(); return; }
+    stopAudio();
+    const a = new Audio(url);
+    audioRef.current = a;
+    a.onended = () => setPlayingKey(null);
+    a.play().catch(() => {});
+    setPlayingKey(pKey);
+  };
+  useEffect(() => () => { if (audioRef.current) audioRef.current.pause(); }, []);
+
+  return (
+    <div
+      style={{ position: "fixed", inset: 0, zIndex: 500, background: "rgba(15,23,42,0.55)", display: "flex", alignItems: "center", justifyContent: "center", padding: 16 }}
+      onClick={e => { if (e.target === e.currentTarget) onClose(); }}
+    >
+      <div className="fade-up" style={{ background: "#fff", borderRadius: 20, width: "100%", maxWidth: 580, maxHeight: "88vh", display: "flex", flexDirection: "column", boxShadow: "0 24px 60px rgba(0,0,0,.18)" }}>
+        {/* Sticky header */}
+        <div style={{ padding: "18px 22px 16px", borderBottom: `1px solid ${band.r}`, display: "flex", justifyContent: "space-between", alignItems: "flex-start", background: band.bg, borderRadius: "20px 20px 0 0", flexShrink: 0 }}>
+          <div>
+            <div style={{ fontFamily: F.h, fontWeight: 800, fontSize: 17, color: band.c }}>{cls.nm}</div>
+            <div style={{ fontSize: 12, color: band.c, opacity: 0.75, marginTop: 2 }}>직전 과제 · {fmtDate}</div>
+          </div>
+          <button onClick={onClose} style={{ border: "none", background: "none", fontSize: 22, cursor: "pointer", color: band.c, opacity: 0.6, lineHeight: 1, marginLeft: 12 }}>×</button>
+        </div>
+        {/* Scrollable body */}
+        <div style={{ overflow: "auto", padding: "16px 22px 20px" }}>
+          {/* Articles */}
+          {artSeqs.map(seq => {
+            const art = ARTS.find(a => a.seq === seq);
+            const b = BANDS[BM[seq]];
+            return (
+              <div key={seq} style={{ display: "flex", alignItems: "center", gap: 10, padding: "8px 12px", borderRadius: 10, background: "#f8fafc", border: `1px solid ${X.bdr}`, marginBottom: 10 }}>
+                {art?.img && <img src={art.img} style={{ width: 52, height: 36, objectFit: "cover", borderRadius: 6, flexShrink: 0 }} alt="" />}
+                <div>
+                  <div style={{ fontWeight: 600, fontSize: 13 }}>{art?.title}</div>
+                  {b && <span style={{ display: "inline-flex", alignItems: "center", gap: 3, fontSize: 10, fontWeight: 700, color: b.c, background: b.bg, borderRadius: 20, padding: "1px 7px", marginTop: 2 }}><span style={{ width: 4, height: 4, borderRadius: "50%", background: b.c }} />{BM[seq]}</span>}
+                </div>
+              </div>
+            );
+          })}
+          {/* Progress table */}
+          <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
+            <thead>
+              <tr style={{ borderBottom: `2px solid ${X.bdr}` }}>
+                <th style={{ textAlign: "left", padding: "8px 10px", color: X.sub, fontWeight: 600, fontSize: 11, width: "30%" }}>학생</th>
+                {stepKeys.map(k => (
+                  <th key={k} style={{ textAlign: "center", padding: "8px 4px", color: X.sub, fontWeight: 600, fontSize: 11 }}>{stepLabels[k]}</th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {sorted.flatMap(({ st, done, arts }) => {
+                const artSeq = arts[0]?.seq;
+                const pg = gP(effProg, st.id, artSeq);
+                const recKey = `${st.id}_${artSeq}`;
+                const isExpanded = !!recExpanded[recKey];
+                const recMapData = pg.w ? loadRecMap(st.id, artSeq) : {};
+                const art = ARTS.find(a => a.seq === artSeq);
+                const sentRows = art ? art.ps.flatMap(pa =>
+                  splitSentenceRanges(pa.en).map((r, sIdx) => ({ key: `${pa.pid}_${sIdx}`, text: r.text }))
+                ) : [];
+                const hasRec = Object.keys(recMapData).length > 0;
+
+                const mainRow = (
+                  <tr key={st.id} style={{ borderBottom: `1px solid #f0f2f5`, background: done ? "#fff" : "#fff8f8" }}>
+                    <td style={{ padding: "10px 10px" }}>
+                      <div style={{ display: "flex", alignItems: "center", gap: 5 }}>
+                        <span style={{ fontWeight: 600, color: X.tx }}>{st.nm}</span>
+                        <span style={{ fontSize: 10, fontWeight: 700, color: done ? X.gn : X.rd, background: done ? X.gbg : X.rbg, borderRadius: 10, padding: "1px 6px" }}>{done ? "완료" : "미완료"}</span>
+                      </div>
+                    </td>
+                    {stepKeys.map(k => (
+                      <td key={k} style={{ textAlign: "center", padding: "10px 4px" }}>
+                        {k === "w" && pg.w && hasRec ? (
+                          <button
+                            onClick={() => setRecExpanded(p => ({ ...p, [recKey]: !p[recKey] }))}
+                            style={{ display: "inline-flex", alignItems: "center", gap: 2, fontSize: 10, fontWeight: 700, color: "#7c3aed", background: isExpanded ? "#ede9fe" : "#f5f3ff", border: "1px solid #ddd6fe", borderRadius: 8, padding: "3px 7px", cursor: "pointer" }}
+                          >{isExpanded ? "▾" : "▸"} 듣기</button>
+                        ) : (
+                          <Dt on={pg[k]} />
+                        )}
+                      </td>
+                    ))}
+                  </tr>
+                );
+
+                if (!isExpanded || !hasRec) return [mainRow];
+
+                const recRow = (
+                  <tr key={`${st.id}_rec`} style={{ borderBottom: `1px solid #f0f2f5` }}>
+                    <td colSpan={6} style={{ padding: "4px 10px 12px 18px" }}>
+                      <div style={{ background: "#f5f3ff", borderRadius: 10, padding: "10px 12px", display: "flex", flexDirection: "column", gap: 8 }}>
+                        {sentRows.map(sr => {
+                          const url = recMapData[sr.key];
+                          if (!url) return null;
+                          const pKey = `${recKey}_${sr.key}`;
+                          const isPlaying = playingKey === pKey;
+                          return (
+                            <div key={sr.key} style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                              <button
+                                onClick={() => togglePlay(pKey, url)}
+                                className={isPlaying ? "ntc-play-pulse" : ""}
+                                style={{ width: 28, height: 28, borderRadius: "50%", border: "none", background: isPlaying ? "#7c3aed" : "#ede9fe", color: isPlaying ? "#fff" : "#7c3aed", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 10, flexShrink: 0 }}
+                              >{isPlaying ? "■" : "▶"}</button>
+                              <span style={{ fontSize: 12, color: X.tx, lineHeight: 1.5 }}>{sr.text}</span>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </td>
+                  </tr>
+                );
+
+                return [mainRow, recRow];
+              })}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ═══════════════════════════════════════════
    APP
    ═══════════════════════════════════════════ */
 export default function App() {
@@ -585,6 +878,7 @@ export default function App() {
   const audioCtxRef = useRef(null);
   const sentenceAudioCacheRef = useRef({});
   const [va, setVa] = useState({});
+  const [vchecked, setVchecked] = useState({});
   const [vd, setVd] = useState(false);
   const [vo, setVo] = useState({});
   const [wa, setWa] = useState({});
@@ -604,19 +898,6 @@ export default function App() {
   useEffect(() => { localStorage.setItem("ntc_prog_v1", JSON.stringify(prog)); }, [prog]);
   useEffect(() => { localStorage.setItem("ntc_scores_v1", JSON.stringify(scores)); }, [scores]);
 
-  const [reviewed, setReviewed] = useState(() => {
-    try { const s = localStorage.getItem("ntc_reviewed_v1"); return s ? JSON.parse(s) : {}; } catch { return {}; }
-  });
-  useEffect(() => { localStorage.setItem("ntc_reviewed_v1", JSON.stringify(reviewed)); }, [reviewed]);
-
-  const [reviewModal, setReviewModal] = useState(null); // { stId, stNm, seq, artTitle }
-
-  const confirmReview = () => {
-    if (!reviewModal) return;
-    const { stId, seq } = reviewModal;
-    setReviewed(p => ({ ...p, [`${stId}_${seq}`]: true }));
-    setReviewModal(null);
-  };
 
   const [useSeed, setUseSeed] = useState(true);
   const effProg = useSeed ? { ...IP, ...prog } : prog;
@@ -627,7 +908,6 @@ export default function App() {
     setAsgn(IA);
     setProg(IP);
     setScores({});
-    setReviewed({});
     setSArt(null);
     setSv("tasks");
   };
@@ -643,6 +923,14 @@ export default function App() {
     () => clsData.flatMap(c => c.sts.map(s => ({ ...s, cId: c.id, cNm: c.nm }))),
     [clsData]
   );
+  const [clsFreq, setClsFreq] = useState(() => {
+    try { const s = localStorage.getItem("ntc_freq_v1"); return s ? JSON.parse(s) : {}; } catch { return {}; }
+  });
+  const setFreq = (cId, val) => {
+    const next = { ...clsFreq, [cId]: val };
+    setClsFreq(next);
+    localStorage.setItem("ntc_freq_v1", JSON.stringify(next));
+  };
   const saveCls = (next) => {
     setClsData(next);
     localStorage.setItem("ntc_cls_v2", JSON.stringify(next));
@@ -653,6 +941,12 @@ export default function App() {
       c.id === cId ? { ...c, sts: [...c.sts, { id: newId, nm }] } : c
     );
     saveCls(next);
+    const defSeq = CLASS_DEFAULT_SEQ[cId];
+    if (defSeq) {
+      const now = new Date();
+      const at = `${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
+      setAsgn(p => ({ ...p, [newId]: [{ seq: defSeq, at }] }));
+    }
   };
   const removeStudent = (stId) => {
     const next = clsData.map(c => ({ ...c, sts: c.sts.filter(s => s.id !== stId) }));
@@ -661,6 +955,7 @@ export default function App() {
 
   /* ─── STUDENT ADD MODAL STATE ─── */
   const [wlIdx, setWlIdx] = useState(0);
+  const [wlRevealIdx, setWlRevealIdx] = useState(-1);
   const [vocIdx, setVocIdx] = useState(0);
   const [showAddModal, setShowAddModal] = useState(false);
   const [addName, setAddName] = useState("");
@@ -803,7 +1098,7 @@ export default function App() {
     const k = `${s}_${q}`;
     setProg((p) => {
       const prev = p[k] || {};
-      return { ...p, [k]: { r: false, wl: false, v: false, w: false, ...prev, [f]: true } };
+      return { ...p, [k]: { r: false, wl: false, v: false, sb: false, w: false, ...prev, [f]: true } };
     });
   };
   const cA = sArt ? ARTS.find(a => a.seq === sArt) : null;
@@ -824,6 +1119,19 @@ export default function App() {
       byPid[pa.pid] = ranges;
     });
     return { byPid, all };
+  }, [cA]);
+
+  const sbSentences = useMemo(() => {
+    if (!cA) return [];
+    const result = [];
+    cA.ps.forEach(pa => {
+      const enSents = splitSentenceRanges(pa.en);
+      const krSents = splitSentenceRanges(pa.kr);
+      enSents.forEach((es, i) => {
+        result.push({ en: es.text.trim(), kr: krSents[i]?.text.trim() || pa.kr });
+      });
+    });
+    return result;
   }, [cA]);
 
   const ensureSentenceAudio = async () => {
@@ -909,10 +1217,8 @@ export default function App() {
 
   const cR = () => {
     uP(sSt, sArt, "r");
-    setSv("wl");
-    setWlIdx(0);
-    setVa({});
-    setVd(false);
+    initVocOptions(cW.filter(w => w.pid).slice(0, 8));
+    setSv("voc");
   };
   const initVocOptions = (wordList) => {
     const ak = wordList.map(w => w.kr);
@@ -923,13 +1229,13 @@ export default function App() {
     });
     setVo(o);
     setVa({});
+    setVchecked({});
     setVd(false);
     setVocIdx(0);
   };
-  const goWlToVoc = () => {
+  const goWlToRd = () => {
     uP(sSt, sArt, "wl");
-    initVocOptions(cW.filter(w => w.pid).slice(0, 8));
-    setSv("voc");
+    setSv("rd");
   };
   const cV = () => {
     const ws = cW.filter(w => w.pid).slice(0, 8);
@@ -937,12 +1243,13 @@ export default function App() {
     const k = `${sSt}_${sArt}`;
     setScores(p => ({ ...p, [k]: { ...(p[k] || {}), voc: { cor, tot: ws.length } } }));
     uP(sSt, sArt, "v");
+    setSv("ssb");
+  };
+  const cSb = () => {
+    uP(sSt, sArt, "sb");
     setSv("rec");
   };
   const cRecSubmit = () => {
-    const keys = sentenceMeta.all.map((s) => s.key);
-    const map = loadRecMap(sSt, sArt);
-    if (keys.length && keys.some((k) => !map[k])) return;
     uP(sSt, sArt, "w");
     setSv("dn");
   };
@@ -996,6 +1303,7 @@ export default function App() {
   };
 
   const [revokeModal, setRevokeModal] = useState(null); // { seq, art, targets }
+  const [detailModal, setDetailModal] = useState(null); // { cls, prevAtStr, prevStudents, showComplete }
 
   const revokeAsgn = (seq) => {
     const ts = getTargetStudents();
@@ -1045,54 +1353,6 @@ export default function App() {
               <div style={{ fontSize: 12, color: X.sub, marginTop: 6 }}>{k.l}</div>
             </Cd>
           )}
-        </div>
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
-          <div>
-            <Hd sub="반별 과제 진행 현황">반 요약</Hd>
-            {clsData.map(cls => {
-              const all = cls.sts.flatMap(s => (asgn[s.id] || []).map(a => ({ sid: s.id, ...a })));
-              if (all.length === 0) return null;
-              const dn = all.filter(a => iD(effProg, a.sid, a.seq)).length; const tot = all.length; const pct = tot ? Math.round(dn / tot * 100) : 0;
-              const nd = cls.sts.filter(s => (asgn[s.id] || []).some(a => !iD(effProg, s.id, a.seq)));
-              return (
-                <Cd key={cls.id} style={{ marginBottom: 12, padding: 16 }}>
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10 }}>
-                    <span style={{ fontWeight: 700, fontSize: 15 }}>{cls.nm}</span>
-                    <span style={{ fontSize: 12, color: X.sub }}>{cls.sts.length}명</span>
-                  </div>
-                  <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 8 }}>
-                    <div style={{ flex: 1, height: 8, borderRadius: 4, background: "#f1f5f9", overflow: "hidden" }}>
-                      <div style={{ height: "100%", borderRadius: 4, background: pct === 100 ? X.gn : X.ac, width: `${pct}%`, transition: "width .5s" }} />
-                    </div>
-                    <span style={{ fontSize: 13, fontWeight: 700, color: pct === 100 ? X.gn : X.ac, minWidth: 40, textAlign: "right" }}>{pct}%</span>
-                  </div>
-                  {nd.length > 0 && <div style={{ fontSize: 12, color: X.am }}>⚠ 미완료 {nd.length}명: {nd.map(s => s.nm).join(", ")}</div>}
-                  {nd.length === 0 && tot > 0 && <div style={{ fontSize: 12, color: X.gn }}>✓ 전원 완료</div>}
-                  {tot === 0 && <div style={{ fontSize: 12, color: X.mt }}>배정 없음</div>}
-                </Cd>
-              );
-            })}
-            <Hd sub="오늘의 추천 할 일">할 일</Hd>
-            <Cd style={{ padding: 16 }}>
-              {[{ d: false, t: "입문반 미완료 학생 리마인드" }, { d: false, t: "기본반 새 기사 배정" }, { d: true, t: "지난주 학습 현황 확인" }].map((td, i) =>
-                <div key={i} style={{ display: "flex", alignItems: "center", gap: 10, padding: "8px 0", borderBottom: i < 2 ? `1px solid ${X.bdr}` : "none" }}>
-                  <span style={{ width: 20, height: 20, borderRadius: 6, border: `2px solid ${td.d ? X.gn : X.bdr}`, background: td.d ? X.gbg : "#fff", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 11, color: X.gn }}>{td.d ? "✓" : ""}</span>
-                  <span style={{ fontSize: 13, color: td.d ? X.mt : X.tx, textDecoration: td.d ? "line-through" : "none" }}>{td.t}</span>
-                </div>
-              )}
-            </Cd>
-          </div>
-          <div>
-            <Hd sub="학생 활동 기록">최근 활동</Hd>
-            <Cd style={{ padding: 16 }}>
-              {TL.map((e, i) => (
-                <div key={i} style={{ display: "flex", gap: 12, padding: "10px 0", borderBottom: i < TL.length - 1 ? `1px solid ${X.bdr}` : "none" }}>
-                  <div style={{ width: 34, height: 34, borderRadius: 9, background: "#f8f9fb", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 16, flexShrink: 0 }}>{e.ic}</div>
-                  <div style={{ flex: 1 }}><div style={{ fontSize: 13, fontWeight: 500 }}>{e.m}</div><div style={{ fontSize: 11, color: X.mt, marginTop: 2 }}>{e.t}</div></div>
-                </div>
-              ))}
-            </Cd>
-          </div>
         </div>
       </div>
     );
@@ -1241,121 +1501,88 @@ export default function App() {
   };
 
   /* ─── TEACHER PROGRESS ─── */
+  const fmtMD = (at) => { const [m, d] = at.split("-"); return `${parseInt(m)}/${parseInt(d)}`; };
+
   const TProg = () => {
-    // 시드 기반 결정적 랜덤 — 같은 학생/기사/타입이면 항상 같은 값
-    const seedRand = (seed) => {
-      let s = seed;
-      s = ((s >>> 16) ^ s) * 0x45d9f3b;
-      s = ((s >>> 16) ^ s) * 0x45d9f3b;
-      s = (s >>> 16) ^ s;
-      return (s >>> 0) / 0xffffffff;
-    };
-    const dummyScore = (stId, seq, type) => {
-      const seed = (stId + seq + type).split("").reduce((a, c) => a + c.charCodeAt(0), 0);
-      const tot = type === "voc" ? 8 : (() => {
-        const wb = WB[seq] || [];
-        const autoTypes = ["wc", "mc", "tf", "us", "mt"];
-        return wb.filter(a => autoTypes.includes(a.t)).reduce((s, a) => s + (a.qs?.length || a.left?.length || 0), 0) || 5;
-      })();
-      const cor = Math.max(1, Math.round(seedRand(seed) * tot));
-      return { cor, tot };
-    };
-    const ScoreCell = ({ on, sc, started, stId, seq, type }) => {
-      let label = null;
-      if (sc && sc.tot > 0) {
-        label = `${sc.cor}/${sc.tot}`;
-      } else if (on) {
-        // 완료 상태인데 실제 점수 없으면 결정적 더미 점수 표시
-        const d = dummyScore(stId, seq, type);
-        label = `${d.cor}/${d.tot}`;
-      }
-      return (
-        <td style={{ textAlign: "center", padding: "12px 8px" }}>
-          <div style={{ display: "inline-flex", alignItems: "center", gap: 5 }}>
-            <Dt on={on} />
-            {label && (
-              <span style={{ fontSize: 11, color: X.sub, fontVariantNumeric: "tabular-nums" }}>
-                {label}
-              </span>
-            )}
-          </div>
-        </td>
-      );
-    };
     return (
       <div>
-        <p style={{ fontSize: 13, color: X.sub, marginBottom: 14 }}>학생별 학습 단계 진행 상태</p>
-        {clsData.filter(cls => cls.sts.length > 0).map(cls => (
-          <Cd key={cls.id} style={{ marginBottom: 20, padding: 0, overflow: "hidden" }}>
-            <div style={{ padding: "14px 20px", background: "#fafbfd", borderBottom: `1px solid ${X.bdr}`, fontFamily: F.h, fontWeight: 700, fontSize: 15 }}>{cls.nm}</div>
-            <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
-              <thead>
-                <tr style={{ borderBottom: `1px solid ${X.bdr}` }}>
-                  {["학생", "기사", "읽기", "단어보기", "단어퀴즈", "녹음", "상태", ""].map(h => (
-                    <th key={h} style={{ textAlign: h === "학생" || h === "기사" ? "left" : "center", padding: "10px 16px", color: X.sub, fontWeight: 600, fontSize: 12 }}>{h}</th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {[...cls.sts].sort((a, b) => a.nm.localeCompare(b.nm, "ko")).flatMap(st => {
-                  const allSa = asgn[st.id] || [];
-                  const sa = allSa.filter(a => !reviewed[`${st.id}_${a.seq}`]);
-                  if (!allSa.length || !sa.length) return [
-                    <tr key={st.id} style={{ borderBottom: `1px solid #f5f5f7` }}>
-                      <td style={{ padding: "12px 16px", fontWeight: 600 }}>{st.nm}</td>
-                      <td colSpan={7} style={{ padding: "12px 16px" }}>
-                        <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-                          <span style={{ color: X.mt, fontSize: 13 }}>현재 진행중인 기사 없음</span>
-                          <button
-                            onClick={() => { setAt({ t: "students", ids: [st.id] }); scrollTo("assign"); }}
-                            style={{ padding: "4px 12px", borderRadius: 7, border: `1px solid ${X.ac}`, background: X.abg, color: X.ac, fontSize: 12, fontWeight: 700, cursor: "pointer", fontFamily: F.b, whiteSpace: "nowrap" }}
-                          >
-                            기사 배정하기
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  ];
-                  return sa.map((a, idx) => {
-                    const ax = ARTS.find(x => x.seq === a.seq);
-                    const p = gP(effProg, st.id, a.seq);
-                    const d = p.r && p.wl && p.v && p.w;
-                    const s = [p.r, p.wl, p.v, p.w].filter(Boolean).length;
-                    const sc = scores[`${st.id}_${a.seq}`] || {};
-                    return (
-                      <tr key={`${st.id}_${a.seq}`} style={{ borderBottom: `1px solid #f5f5f7` }}>
-                        {idx === 0 && <td rowSpan={sa.length} style={{ padding: "12px 16px", fontWeight: 600, verticalAlign: "top" }}>{st.nm}</td>}
-                        <td style={{ padding: "12px 16px" }}>
-                          <div style={{ fontWeight: 500, marginBottom: 3 }}>{ax?.title?.substring(0, 22)}</div>
-                          <Bd b={BM[a.seq]} />
-                        </td>
-                        <td style={{ textAlign: "center", padding: "12px 8px" }}><Dt on={p.r} /></td>
-                        <td style={{ textAlign: "center", padding: "12px 8px" }}><Dt on={p.wl} /></td>
-                        <ScoreCell on={p.v} sc={sc.voc} started={p.wl} stId={st.id} seq={a.seq} type="voc" />
-                        <td style={{ textAlign: "center", padding: "12px 8px" }}><Dt on={p.w} /></td>
-                        <td style={{ textAlign: "center" }}>
-                          <span style={{ padding: "4px 12px", borderRadius: 20, fontSize: 11, fontWeight: 600, color: d ? X.gn : s > 0 ? X.am : X.mt, background: d ? X.gbg : s > 0 ? X.abg2 : "#f8f9fa" }}>
-                            {d ? "✓ 완료" : s > 0 ? `진행중 ${s}/4` : "미시작"}
-                          </span>
-                        </td>
-                        <td style={{ textAlign: "center", padding: "8px 12px" }}>
-                          {d && (
-                            <button
-                              onClick={() => setReviewModal({ stId: st.id, stNm: st.nm, seq: a.seq, artTitle: ax?.title || "" })}
-                              style={{ padding: "5px 12px", borderRadius: 8, border: `1px solid ${X.ac}`, background: X.abg, color: X.ac, fontSize: 11, fontWeight: 700, cursor: "pointer", fontFamily: F.b, whiteSpace: "nowrap" }}
-                            >
-                              선생님 확인
-                            </button>
-                          )}
-                        </td>
-                      </tr>
-                    );
-                  });
-                })}
-              </tbody>
-            </table>
-          </Cd>
-        ))}
+        <p style={{ fontSize: 13, color: X.sub, marginBottom: 16 }}>반별 학습 운영 현황</p>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(300px,1fr))", gap: 16 }}>
+          {clsData.filter(cls => cls.sts.length > 0).map(cls => {
+            const levelKey = cls.nm.replace("반", "");
+            const band = BANDS[levelKey] || { c: X.ac, bg: X.abg, r: "#bfdbfe" };
+            const allAtDates = [...new Set(
+              cls.sts.flatMap(st => (asgn[st.id] || []).map(a => a.at))
+            )].sort();
+            const curAtStr = allAtDates.length > 0 ? allAtDates[allAtDates.length - 1] : null;
+            const prevAtStr = allAtDates.length > 1 ? allAtDates[allAtDates.length - 2] : null;
+            const prevStudents = prevAtStr ? cls.sts
+              .filter(st => (asgn[st.id] || []).some(a => a.at === prevAtStr))
+              .map(st => {
+                const arts = (asgn[st.id] || []).filter(a => a.at === prevAtStr);
+                const done = arts.every(a => iD(effProg, st.id, a.seq));
+                return { st, done, arts };
+              }) : [];
+            const prevDoneCount = prevStudents.filter(x => x.done).length;
+            const curStudents = curAtStr ? cls.sts.filter(st => (asgn[st.id] || []).some(a => a.at === curAtStr)) : [];
+
+            const CardHeader = () => (
+              <div style={{ padding: "14px 18px", background: band.bg, borderBottom: `1px solid ${band.r}`, display: "flex", alignItems: "center", gap: 8 }}>
+                <span style={{ fontFamily: F.h, fontWeight: 800, fontSize: 16, color: band.c }}>{cls.nm}</span>
+                {clsFreq[cls.id] && <span style={{ fontSize: 11, fontWeight: 700, color: band.c, background: "rgba(255,255,255,0.75)", borderRadius: 20, padding: "2px 8px" }}>{clsFreq[cls.id]}</span>}
+                <span style={{ marginLeft: "auto", fontSize: 12, color: band.c, opacity: 0.7 }}>{cls.sts.length}명</span>
+              </div>
+            );
+
+            if (!curAtStr) {
+              return (
+                <Cd key={cls.id} className="card-hover" style={{ padding: 0, overflow: "hidden" }}>
+                  <CardHeader />
+                  <div style={{ padding: "24px 18px", textAlign: "center" }}>
+                    <p style={{ fontSize: 13, color: X.mt, marginBottom: 12 }}>배정된 과제 없음</p>
+                    <button
+                      onClick={() => { setAt({ t: "class", ids: cls.sts.map(s => s.id) }); scrollTo("assign"); }}
+                      style={{ padding: "6px 16px", borderRadius: 8, border: `1px solid ${X.ac}`, background: X.abg, color: X.ac, fontSize: 12, fontWeight: 700, cursor: "pointer", fontFamily: F.b }}
+                    >기사 배정하기</button>
+                  </div>
+                </Cd>
+              );
+            }
+
+            return (
+              <Cd key={cls.id} className="card-hover" style={{ padding: 0, overflow: "hidden" }}>
+                <CardHeader />
+                <div style={{ padding: "14px 18px", display: "flex", flexDirection: "column", gap: 10 }}>
+                  {prevAtStr && (
+                    <div
+                      onClick={() => setDetailModal({ cls, prevAtStr, prevStudents, showComplete: false })}
+                      style={{ padding: "10px 14px", borderRadius: 10, background: "#f8fafc", border: `1px solid ${X.bdr}`, cursor: "pointer", display: "flex", justifyContent: "space-between", alignItems: "center" }}
+                    >
+                      <div>
+                        <div style={{ fontSize: 11, color: X.mt, fontWeight: 600, marginBottom: 3 }}>직전 과제 · {fmtMD(prevAtStr)} 배정</div>
+                        <div style={{ fontSize: 13, fontWeight: 700, color: X.tx }}>{prevDoneCount}/{prevStudents.length} 완료</div>
+                      </div>
+                      <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                        {prevDoneCount === prevStudents.length
+                          ? <span style={{ fontSize: 11, fontWeight: 700, color: X.gn, background: X.gbg, borderRadius: 20, padding: "3px 10px" }}>✓ 전원완료</span>
+                          : <span style={{ fontSize: 11, fontWeight: 700, color: X.am, background: X.abg2, borderRadius: 20, padding: "3px 10px" }}>{prevStudents.length - prevDoneCount}명 미완료</span>
+                        }
+                        <span style={{ fontSize: 16, color: X.mt, lineHeight: 1 }}>›</span>
+                      </div>
+                    </div>
+                  )}
+                  <div style={{ padding: "10px 14px", borderRadius: 10, background: "#f0f9ff", border: "1px solid #bae6fd", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                    <div>
+                      <div style={{ fontSize: 11, color: "#0284c7", fontWeight: 600, marginBottom: 3 }}>현재 과제 · {fmtMD(curAtStr)} 배정</div>
+                      <div style={{ fontSize: 13, fontWeight: 700, color: X.tx }}>{curStudents.length}명 진행 중</div>
+                    </div>
+                    <span style={{ fontSize: 11, fontWeight: 700, color: "#0284c7", background: "#e0f2fe", borderRadius: 20, padding: "3px 10px" }}>진행중</span>
+                  </div>
+                </div>
+              </Cd>
+            );
+          })}
+        </div>
       </div>
     );
   };
@@ -1379,9 +1606,21 @@ export default function App() {
           const bBg = band ? band[1].bg : X.abg;
           return (
             <Cd key={cls.id} style={{ padding: 0, overflow: "hidden" }}>
-              <div style={{ padding: "12px 16px", background: bBg, borderBottom: `1px solid ${X.bdr}`, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                <span style={{ fontFamily: F.h, fontWeight: 700, fontSize: 15, color: bColor }}>{cls.nm}</span>
-                <span style={{ fontSize: 12, color: bColor, fontWeight: 600 }}>{cls.sts.length}명</span>
+              <div style={{ padding: "12px 16px", background: bBg, borderBottom: `1px solid ${X.bdr}` }}>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
+                  <span style={{ fontFamily: F.h, fontWeight: 700, fontSize: 15, color: bColor }}>{cls.nm}</span>
+                  <span style={{ fontSize: 12, color: bColor, fontWeight: 600 }}>{cls.sts.length}명</span>
+                </div>
+                <select
+                  value={clsFreq[cls.id] || ""}
+                  onChange={e => setFreq(cls.id, e.target.value)}
+                  style={{ width: "100%", padding: "5px 8px", borderRadius: 7, border: `1px solid rgba(0,0,0,.15)`, background: "rgba(255,255,255,.7)", color: bColor, fontSize: 12, fontWeight: 600, fontFamily: F.b, cursor: "pointer" }}
+                >
+                  <option value="">수업 빈도 선택</option>
+                  <option value="주2회">주2회</option>
+                  <option value="주3회">주3회</option>
+                  <option value="주5회">주5회</option>
+                </select>
               </div>
               {cls.sts.length === 0 ? (
                 <div style={{ padding: "20px 16px", color: X.mt, fontSize: 13, textAlign: "center" }}>등록된 학생이 없습니다.</div>
@@ -1394,6 +1633,7 @@ export default function App() {
                           {st.nm[0]}
                         </div>
                         <span style={{ fontSize: 14, fontWeight: 600 }}>{st.nm}</span>
+                        {st.id.startsWith("s_") && <span style={{ fontSize: 10, fontWeight: 700, color: "#fff", background: "#a855f7", borderRadius: 4, padding: "1px 5px", letterSpacing: "0.03em" }}>NEW</span>}
                       </div>
                       <button
                         onClick={() => { if (window.confirm(`${st.nm} 학생을 삭제하시겠습니까?`)) removeStudent(st.id); }}
@@ -1425,17 +1665,18 @@ export default function App() {
           <div style={{ display: "grid", gap: 14 }}>
             {sAs.map(({ art, seq, pg }) => {
               if (!art) return null;
-              const d = pg.r && pg.wl && pg.v && pg.w;
-              const s = [pg.r, pg.wl, pg.v, pg.w].filter(Boolean).length;
+              const d = pg.r && pg.wl && pg.v && pg.sb && pg.w;
+              const s = [pg.wl, pg.r, pg.v, pg.sb, pg.w].filter(Boolean).length;
               return (
                 <Cd key={seq} style={{ display: "flex", gap: 20, alignItems: "center", cursor: "pointer", padding: 20 }}
                   onClick={() => {
                     setSArt(seq);
                     if (d) setSv("dn");
-                    else if (pg.r && pg.wl && pg.v && !pg.w) setSv("rec");
-                    else if (pg.r && pg.wl && !pg.v) { initVocOptions((W[seq] || []).filter(w => w.pid).slice(0, 8)); setSv("voc"); }
-                    else if (pg.r && !pg.wl) setSv("wl");
-                    else setSv("rd");
+                    else if (pg.wl && pg.r && pg.v && pg.sb && !pg.w) setSv("rec");
+                    else if (pg.wl && pg.r && pg.v && !pg.sb) setSv("ssb");
+                    else if (pg.wl && pg.r && !pg.v) { initVocOptions((W[seq] || []).filter(w => w.pid).slice(0, 8)); setSv("voc"); }
+                    else if (pg.wl && !pg.r) setSv("rd");
+                    else setSv("wl");
                     setVa({});
                     setWa({});
                     setVd(false);
@@ -1447,16 +1688,16 @@ export default function App() {
                     <div style={{ fontFamily: F.h, fontWeight: 700, fontSize: 17, marginBottom: 4 }}>{art.title}</div>
                     <div style={{ fontSize: 12, color: X.sub, marginBottom: 10 }}>{art.topic}</div>
                     <div style={{ display: "flex", gap: 5 }}>
-                      {["📖 읽기", "📋 단어보기", "📝 단어퀴즈", "🎤 녹음"].map((l, i) => (
-                        <span key={i} style={{ padding: "3px 12px", borderRadius: 20, fontSize: 11, fontWeight: 600, background: [pg.r, pg.wl, pg.v, pg.w][i] ? X.gbg : "#f8f9fa", color: [pg.r, pg.wl, pg.v, pg.w][i] ? X.gn : X.mt, border: `1px solid ${[pg.r, pg.wl, pg.v, pg.w][i] ? "#a7f3d0" : X.bdr}` }}>
-                          {[pg.r, pg.wl, pg.v, pg.w][i] ? "✓" : ""} {l}
+                      {["📋 단어보기", "📖 읽기", "📝 단어퀴즈", "✏️ 문장만들기", "🎤 녹음"].map((l, i) => (
+                        <span key={i} style={{ padding: "3px 12px", borderRadius: 20, fontSize: 11, fontWeight: 600, background: [pg.wl, pg.r, pg.v, pg.sb, pg.w][i] ? X.gbg : "#f8f9fa", color: [pg.wl, pg.r, pg.v, pg.sb, pg.w][i] ? X.gn : X.mt, border: `1px solid ${[pg.wl, pg.r, pg.v, pg.sb, pg.w][i] ? "#a7f3d0" : X.bdr}` }}>
+                          {[pg.wl, pg.r, pg.v, pg.sb, pg.w][i] ? "✓" : ""} {l}
                         </span>
                       ))}
                     </div>
                   </div>
                   <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 4 }}>
                     <div style={{ width: 48, height: 48, borderRadius: "50%", background: d ? X.gbg : s ? X.abg2 : "#f8f9fa", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: F.h, fontWeight: 800, fontSize: 17, color: d ? X.gn : s ? X.am : X.mt }}>
-                      {d ? "✓" : `${s}/4`}
+                      {d ? "✓" : `${s}/5`}
                     </div>
                   </div>
                 </Cd>
@@ -1681,7 +1922,7 @@ export default function App() {
           )}
 
           <div style={{ marginTop: 36, textAlign: "center" }}>
-            <Bt v="success" size="lg" onClick={e => { e.stopPropagation(); cR(); }}>읽기 완료 → 단어보기</Bt>
+            <Bt v="success" size="lg" onClick={e => { e.stopPropagation(); cR(); }}>읽기 완료 → 단어퀴즈</Bt>
           </div>
         </div>
       </div>
@@ -1731,12 +1972,22 @@ export default function App() {
             <div style={{ flex: 1, borderRadius: 20, border: `1px solid ${X.bdr}`, background: "#fff", boxShadow: "0 4px 24px rgba(0,0,0,.07)", padding: "40px 32px", textAlign: "center", minHeight: 200, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 16 }}>
               <div style={{ fontFamily: F.h, fontWeight: 800, fontSize: 32, color: X.tx, letterSpacing: "-0.5px" }}>{w.en}</div>
               <div style={{ width: 40, height: 2, borderRadius: 1, background: X.bdr }} />
-              <div style={{ fontSize: 18, color: X.sub, fontWeight: 500 }}>{w.kr}</div>
+              {wlRevealIdx === idx ? (
+                <div style={{ fontSize: 18, color: X.sub, fontWeight: 500 }}>{w.kr}</div>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => setWlRevealIdx(idx)}
+                  style={{ padding: "8px 20px", borderRadius: 20, border: `1px solid ${X.ac}`, background: X.abg, color: X.ac, fontSize: 13, fontWeight: 700, cursor: "pointer", fontFamily: F.b }}
+                >
+                  뜻 보기
+                </button>
+              )}
               {w.mp3 && (
                 <button
                   type="button"
                   onClick={() => playWordAudio(cA.seq, w.mp3)}
-                  style={{ marginTop: 8, display: "inline-flex", alignItems: "center", gap: 6, padding: "7px 16px", borderRadius: 20, border: `1px solid ${X.bdr}`, background: "#f8f9fa", cursor: "pointer", fontSize: 13, color: X.sub, fontFamily: F.b }}
+                  style={{ marginTop: 4, display: "inline-flex", alignItems: "center", gap: 6, padding: "7px 16px", borderRadius: 20, border: `1px solid ${X.bdr}`, background: "#f8f9fa", cursor: "pointer", fontSize: 13, color: X.sub, fontFamily: F.b }}
                 >
                   🔊 발음 듣기
                 </button>
@@ -1765,7 +2016,7 @@ export default function App() {
           {/* 마지막 카드에서만 완료 버튼 노출 */}
           {isLast && (
             <div style={{ marginTop: 28, textAlign: "center" }}>
-              <Bt v="success" size="lg" onClick={goWlToVoc}>단어 확인 완료 → 단어퀴즈</Bt>
+              <Bt v="success" size="lg" onClick={goWlToRd}>단어 확인 완료 → 읽기</Bt>
             </div>
           )}
         </div>
@@ -1777,53 +2028,71 @@ export default function App() {
   const SVoc = () => {
     if (!cA) return null;
     const ws = cW.filter(w => w.pid).slice(0, 8);
-    const cor = ws.filter(w => va[w.i] === w.kr).length;
-    const vocPass = ws.length > 0 && cor / ws.length >= 0.8;
-    const allAnswered = ws.every(w => va[w.i]);
     const isLast = vocIdx >= ws.length - 1;
 
-    /* 결과 화면 */
+    /* 전체 결과 요약 화면 */
     if (vd) {
+      const cor = ws.filter(w => va[w.i] === w.kr).length;
       return (
         <div>
           <Bt v="ghost" onClick={bk} style={{ marginBottom: 12 }}>← 과제 목록</Bt>
           <div style={{ maxWidth: 560, margin: "0 auto" }}>
-            {/* 결과 요약 */}
             <div style={{ textAlign: "center", padding: "32px 24px", marginBottom: 20, borderRadius: 20, background: "#fff", border: `1px solid ${X.bdr}`, boxShadow: "0 4px 24px rgba(0,0,0,.07)" }}>
               <div style={{ fontSize: 40, marginBottom: 12 }}>{cor === ws.length ? "🎉" : cor >= ws.length * 0.8 ? "👍" : "📚"}</div>
               <div style={{ fontFamily: F.h, fontWeight: 800, fontSize: 32, color: cor === ws.length ? X.gn : X.am, marginBottom: 4 }}>{cor} / {ws.length}</div>
               <div style={{ fontSize: 14, color: X.sub }}>정답</div>
             </div>
-            {/* 문항별 결과 */}
             <div style={{ display: "flex", flexDirection: "column", gap: 10, marginBottom: 24 }}>
               {ws.map((w, i) => {
-                const sel = va[w.i]; const ok = sel === w.kr;
+                const ans = va[w.i]; const ok = ans === w.kr;
                 return (
                   <div key={w.i} style={{ padding: "14px 16px", borderRadius: 12, background: ok ? "#f0fdf4" : "#fef2f2", border: `1px solid ${ok ? "#a7f3d0" : "#fecaca"}`, display: "flex", alignItems: "center", gap: 12 }}>
                     <span style={{ fontWeight: 700, fontSize: 13, color: ok ? X.gn : X.rd, flexShrink: 0 }}>{ok ? "✓" : "✗"}</span>
                     <div style={{ flex: 1 }}>
                       <div style={{ fontWeight: 700, fontSize: 14 }}>{i + 1}. {w.en}</div>
-                      {!ok && <div style={{ fontSize: 12, color: X.sub, marginTop: 2 }}>내 답: <span style={{ color: X.rd }}>{sel || "미선택"}</span> / 정답: <span style={{ color: X.gn, fontWeight: 600 }}>{w.kr}</span></div>}
+                      {!ok && <div style={{ fontSize: 12, color: X.sub, marginTop: 2 }}>내 답: <span style={{ color: X.rd }}>{ans || "미선택"}</span> / 정답: <span style={{ color: X.gn, fontWeight: 600 }}>{w.kr}</span></div>}
                     </div>
                     {w.mp3 && <button onClick={() => playWordAudio(cA.seq, w.mp3)} style={{ border: `1px solid ${X.bdr}`, background: "#fff", borderRadius: 7, width: 28, height: 28, cursor: "pointer", fontSize: 13 }}>🔊</button>}
                   </div>
                 );
               })}
             </div>
-            <div style={{ textAlign: "center" }}>
-              {vocPass
-                ? <Bt v="success" size="lg" onClick={cV}>단어 완료 → 녹음하기</Bt>
-                : <Bt v="outline" size="lg" onClick={() => { setVd(false); setVa({}); setVocIdx(0); }}>다시 풀어보기</Bt>}
+            <div style={{ display: "flex", gap: 10, justifyContent: "center" }}>
+              <Bt v="outline" size="lg" onClick={() => { setVd(false); setVa({}); setVchecked({}); setVocIdx(0); }}>다시 풀어보기</Bt>
+              <Bt v="success" size="lg" onClick={cV}>문장만들기 →</Bt>
             </div>
           </div>
         </div>
       );
     }
 
-    /* 퀴즈 화면 */
+    /* 문제별 퀴즈 화면 */
     const w = ws[vocIdx];
     const opts = w ? (vo[w.i] || [w.kr]) : [];
     const sel = w ? va[w.i] : null;
+    const isChecked = w ? !!vchecked[w.i] : false;
+    const isCorrect = isChecked && sel === w?.kr;
+
+    const optStyle = (o) => {
+      if (!isChecked) {
+        const picked = sel === o;
+        return {
+          border: `2px solid ${picked ? X.ac : X.bdr}`,
+          background: picked ? X.abg : "#fff",
+          color: picked ? X.ac : X.tx,
+          fontWeight: picked ? 700 : 400,
+          cursor: "pointer",
+        };
+      }
+      if (o === w.kr) return { border: `2px solid ${X.gn}`, background: "#f0fdf4", color: X.gn, fontWeight: 700, cursor: "default" };
+      if (o === sel && sel !== w.kr) return { border: `2px solid ${X.rd}`, background: "#fef2f2", color: X.rd, fontWeight: 700, cursor: "default" };
+      return { border: `2px solid ${X.bdr}`, background: "#fafbfd", color: X.mt, fontWeight: 400, cursor: "default" };
+    };
+
+    const goNext = () => {
+      if (isLast) setVd(true);
+      else setVocIdx(i => i + 1);
+    };
 
     return (
       <div>
@@ -1835,32 +2104,23 @@ export default function App() {
             <span style={{ fontSize: 13, color: X.sub, fontWeight: 600 }}>{vocIdx + 1} / {ws.length}</span>
           </div>
 
-          {/* 프로그래스바 — 문항별 슬롯 */}
+          {/* 프로그래스바 */}
           <div style={{ display: "flex", gap: 4, marginBottom: 28 }}>
             {ws.map((ww, i) => {
-              const answered = !!va[ww.i];
+              const checked = !!vchecked[ww.i];
+              const correct = checked && va[ww.i] === ww.kr;
               const isCur = i === vocIdx;
-              const bg = isCur
-                ? X.ac                        /* 현재 문항: 파랑 */
-                : answered
-                  ? "#a7f3d0"                 /* 답 선택됨: 연초록 */
-                  : "#f1f5f9";                /* 미선택: 연회색 */
-              const border = !answered && !isCur ? `1px solid ${X.bdr}` : "none";
+              const bg = isCur ? X.ac : checked ? (correct ? X.gn : X.rd) : va[ww.i] ? "#a7f3d0" : "#f1f5f9";
               return (
                 <button key={i} onClick={() => setVocIdx(i)}
-                  style={{ flex: 1, height: 8, borderRadius: 4, border, background: bg, cursor: "pointer", padding: 0, transition: "background .2s", position: "relative" }}>
-                  {/* 미선택 문항에 빨간 점 */}
-                  {!answered && !isCur && (
-                    <span style={{ position: "absolute", top: -5, right: -2, width: 6, height: 6, borderRadius: "50%", background: X.rd, border: "1px solid #fff" }} />
-                  )}
-                </button>
+                  style={{ flex: 1, height: 8, borderRadius: 4, border: "none", background: bg, cursor: "pointer", padding: 0, transition: "background .2s" }} />
               );
             })}
           </div>
 
           {/* 문제 카드 */}
           {w && (
-            <div style={{ background: "#fff", borderRadius: 20, border: `1px solid ${X.bdr}`, boxShadow: "0 4px 24px rgba(0,0,0,.07)", padding: "32px 28px", marginBottom: 20 }}>
+            <div style={{ background: "#fff", borderRadius: 20, border: `1px solid ${X.bdr}`, boxShadow: "0 4px 24px rgba(0,0,0,.07)", padding: "32px 28px", marginBottom: 16 }}>
               <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 24, justifyContent: "center" }}>
                 <span style={{ fontFamily: F.h, fontWeight: 800, fontSize: 28, color: X.tx }}>{w.en}</span>
                 {w.mp3 && (
@@ -1871,56 +2131,61 @@ export default function App() {
                 )}
               </div>
               <p style={{ fontSize: 13, color: X.sub, textAlign: "center", marginBottom: 20 }}>알맞은 뜻을 선택하세요.</p>
-              {/* 선택지 버튼 */}
               <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
                 {opts.map((o, oi) => {
-                  const isSelected = sel === o;
+                  const st = optStyle(o);
+                  const picked = sel === o;
+                  const isAns = o === w.kr;
                   return (
-                    <button key={oi} onClick={() => setVa(p => ({ ...p, [w.i]: o }))}
-                      style={{
-                        padding: "14px 20px", borderRadius: 12, border: `2px solid ${isSelected ? X.ac : X.bdr}`,
-                        background: isSelected ? X.abg : "#fff", color: isSelected ? X.ac : X.tx,
-                        fontFamily: F.b, fontSize: 15, fontWeight: isSelected ? 700 : 400,
-                        cursor: "pointer", textAlign: "left", transition: "all .15s",
-                        display: "flex", alignItems: "center", gap: 10,
-                      }}>
-                      <span style={{ width: 22, height: 22, borderRadius: "50%", border: `2px solid ${isSelected ? X.ac : X.bdr}`, background: isSelected ? X.ac : "#fff", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, fontSize: 11, color: "#fff", fontWeight: 700 }}>
-                        {isSelected ? "✓" : String.fromCharCode(65 + oi)}
+                    <button key={oi}
+                      onClick={() => { if (!isChecked) setVa(p => ({ ...p, [w.i]: o })); }}
+                      style={{ padding: "14px 20px", borderRadius: 12, fontFamily: F.b, fontSize: 15, textAlign: "left", display: "flex", alignItems: "center", gap: 10, transition: "all .15s", ...st }}>
+                      <span style={{ width: 22, height: 22, borderRadius: "50%", border: `2px solid ${st.border.split(" ")[2]}`, background: (isChecked && isAns) ? X.gn : (isChecked && picked && !isAns) ? X.rd : picked ? X.ac : "#fff", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, fontSize: 11, color: "#fff", fontWeight: 700 }}>
+                        {isChecked ? (isAns ? "✓" : (picked ? "✗" : String.fromCharCode(65 + oi))) : (picked ? "✓" : String.fromCharCode(65 + oi))}
                       </span>
                       {o}
                     </button>
                   );
                 })}
               </div>
+
+              {/* 채점 결과 피드백 */}
+              {isChecked && (
+                <div style={{ marginTop: 20, padding: "12px 16px", borderRadius: 10, background: isCorrect ? "#f0fdf4" : "#fef2f2", border: `1px solid ${isCorrect ? "#a7f3d0" : "#fecaca"}`, textAlign: "center" }}>
+                  <span style={{ fontWeight: 700, color: isCorrect ? X.gn : X.rd, fontSize: 15 }}>
+                    {isCorrect ? "🎉 정답!" : `❌ 틀렸어요 — 정답: ${w.kr}`}
+                  </span>
+                </div>
+              )}
             </div>
           )}
 
           {/* 하단 버튼 */}
-          <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
-            {vocIdx > 0 && (
-              <button onClick={() => setVocIdx(i => i - 1)}
-                style={{ padding: "12px 18px", borderRadius: 10, border: `1px solid ${X.bdr}`, background: "#fff", fontSize: 14, fontWeight: 600, fontFamily: F.b, cursor: "pointer", color: X.sub }}>
-                ← 이전
+          {!isChecked ? (
+            <div style={{ display: "flex", gap: 10 }}>
+              {vocIdx > 0 && (
+                <button onClick={() => setVocIdx(i => i - 1)}
+                  style={{ padding: "12px 18px", borderRadius: 10, border: `1px solid ${X.bdr}`, background: "#fff", fontSize: 14, fontWeight: 600, fontFamily: F.b, cursor: "pointer", color: X.sub }}>
+                  ← 이전
+                </button>
+              )}
+              <button onClick={() => { if (sel) setVchecked(p => ({ ...p, [w.i]: true })); }}
+                disabled={!sel}
+                style={{ flex: 1, padding: "13px", borderRadius: 10, border: "none", background: sel ? X.ac : "#e2e8f0", color: "#fff", fontSize: 14, fontWeight: 700, fontFamily: F.b, cursor: sel ? "pointer" : "default", transition: "all .2s" }}>
+                정답 확인
               </button>
-            )}
-            {!isLast ? (
-              <button onClick={() => setVocIdx(i => i + 1)}
+            </div>
+          ) : (
+            <div style={{ display: "flex", gap: 10 }}>
+              <button onClick={() => { setVa(p => { const n = { ...p }; delete n[w.i]; return n; }); setVchecked(p => { const n = { ...p }; delete n[w.i]; return n; }); }}
+                style={{ flex: 1, padding: "13px", borderRadius: 10, border: `1px solid ${X.bdr}`, background: "#fff", fontSize: 14, fontWeight: 600, fontFamily: F.b, cursor: "pointer", color: X.sub }}>
+                🔄 다시 풀어보기
+              </button>
+              <button onClick={goNext}
                 style={{ flex: 1, padding: "13px", borderRadius: 10, border: "none", background: X.dk, color: "#fff", fontSize: 14, fontWeight: 700, fontFamily: F.b, cursor: "pointer" }}>
-                다음 문제 →
+                {isLast ? "결과 보기 →" : "다음 문제 →"}
               </button>
-            ) : (
-              <button onClick={() => setVd(true)} disabled={!allAnswered}
-                style={{ flex: 1, padding: "13px", borderRadius: 10, border: "none", background: allAnswered ? X.gn : "#e2e8f0", color: allAnswered ? "#fff" : X.mt, fontSize: 14, fontWeight: 700, fontFamily: F.b, cursor: allAnswered ? "pointer" : "default", transition: "all .2s" }}>
-                {allAnswered ? "정답 확인 →" : `정답 확인 (${ws.filter(ww => !va[ww.i]).length}문제 미선택)`}
-              </button>
-            )}
-          </div>
-
-          {/* 전체 진행 요약 */}
-          {ws.some(ww => !va[ww.i]) && (
-            <p style={{ textAlign: "center", fontSize: 12, color: X.mt, marginTop: 12 }}>
-              미선택 문항: {ws.map((ww, i) => !va[ww.i] ? i + 1 : null).filter(Boolean).join(", ")}번
-            </p>
+            </div>
           )}
         </div>
       </div>
@@ -2084,20 +2349,12 @@ export default function App() {
 
   /* ─── STEP BAR ─── */
   const SB = () => {
-    const ss = ["rd", "wl", "voc", "rec", "dn"];
-    const ls = ["📖 읽기", "📋 단어보기", "📝 단어퀴즈", "🎤 녹음", "✅ 완료"];
+    const ss = ["wl", "rd", "voc", "ssb", "rec", "dn"];
+    const ls = ["📋 단어보기", "📖 읽기", "📝 단어퀴즈", "✏️ 문장만들기", "🎤 녹음", "✅ 완료"];
     const ci = ss.indexOf(sv);
-    const pg = sArt ? gP(prog, sSt, sArt) : { r: false, wl: false, v: false, w: false };
-    const done = pg.r && pg.wl && pg.v && pg.w;
-    const canGo = (i) => {
-      if (done) return true;
-      if (i === 0) return true;
-      if (i === 1) return pg.r;
-      if (i === 2) return pg.wl;
-      if (i === 3) return pg.v;
-      if (i === 4) return pg.w;
-      return false;
-    };
+    const pg = sArt ? gP(prog, sSt, sArt) : { r: false, wl: false, v: false, sb: false, w: false };
+    const done = pg.r && pg.wl && pg.v && pg.sb && pg.w;
+    const canGo = () => true;
     return (
       <div style={{ display: "flex", gap: 2, marginBottom: 20, background: X.card, borderRadius: 12, padding: 4, border: `1px solid ${X.bdr}` }}>
         {ss.map((s, i) => {
@@ -2129,9 +2386,10 @@ export default function App() {
 
   const svs = {
     tasks: <STasks />,
-    rd: <SRead />,
     wl: <SWl />,
+    rd: <SRead />,
     voc: <SVoc />,
+    ssb: <SentenceBuildStep sentences={sbSentences} onComplete={cSb} />,
     rec: (
       <StudentRecordingStep
         sSt={sSt}
@@ -2192,7 +2450,7 @@ export default function App() {
       {role === "teacher" && (
         <div style={{ position: "sticky", top: 56, zIndex: 40, background: X.card, borderBottom: `1px solid ${X.bdr}`, padding: "0 24px" }}>
           <div style={{ maxWidth: 1280, margin: "0 auto", display: "flex", gap: 0 }}>
-            {[["progress", "학습 현황"], ["assign", "기사 배정"], ["dash", "대시보드"], ["students", "학생 관리"]].map(([v, l]) => (
+            {[["progress", "학습 현황"], ["assign", "기사 배정"], ["students", "학생 관리"]].map(([v, l]) => (
               <button key={v} onClick={() => scrollTo(v)}
                 style={{ padding: "12px 22px", border: "none", borderBottom: tAct === v ? `2px solid ${X.dk}` : "2px solid transparent", cursor: "pointer", fontSize: 13, fontWeight: 600, fontFamily: F.b, background: "transparent", color: tAct === v ? X.tx : X.sub, transition: "all .15s" }}>
                 {l}
@@ -2209,6 +2467,9 @@ export default function App() {
       <div style={{ maxWidth: role === "teacher" ? 1280 : 1040, margin: "0 auto", padding: role === "student" && sv === "rd" ? "0 16px 24px" : "24px 16px" }}>
         {role === "teacher" ? (
           <div style={{ display: "flex", flexDirection: "column", gap: 0 }}>
+            <div ref={secRefs.dash} style={{ scrollMarginTop: 100, marginBottom: 56 }}>
+              <TDash />
+            </div>
             <div ref={secRefs.progress} style={{ scrollMarginTop: 100, marginBottom: 56 }}>
               <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 20 }}>
                 <span style={{ width: 4, height: 22, borderRadius: 2, background: X.gn, display: "inline-block" }} />
@@ -2222,13 +2483,6 @@ export default function App() {
                 <h2 style={{ fontFamily: F.h, fontWeight: 800, fontSize: 24, color: X.tx }}>기사 배정</h2>
               </div>
               <TAssign />
-            </div>
-            <div ref={secRefs.dash} style={{ scrollMarginTop: 100, marginBottom: 56 }}>
-              <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 20 }}>
-                <span style={{ width: 4, height: 22, borderRadius: 2, background: X.dk, display: "inline-block" }} />
-                <h2 style={{ fontFamily: F.h, fontWeight: 800, fontSize: 24, color: X.tx }}>대시보드</h2>
-              </div>
-              <TDash />
             </div>
             <div ref={secRefs.students} style={{ scrollMarginTop: 100, marginBottom: 56 }}>
               <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 20 }}>
@@ -2293,37 +2547,9 @@ export default function App() {
         );
       })()}
 
-      {/* 선생님 확인 모달 */}
-      {reviewModal && (
-        <div
-          style={{ position: "fixed", inset: 0, zIndex: 500, background: "rgba(15,23,42,0.55)", display: "flex", alignItems: "center", justifyContent: "center", padding: 16 }}
-          onClick={e => { if (e.target === e.currentTarget) setReviewModal(null); }}
-        >
-          <div className="fade-up" style={{ background: "#fff", borderRadius: 20, width: "100%", maxWidth: 400, boxShadow: "0 24px 60px rgba(0,0,0,.18)", overflow: "hidden" }}>
-            <div style={{ padding: "18px 22px 16px", borderBottom: `1px solid ${X.bdr}`, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-              <span style={{ fontFamily: F.h, fontWeight: 800, fontSize: 17 }}>선생님 확인</span>
-              <button onClick={() => setReviewModal(null)} style={{ border: "none", background: "none", fontSize: 20, cursor: "pointer", color: X.mt, lineHeight: 1 }}>×</button>
-            </div>
-            <div style={{ padding: "22px 22px 20px" }}>
-              <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 18 }}>
-                <span style={{ fontSize: 28 }}>✅</span>
-                <div>
-                  <div style={{ fontWeight: 700, fontSize: 14, color: X.tx }}>{reviewModal.stNm} 학생</div>
-                  <div style={{ fontSize: 12, color: X.sub, marginTop: 2 }}>{reviewModal.artTitle}</div>
-                </div>
-              </div>
-              <p style={{ fontSize: 14, color: X.tx, lineHeight: 1.7, marginBottom: 22 }}>
-                이 과제를 <strong>확인 완료</strong> 처리할까요?<br />
-                <span style={{ fontSize: 12, color: X.sub }}>학습 현황 목록에서 제거되며, 수행 데이터는 유지됩니다.</span>
-              </p>
-              <div style={{ display: "flex", gap: 10, justifyContent: "flex-end" }}>
-                <Bt v="outline" onClick={() => setReviewModal(null)}>취소</Bt>
-                <Bt v="success" onClick={confirmReview}>확인 완료</Bt>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
+
+      {/* 학습현황 상세 모달 */}
+      {detailModal && <ProgDetailModal modal={detailModal} onClose={() => setDetailModal(null)} effProg={effProg} />}
 
       {/* 토스트 */}
       {showAddModal && (() => {
@@ -2370,7 +2596,10 @@ export default function App() {
                         return (
                           <button key={c.id} onClick={() => setAddCId(c.id)}
                             style={{ padding: "12px 14px", borderRadius: 10, border: `2px solid ${sel ? bc : X.bdr}`, background: sel ? bbg : "#fff", cursor: "pointer", textAlign: "left", transition: "all .15s" }}>
-                            <div style={{ fontSize: 13, fontWeight: 700, color: sel ? bc : X.tx, fontFamily: F.h }}>{c.nm}</div>
+                            <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                              <span style={{ fontSize: 13, fontWeight: 700, color: sel ? bc : X.tx, fontFamily: F.h }}>{c.nm}</span>
+                              {clsFreq[c.id] && <span style={{ fontSize: 10, fontWeight: 700, color: sel ? bc : X.mt, background: sel ? `${bc}22` : "#f1f5f9", borderRadius: 4, padding: "1px 5px" }}>{clsFreq[c.id]}</span>}
+                            </div>
                             <div style={{ fontSize: 11, color: X.sub, marginTop: 2 }}>{c.sts.length}명 재학 중</div>
                           </button>
                         );
