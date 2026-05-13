@@ -573,7 +573,7 @@ function shuffleArr(arr) {
   return a;
 }
 
-function SentenceBuildStep({ sentences, onComplete }) {
+function SentenceBuildStep({ sentences, onComplete, onBack }) {
   const [idx, setIdx] = useState(0);
   const [sel, setSel] = useState([]);
   const [pool, setPool] = useState(() => sentences[0] ? shuffleArr(tokenizeSentence(sentences[0].en)) : []);
@@ -622,6 +622,7 @@ function SentenceBuildStep({ sentences, onComplete }) {
 
   return (
     <div style={{ maxWidth: 640, margin: "0 auto" }}>
+      {onBack && <Bt v="ghost" onClick={onBack} style={{ marginBottom: 12 }}>← 과제 목록</Bt>}
       {/* 헤더 & 진행 */}
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10 }}>
         <h2 style={{ fontFamily: F.h, fontWeight: 800, fontSize: 20, color: X.tx }}>문장 만들기</h2>
@@ -1932,7 +1933,7 @@ export default function App() {
           </div>
           <h1 style={{ fontFamily: F.h, fontWeight: 800, fontSize: "clamp(22px,3.5vw,32px)", letterSpacing: -0.5, lineHeight: 1.2, color: X.tx, marginBottom: 6 }}>{cA.title}</h1>
           <div style={{ fontSize: 16, color: X.sub, marginBottom: 20 }}>{cA.tkr}</div>
-          <div style={{ display: "flex", gap: 8, paddingBottom: 20, borderBottom: `1px solid ${X.bdr}` }}>
+          <div className="ntc-read-controls">
             <Bt v="outline" onClick={e => { e.stopPropagation(); setKr(!kr); }}>{kr ? "🇰🇷 번역 숨기기" : "🇰🇷 번역 보기"}</Bt>
             <Bt v="outline"
               onClick={e => {
@@ -1964,7 +1965,7 @@ export default function App() {
             >
               {artPlaying ? "⏸ 재생중..." : "🔊 듣기"}
             </Bt>
-            <div style={{ display: "inline-flex", alignItems: "center", gap: 6, marginLeft: 4 }}>
+            <div className="ntc-speed-row">
               {PLAYBACK_RATES.map((rate) => {
                 const active = playbackRate === rate;
                 return (
@@ -2477,7 +2478,7 @@ export default function App() {
     const vocCor = ws.filter(w => va[w.i] === w.kr).length;
     const scVoc = scores[`${sSt}_${sArt}`]?.voc;
     const vocLabel = scVoc && scVoc.tot > 0 ? `${scVoc.cor} / ${scVoc.tot} 정답` : (ws.length > 0 ? `${vocCor} / ${ws.length} 정답` : "완료");
-    const nSen = sentenceMeta.all.length;
+    const nSen = sentenceMeta.all.filter((_, i) => [2, 5].includes(i)).length;
     const dummyMin = Math.floor(Math.random() * 4) + 6;
     return (
       <div className="fade-up">
@@ -2535,19 +2536,17 @@ export default function App() {
     const done = pg.r && pg.wl && pg.v && pg.sb && pg.w;
     const canGo = () => true;
     return (
-      <div style={{ display: "flex", gap: 2, marginBottom: 20, background: X.card, borderRadius: 12, padding: 4, border: `1px solid ${X.bdr}` }}>
+      <div className="ntc-step-bar" style={{ marginBottom: 20, background: X.card, borderRadius: 14, padding: 4, border: `1px solid ${X.bdr}` }}>
         {ss.map((s, i) => {
           const active = i === ci;
           const past = i < ci;
           const allowed = canGo(i);
           return (
-            <div
-              key={s}
+            <button key={s}
+              className="ntc-step-item"
               onClick={() => { if (allowed && !active) setSv(s); }}
-              style={{ flex: 1, textAlign: "center", padding: "9px 0", borderRadius: 10, fontSize: 12, fontWeight: 600, background: active ? X.dk : past ? X.gbg : "transparent", color: active ? "#fff" : past ? X.gn : X.mt, transition: "all .2s", cursor: allowed && !active ? "pointer" : "default", opacity: allowed ? 1 : 0.4 }}
-            >
-              {ls[i]}
-            </div>
+              style={{ padding: "9px 4px", borderRadius: 10, border: "none", fontSize: 11, fontWeight: 700, fontFamily: F.b, whiteSpace: "nowrap", textAlign: "center", background: active ? X.dk : past ? X.gbg : "#f1f5f9", color: active ? "#fff" : past ? X.gn : X.mt, cursor: allowed && !active ? "pointer" : "default", transition: "all .2s", opacity: allowed ? 1 : 0.5 }}
+            >{ls[i]}</button>
           );
         })}
       </div>
@@ -2568,7 +2567,7 @@ export default function App() {
     wl: <SWl />,
     rd: <SRead />,
     voc: <SVoc />,
-    ssb: <SentenceBuildStep sentences={sbSentences} onComplete={cSb} />,
+    ssb: <SentenceBuildStep sentences={sbSentences} onComplete={cSb} onBack={bk} />,
     rec: (
       <StudentRecordingStep
         sSt={sSt}
@@ -2615,7 +2614,12 @@ export default function App() {
         </div>
       )}
 
-      {/* Student 읽기 화면: hero를 컨테이너 밖에 full-width로 렌더 */}
+      {/* Student 읽기 화면: 탭바 먼저, 그 다음 full-width hero */}
+      {role === "student" && sv === "rd" && sArt && (
+        <div style={{ maxWidth: 1040, margin: "0 auto", padding: "24px 16px 0" }}>
+          <SB />
+        </div>
+      )}
       {role === "student" && sv === "rd" && sArt && <SReadHero />}
 
       {/* 콘텐츠 영역 */}
@@ -2647,7 +2651,7 @@ export default function App() {
         ) : (
           <>
             {/* StepBar: 읽기 화면에서는 hero 아래(컨테이너 안 상단)에 위치 */}
-            {sv !== "tasks" && sArt && <div style={{ paddingTop: sv === "rd" ? 20 : 0 }}><SB /></div>}
+            {sv !== "tasks" && sv !== "rd" && sArt && <div><SB /></div>}
             {svs[sv]}
           </>
         )}

@@ -133,5 +133,11 @@ body { font-family:'Pretendard',sans-serif; }
 @keyframes ntcRecDotBlink { 0%, 100% { opacity: 1; } 50% { opacity: 0.2; } }
 .ntc-rec-dot { width: 10px; height: 10px; border-radius: 50%; background: #ef4444; animation: ntcRecDotBlink 1s ease-in-out infinite; flex-shrink: 0; box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.25); }
 @keyframes ntcPlayPulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.45; } }
+.ntc-step-bar { display:flex; flex-wrap:nowrap; gap:4px; }
+.ntc-step-item { flex:1 1 0; min-width:0; }
+@media (max-width:520px) { .ntc-step-bar { flex-wrap:wrap; } .ntc-step-item { flex:1 1 calc(33.333% - 4px); } }
+.ntc-read-controls { display:flex; flex-wrap:wrap; gap:8px; align-items:center; padding-bottom:20px; border-bottom:1px solid #e6e9f0; }
+.ntc-speed-row { display:inline-flex; align-items:center; gap:6px; margin-left:4px; }
+@media (max-width:480px) { .ntc-speed-row { flex:0 0 100%; margin-left:0; } }
 .ntc-play-pulse { animation: ntcPlayPulse 1.1s ease-in-out infinite; }
 `;
