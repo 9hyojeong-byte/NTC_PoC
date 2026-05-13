@@ -1527,9 +1527,7 @@ export default function App() {
     return (
       <div>
         <Cd style={{ marginBottom: 20, padding: 24, background: `linear-gradient(135deg,${X.dk} 0%,#1e293b 100%)`, color: "#fff", border: "none", display: "flex", alignItems: "center", gap: 20 }}>
-          <div style={{ width: 60, height: 60, borderRadius: 16, background: "rgba(255,255,255,.15)", flexShrink: 0, overflow: "hidden" }}>
-            <img src="/C_01.png" alt="박지영 선생님" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
-          </div>
+
           <div style={{ flex: 1 }}>
             <div style={{ fontFamily: F.h, fontWeight: 800, fontSize: 22 }}>박지영 선생님</div>
             <div style={{ fontSize: 13, color: "#94a3b8", marginTop: 3 }}>NE 영어학원 · 담당 {clsData.length}개 반 · 학생 {dynALL.length}명</div>
@@ -1831,9 +1829,14 @@ export default function App() {
   /* ─── STUDENT TASKS ─── */
   const STasks = () => (
     <div className="fade-up">
-      <div style={{ marginBottom: 24 }}>
-        <h2 style={{ fontFamily: F.h, fontWeight: 800, fontSize: 24 }}>나의 과제</h2>
-        <p style={{ fontSize: 13, color: X.sub, marginTop: 4 }}>선생님이 배정한 기사를 순서대로 학습하세요.</p>
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 24 }}>
+        <div>
+          <h2 style={{ fontFamily: F.h, fontWeight: 800, fontSize: 24 }}>나의 과제</h2>
+          <p style={{ fontSize: 13, color: X.sub, marginTop: 4 }}>선생님이 배정한 기사를 순서대로 학습하세요.</p>
+        </div>
+        <select style={{ padding: "7px 12px", borderRadius: 10, border: `1px solid ${X.bdr}`, fontSize: 13, fontFamily: F.b, color: X.tx, background: "#fff", flexShrink: 0 }} value={sSt} onChange={e => { setSSt(e.target.value); setSArt(null); setSv("tasks"); }}>
+          {dynALL.map(s => <option key={s.id} value={s.id}>{s.nm} ({s.cNm})</option>)}
+        </select>
       </div>
       {!sAs.length
         ? <Cd style={{ textAlign: "center", padding: 48, color: X.mt }}>배정된 과제가 없습니다.</Cd>
@@ -1844,7 +1847,7 @@ export default function App() {
               const d = pg.r && pg.wl && pg.v && pg.sb && pg.w;
               const s = [pg.wl, pg.r, pg.v, pg.sb, pg.w].filter(Boolean).length;
               return (
-                <Cd key={seq} style={{ display: "flex", gap: 20, alignItems: "center", cursor: "pointer", padding: 20 }}
+                <Cd key={seq} style={{ cursor: "pointer", padding: 20 }}
                   onClick={() => {
                     setSArt(seq);
                     if (d) setSv("dn");
@@ -1859,22 +1862,22 @@ export default function App() {
                     setWd(false);
                   }}
                 >
-                  <img src={art.img} style={{ width: 88, height: 88, objectFit: "cover", borderRadius: 14 }} alt="" />
-                  <div style={{ flex: 1 }}>
-                    <div style={{ fontFamily: F.h, fontWeight: 700, fontSize: 17, marginBottom: 4 }}>{art.title}</div>
-                    <div style={{ fontSize: 12, color: X.sub, marginBottom: 10 }}>{art.topic}</div>
-                    <div style={{ display: "flex", gap: 5 }}>
-                      {["📋 단어보기", "📖 읽기", "📝 단어퀴즈", "✏️ 문장만들기", "🎤 녹음"].map((l, i) => (
-                        <span key={i} style={{ padding: "3px 12px", borderRadius: 20, fontSize: 11, fontWeight: 600, background: [pg.wl, pg.r, pg.v, pg.sb, pg.w][i] ? X.gbg : "#f8f9fa", color: [pg.wl, pg.r, pg.v, pg.sb, pg.w][i] ? X.gn : X.mt, border: `1px solid ${[pg.wl, pg.r, pg.v, pg.sb, pg.w][i] ? "#a7f3d0" : X.bdr}` }}>
-                          {[pg.wl, pg.r, pg.v, pg.sb, pg.w][i] ? "✓" : ""} {l}
-                        </span>
-                      ))}
+                  <div style={{ display: "flex", gap: 20, alignItems: "center", marginBottom: 12 }}>
+                    <img src={art.img} style={{ width: 72, height: 72, objectFit: "cover", borderRadius: 12, flexShrink: 0 }} alt="" />
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div style={{ fontFamily: F.h, fontWeight: 700, fontSize: 17, marginBottom: 3 }}>{art.title}</div>
+                      <div style={{ fontSize: 12, color: X.sub }}>{art.topic}</div>
                     </div>
-                  </div>
-                  <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 4 }}>
-                    <div style={{ width: 48, height: 48, borderRadius: "50%", background: d ? X.gbg : s ? X.abg2 : "#f8f9fa", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: F.h, fontWeight: 800, fontSize: 17, color: d ? X.gn : s ? X.am : X.mt }}>
+                    <div style={{ width: 44, height: 44, borderRadius: "50%", background: d ? X.gbg : s ? X.abg2 : "#f8f9fa", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: F.h, fontWeight: 800, fontSize: 15, color: d ? X.gn : s ? X.am : X.mt, flexShrink: 0 }}>
                       {d ? "✓" : `${s}/5`}
                     </div>
+                  </div>
+                  <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
+                    {["📋 단어보기", "📖 읽기", "📝 단어퀴즈", "✏️ 문장만들기", "🎤 녹음"].map((l, i) => (
+                      <span key={i} style={{ padding: "4px 12px", borderRadius: 20, fontSize: 11, fontWeight: 600, background: [pg.wl, pg.r, pg.v, pg.sb, pg.w][i] ? X.gbg : "#f8f9fa", color: [pg.wl, pg.r, pg.v, pg.sb, pg.w][i] ? X.gn : X.mt, border: `1px solid ${[pg.wl, pg.r, pg.v, pg.sb, pg.w][i] ? "#a7f3d0" : X.bdr}` }}>
+                        {[pg.wl, pg.r, pg.v, pg.sb, pg.w][i] ? "✓" : ""} {l}
+                      </span>
+                    ))}
                   </div>
                 </Cd>
               );
@@ -2581,19 +2584,14 @@ export default function App() {
   return (
     <div style={{ fontFamily: F.b, background: X.bg, minHeight: "100vh", color: X.tx }} onClick={() => setPw(null)}>
       {/* 헤더 */}
-      <div style={{ background: X.card, borderBottom: `1px solid ${X.bdr}`, padding: "0 24px", display: "flex", alignItems: "center", justifyContent: "space-between", height: 56, position: "sticky", top: 0, zIndex: 50 }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-          <img src="/Bi_new_times_bk.svg" alt="NE Times" style={{ height: 22, width: "auto", display: "block" }} />
-          <span style={{ fontFamily: F.b, fontWeight: 700, fontSize: 14, color: "#fff", background: X.dk, padding: "3px 10px", borderRadius: 7, marginTop: 5, display: "inline-block" }}>Class</span>
+      <div style={{ background: X.card, borderBottom: `1px solid ${X.bdr}`, padding: "0 20px", display: "flex", alignItems: "center", justifyContent: "space-between", height: 44, position: "sticky", top: 0, zIndex: 50 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 5 }}>
+          <img src="/Bi_new_times_bk.svg" alt="NE Times" style={{ height: 17, width: "auto", display: "block" }} />
+          <span style={{ fontFamily: F.b, fontWeight: 700, fontSize: 11, color: "#fff", background: X.dk, padding: "2px 7px", borderRadius: 5, marginTop: 3, display: "inline-block" }}>Class</span>
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
-          {role === "student" && (
-            <select style={{ padding: "5px 10px", borderRadius: 8, border: `1px solid ${X.bdr}`, fontSize: 12, fontFamily: F.b }} value={sSt} onChange={e => { setSSt(e.target.value); setSArt(null); setSv("tasks"); }}>
-              {dynALL.map(s => <option key={s.id} value={s.id}>{s.nm} ({s.cNm})</option>)}
-            </select>
-          )}
           <div style={{ display: "flex", background: "#f1f5f9", borderRadius: 10, padding: 3 }}>
-            {[["teacher", "👩‍🏫 선생님"], ["student", "👨‍🎓 학생"]].map(([r, l]) => (
+            {[["teacher", "선생님"], ["student", "학생"]].map(([r, l]) => (
               <button key={r} onClick={() => { setRole(r); setPw(null); if (r === "student") { setSArt(null); setSv("tasks"); } }}
                 style={{ padding: "6px 16px", borderRadius: 8, border: "none", cursor: "pointer", fontSize: 13, fontWeight: 600, fontFamily: F.b, background: role === r ? "#fff" : "transparent", color: role === r ? X.tx : X.mt, boxShadow: role === r ? "0 1px 3px rgba(0,0,0,.1)" : "none", transition: "all .15s" }}>
                 {l}
@@ -2605,7 +2603,7 @@ export default function App() {
 
       {/* Teacher sticky 탭바 */}
       {role === "teacher" && (
-        <div style={{ position: "sticky", top: 56, zIndex: 40, background: X.card, borderBottom: `1px solid ${X.bdr}`, padding: "0 24px" }}>
+        <div style={{ position: "sticky", top: 44, zIndex: 40, background: X.card, borderBottom: `1px solid ${X.bdr}`, padding: "0 24px" }}>
           <div style={{ maxWidth: 1280, margin: "0 auto", display: "flex", gap: 0 }}>
             {[["progress", "학습 현황"], ["students", "반 관리"]].map(([v, l]) => (
               <button key={v} onClick={() => setTAct(v)}
