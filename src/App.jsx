@@ -2450,7 +2450,7 @@ export default function App() {
       {role === "teacher" && (
         <div style={{ position: "sticky", top: 56, zIndex: 40, background: X.card, borderBottom: `1px solid ${X.bdr}`, padding: "0 24px" }}>
           <div style={{ maxWidth: 1280, margin: "0 auto", display: "flex", gap: 0 }}>
-            {[["progress", "학습 현황"], ["assign", "기사 배정"], ["students", "학생 관리"]].map(([v, l]) => (
+            {[["progress", "학습 현황"], ["students", "학생 관리"]].map(([v, l]) => (
               <button key={v} onClick={() => scrollTo(v)}
                 style={{ padding: "12px 22px", border: "none", borderBottom: tAct === v ? `2px solid ${X.dk}` : "2px solid transparent", cursor: "pointer", fontSize: 13, fontWeight: 600, fontFamily: F.b, background: "transparent", color: tAct === v ? X.tx : X.sub, transition: "all .15s" }}>
                 {l}
@@ -2476,13 +2476,6 @@ export default function App() {
                 <h2 style={{ fontFamily: F.h, fontWeight: 800, fontSize: 24, color: X.tx }}>학습 현황</h2>
               </div>
               <TProg />
-            </div>
-            <div ref={secRefs.assign} style={{ scrollMarginTop: 100, marginBottom: 56 }}>
-              <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 20 }}>
-                <span style={{ width: 4, height: 22, borderRadius: 2, background: X.ac, display: "inline-block" }} />
-                <h2 style={{ fontFamily: F.h, fontWeight: 800, fontSize: 24, color: X.tx }}>기사 배정</h2>
-              </div>
-              <TAssign />
             </div>
             <div ref={secRefs.students} style={{ scrollMarginTop: 100, marginBottom: 56 }}>
               <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 20 }}>
