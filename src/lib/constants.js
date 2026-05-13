@@ -79,32 +79,34 @@ export const ALL = CLS.flatMap((c) =>
   c.sts.map((s) => ({ ...s, cId: c.id, cNm: c.nm }))
 );
 
-/* 반별 기본 배정 기사 (반 id → articleSeq) */
+/* 반별 신규 학생 자동 배정 기사 (반 id → 현재 과제 articleSeq) */
 export const CLASS_DEFAULT_SEQ = {
-  c1: "786", // 입문반
-  c3: "121", // 기본반
+  c1: "786", // 입문반 현재 과제
+  c3: "122", // 기본반 현재 과제
+};
+
+/* 반별 신규 학생 자동 배정 날짜 */
+export const CLASS_DEFAULT_AT = {
+  c1: "03-30",
+  c3: "03-30",
 };
 
 /* 초기 배정 데이터 */
 export const IA = {
-  s1: [{ seq: "786", at: "03-28" }],
-  s2: [{ seq: "786", at: "03-28" }, { seq: "785", at: "03-29" }],
-  s3: [{ seq: "785", at: "03-29" }],
-  s4: [{ seq: "786", at: "04-02" }],
-  s5: [{ seq: "121", at: "03-28" }],
-  s6: [{ seq: "121", at: "03-28" }, { seq: "122", at: "03-30" }],
-  s7: [{ seq: "122", at: "03-30" }],
-  s8: [{ seq: "121", at: "04-02" }],
+  // 입문반: 직전(785/3-28), 현재(786/3-30)
+  s1: [{ seq: "785", at: "03-28" }, { seq: "786", at: "03-30" }],
+  s2: [{ seq: "785", at: "03-28" }, { seq: "786", at: "03-30" }],
+  s3: [{ seq: "785", at: "03-28" }, { seq: "786", at: "03-30" }],
+  s4: [{ seq: "785", at: "03-28" }, { seq: "786", at: "03-30" }],
+  // 기본반: 직전(121/3-27), 현재(122/3-30)
+  s5: [{ seq: "121", at: "03-27" }, { seq: "122", at: "03-30" }],
+  s6: [{ seq: "121", at: "03-27" }, { seq: "122", at: "03-30" }],
+  s7: [{ seq: "121", at: "03-27" }, { seq: "122", at: "03-30" }],
+  s8: [{ seq: "121", at: "03-27" }, { seq: "122", at: "03-30" }],
 };
 
-/* 초기 진행 데이터 (r: 읽기, wl: 단어보기, v: 단어퀴즈, sb: 문장만들기, w: 녹음 제출) */
-export const IP = {
-  s1_786: { r: true, wl: true, v: true, sb: true, w: true },
-  s2_786: { r: true, wl: true, v: true, sb: true, w: false },
-  s2_785: { r: false, wl: false, v: false, sb: false, w: false },
-  s5_121: { r: true, wl: true, v: false, sb: false, w: false },
-  s6_121: { r: true, wl: true, v: true, sb: true, w: true },
-};
+/* 초기 진행 데이터 — 모두 미시작 */
+export const IP = {};
 
 /* 타임라인 로그 */
 export const TL = [

@@ -1,7 +1,7 @@
 import React, { useState, useMemo, useEffect, useRef } from "react";
 
 /* ── lib imports ── */
-import { GLOBAL_CSS, BANDS, BM, CLS, ALL, IA, IP, TL, F, X, CLASS_DEFAULT_SEQ } from "./lib/constants.js";
+import { GLOBAL_CSS, BANDS, BM, CLS, ALL, IA, IP, TL, F, X, CLASS_DEFAULT_SEQ, CLASS_DEFAULT_AT } from "./lib/constants.js";
 import { ARTS, W, WB } from "./lib/selectors.js";
 import { playWordAudio } from "./lib/audio.js";
 
@@ -705,7 +705,7 @@ function SentenceBuildStep({ sentences, onComplete }) {
 }
 
 /* ─── PROG DETAIL MODAL ─── */
-function ProgDetailModal({ modal, onClose, effProg }) {
+function ProgDetailModal({ modal, onClose, effProg, label = "직전 과제" }) {
   const [recExpanded, setRecExpanded] = useState({});
   const [playingKey, setPlayingKey] = useState(null);
   const audioRef = useRef(null);
@@ -748,7 +748,7 @@ function ProgDetailModal({ modal, onClose, effProg }) {
         <div style={{ padding: "18px 22px 16px", borderBottom: `1px solid ${band.r}`, display: "flex", justifyContent: "space-between", alignItems: "flex-start", background: band.bg, borderRadius: "20px 20px 0 0", flexShrink: 0 }}>
           <div>
             <div style={{ fontFamily: F.h, fontWeight: 800, fontSize: 17, color: band.c }}>{cls.nm}</div>
-            <div style={{ fontSize: 12, color: band.c, opacity: 0.75, marginTop: 2 }}>직전 과제 · {fmtDate}</div>
+            <div style={{ fontSize: 12, color: band.c, opacity: 0.75, marginTop: 2 }}>{label} · {fmtDate}</div>
           </div>
           <button onClick={onClose} style={{ border: "none", background: "none", fontSize: 22, cursor: "pointer", color: band.c, opacity: 0.6, lineHeight: 1, marginLeft: 12 }}>×</button>
         </div>
@@ -788,7 +788,7 @@ function ProgDetailModal({ modal, onClose, effProg }) {
                 const art = ARTS.find(a => a.seq === artSeq);
                 const sentRows = art ? art.ps.flatMap(pa =>
                   splitSentenceRanges(pa.en).map((r, sIdx) => ({ key: `${pa.pid}_${sIdx}`, text: r.text }))
-                ) : [];
+                ).filter((_, i) => [2, 5].includes(i)) : [];
                 const hasRec = Object.keys(recMapData).length > 0;
 
                 const mainRow = (
@@ -796,6 +796,7 @@ function ProgDetailModal({ modal, onClose, effProg }) {
                     <td style={{ padding: "10px 10px" }}>
                       <div style={{ display: "flex", alignItems: "center", gap: 5 }}>
                         <span style={{ fontWeight: 600, color: X.tx }}>{st.nm}</span>
+                        {st.id.startsWith("s_") && <span style={{ fontSize: 10, fontWeight: 700, color: "#fff", background: "#a855f7", borderRadius: 4, padding: "1px 5px", letterSpacing: "0.03em" }}>NEW</span>}
                         <span style={{ fontSize: 10, fontWeight: 700, color: done ? X.gn : X.rd, background: done ? X.gbg : X.rbg, borderRadius: 10, padding: "1px 6px" }}>{done ? "완료" : "미완료"}</span>
                       </div>
                     </td>
@@ -924,13 +925,15 @@ export default function App() {
     [clsData]
   );
   const [clsFreq, setClsFreq] = useState(() => {
-    try { const s = localStorage.getItem("ntc_freq_v1"); return s ? JSON.parse(s) : {}; } catch { return {}; }
+    try { const s = localStorage.getItem("ntc_freq_v1"); const stored = s ? JSON.parse(s) : {}; return { c1: "주3회", c3: "주2회", ...stored }; } catch { return { c1: "주3회", c3: "주2회" }; }
   });
   const setFreq = (cId, val) => {
     const next = { ...clsFreq, [cId]: val };
     setClsFreq(next);
     localStorage.setItem("ntc_freq_v1", JSON.stringify(next));
   };
+  const FREQS = ["주2회", "주3회", "주5회"];
+  const cycleFreq = (cId) => { const cur = clsFreq[cId] || "주2회"; setFreq(cId, FREQS[(FREQS.indexOf(cur) + 1) % FREQS.length]); };
   const saveCls = (next) => {
     setClsData(next);
     localStorage.setItem("ntc_cls_v2", JSON.stringify(next));
@@ -943,8 +946,7 @@ export default function App() {
     saveCls(next);
     const defSeq = CLASS_DEFAULT_SEQ[cId];
     if (defSeq) {
-      const now = new Date();
-      const at = `${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
+      const at = CLASS_DEFAULT_AT[cId] || (() => { const now = new Date(); return `${String(now.getMonth()+1).padStart(2,"0")}-${String(now.getDate()).padStart(2,"0")}`; })();
       setAsgn(p => ({ ...p, [newId]: [{ seq: defSeq, at }] }));
     }
   };
@@ -1131,7 +1133,7 @@ export default function App() {
         result.push({ en: es.text.trim(), kr: krSents[i]?.text.trim() || pa.kr });
       });
     });
-    return result;
+    return result.filter((_, i) => [1, 4, 6, 7].includes(i));
   }, [cA]);
 
   const ensureSentenceAudio = async () => {
@@ -1217,7 +1219,7 @@ export default function App() {
 
   const cR = () => {
     uP(sSt, sArt, "r");
-    initVocOptions(cW.filter(w => w.pid).slice(0, 8));
+    initVocOptions(cW.filter(w => w.pid).slice(0, 4));
     setSv("voc");
   };
   const initVocOptions = (wordList) => {
@@ -1238,7 +1240,7 @@ export default function App() {
     setSv("rd");
   };
   const cV = () => {
-    const ws = cW.filter(w => w.pid).slice(0, 8);
+    const ws = cW.filter(w => w.pid).slice(0, 4);
     const cor = ws.filter(w => va[w.i] === w.kr).length;
     const k = `${sSt}_${sArt}`;
     setScores(p => ({ ...p, [k]: { ...(p[k] || {}), voc: { cor, tot: ws.length } } }));
@@ -1304,6 +1306,7 @@ export default function App() {
 
   const [revokeModal, setRevokeModal] = useState(null); // { seq, art, targets }
   const [detailModal, setDetailModal] = useState(null); // { cls, prevAtStr, prevStudents, showComplete }
+  const [freqModal, setFreqModal] = useState(null); // { cId, nm, cur }
 
   const revokeAsgn = (seq) => {
     const ts = getTargetStudents();
@@ -1529,7 +1532,7 @@ export default function App() {
             const CardHeader = () => (
               <div style={{ padding: "14px 18px", background: band.bg, borderBottom: `1px solid ${band.r}`, display: "flex", alignItems: "center", gap: 8 }}>
                 <span style={{ fontFamily: F.h, fontWeight: 800, fontSize: 16, color: band.c }}>{cls.nm}</span>
-                {clsFreq[cls.id] && <span style={{ fontSize: 11, fontWeight: 700, color: band.c, background: "rgba(255,255,255,0.75)", borderRadius: 20, padding: "2px 8px" }}>{clsFreq[cls.id]}</span>}
+                <button onClick={e => { e.stopPropagation(); setFreqModal({ cId: cls.id, nm: cls.nm, sel: clsFreq[cls.id] || "주2회" }); }} style={{ fontSize: 11, fontWeight: 700, color: band.c, background: "rgba(255,255,255,0.75)", borderRadius: 20, padding: "2px 9px", border: "1px solid rgba(0,0,0,0.08)", cursor: "pointer", fontFamily: F.b }}>[{clsFreq[cls.id] || "주2회"}]</button>
                 <span style={{ marginLeft: "auto", fontSize: 12, color: band.c, opacity: 0.7 }}>{cls.sts.length}명</span>
               </div>
             );
@@ -1571,12 +1574,27 @@ export default function App() {
                       </div>
                     </div>
                   )}
-                  <div style={{ padding: "10px 14px", borderRadius: 10, background: "#f0f9ff", border: "1px solid #bae6fd", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                  <div
+                    onClick={() => {
+                      const students = cls.sts
+                        .filter(st => (asgn[st.id] || []).some(a => a.at === curAtStr))
+                        .map(st => {
+                          const arts = (asgn[st.id] || []).filter(a => a.at === curAtStr);
+                          const done = arts.every(a => iD(effProg, st.id, a.seq));
+                          return { st, done, arts };
+                        });
+                      setDetailModal({ cls, prevAtStr: curAtStr, prevStudents: students, label: "현재 과제" });
+                    }}
+                    style={{ padding: "10px 14px", borderRadius: 10, background: "#f0f9ff", border: "1px solid #bae6fd", display: "flex", justifyContent: "space-between", alignItems: "center", cursor: "pointer" }}
+                  >
                     <div>
                       <div style={{ fontSize: 11, color: "#0284c7", fontWeight: 600, marginBottom: 3 }}>현재 과제 · {fmtMD(curAtStr)} 배정</div>
                       <div style={{ fontSize: 13, fontWeight: 700, color: X.tx }}>{curStudents.length}명 진행 중</div>
                     </div>
-                    <span style={{ fontSize: 11, fontWeight: 700, color: "#0284c7", background: "#e0f2fe", borderRadius: 20, padding: "3px 10px" }}>진행중</span>
+                    <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                      <span style={{ fontSize: 11, fontWeight: 700, color: "#0284c7", background: "#e0f2fe", borderRadius: 20, padding: "3px 10px" }}>진행중</span>
+                      <span style={{ fontSize: 16, color: "#0284c7", lineHeight: 1 }}>›</span>
+                    </div>
                   </div>
                 </div>
               </Cd>
@@ -1606,21 +1624,12 @@ export default function App() {
           const bBg = band ? band[1].bg : X.abg;
           return (
             <Cd key={cls.id} style={{ padding: 0, overflow: "hidden" }}>
-              <div style={{ padding: "12px 16px", background: bBg, borderBottom: `1px solid ${X.bdr}` }}>
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
+              <div style={{ padding: "12px 16px", background: bBg, borderBottom: `1px solid ${X.bdr}`, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 7 }}>
                   <span style={{ fontFamily: F.h, fontWeight: 700, fontSize: 15, color: bColor }}>{cls.nm}</span>
-                  <span style={{ fontSize: 12, color: bColor, fontWeight: 600 }}>{cls.sts.length}명</span>
+                  <button onClick={() => setFreqModal({ cId: cls.id, nm: cls.nm, sel: clsFreq[cls.id] || "주2회" })} style={{ fontSize: 11, fontWeight: 700, color: bColor, background: "rgba(255,255,255,0.75)", borderRadius: 20, padding: "2px 9px", border: "1px solid rgba(0,0,0,0.08)", cursor: "pointer", fontFamily: F.b }}>[{clsFreq[cls.id] || "주2회"}]</button>
                 </div>
-                <select
-                  value={clsFreq[cls.id] || ""}
-                  onChange={e => setFreq(cls.id, e.target.value)}
-                  style={{ width: "100%", padding: "5px 8px", borderRadius: 7, border: `1px solid rgba(0,0,0,.15)`, background: "rgba(255,255,255,.7)", color: bColor, fontSize: 12, fontWeight: 600, fontFamily: F.b, cursor: "pointer" }}
-                >
-                  <option value="">수업 빈도 선택</option>
-                  <option value="주2회">주2회</option>
-                  <option value="주3회">주3회</option>
-                  <option value="주5회">주5회</option>
-                </select>
+                <span style={{ fontSize: 12, color: bColor, fontWeight: 600 }}>{cls.sts.length}명</span>
               </div>
               {cls.sts.length === 0 ? (
                 <div style={{ padding: "20px 16px", color: X.mt, fontSize: 13, textAlign: "center" }}>등록된 학생이 없습니다.</div>
@@ -1674,7 +1683,7 @@ export default function App() {
                     if (d) setSv("dn");
                     else if (pg.wl && pg.r && pg.v && pg.sb && !pg.w) setSv("rec");
                     else if (pg.wl && pg.r && pg.v && !pg.sb) setSv("ssb");
-                    else if (pg.wl && pg.r && !pg.v) { initVocOptions((W[seq] || []).filter(w => w.pid).slice(0, 8)); setSv("voc"); }
+                    else if (pg.wl && pg.r && !pg.v) { initVocOptions((W[seq] || []).filter(w => w.pid).slice(0, 4)); setSv("voc"); }
                     else if (pg.wl && !pg.r) setSv("rd");
                     else setSv("wl");
                     setVa({});
@@ -2027,7 +2036,7 @@ export default function App() {
   /* ─── STUDENT VOCAB ─── */
   const SVoc = () => {
     if (!cA) return null;
-    const ws = cW.filter(w => w.pid).slice(0, 8);
+    const ws = cW.filter(w => w.pid).slice(0, 4);
     const isLast = vocIdx >= ws.length - 1;
 
     /* 전체 결과 요약 화면 */
@@ -2294,7 +2303,7 @@ export default function App() {
 
   /* ─── STUDENT DONE ─── */
   const SDn = () => {
-    const ws = cW.filter(w => w.pid).slice(0, 8);
+    const ws = cW.filter(w => w.pid).slice(0, 4);
     const vocCor = ws.filter(w => va[w.i] === w.kr).length;
     const scVoc = scores[`${sSt}_${sArt}`]?.voc;
     const vocLabel = scVoc && scVoc.tot > 0 ? `${scVoc.cor} / ${scVoc.tot} 정답` : (ws.length > 0 ? `${vocCor} / ${ws.length} 정답` : "완료");
@@ -2394,7 +2403,7 @@ export default function App() {
       <StudentRecordingStep
         sSt={sSt}
         sArt={sArt}
-        sentenceRows={sentenceMeta.all}
+        sentenceRows={sentenceMeta.all.filter((_, i) => [2, 5].includes(i))}
         onSubmit={cRecSubmit}
         onBack={bk}
       />
@@ -2494,6 +2503,44 @@ export default function App() {
         )}
       </div>
 
+      {/* 수업 주기 선택 모달 */}
+      {freqModal && (() => {
+        const { cId, nm, sel } = freqModal;
+        const levelKey = nm.replace("반", "");
+        const band = BANDS[levelKey] || { c: X.ac, bg: X.abg, r: "#bfdbfe" };
+        return (
+          <div style={{ position: "fixed", inset: 0, zIndex: 500, background: "rgba(15,23,42,0.55)", display: "flex", alignItems: "center", justifyContent: "center", padding: 16 }}
+            onClick={e => { if (e.target === e.currentTarget) setFreqModal(null); }}
+          >
+            <div className="fade-up" style={{ background: "#fff", borderRadius: 20, width: "100%", maxWidth: 360, boxShadow: "0 24px 60px rgba(0,0,0,.18)", overflow: "hidden" }}>
+              <div style={{ padding: "18px 22px 16px", borderBottom: `1px solid ${X.bdr}`, display: "flex", justifyContent: "space-between", alignItems: "center", background: band.bg }}>
+                <div>
+                  <div style={{ fontFamily: F.h, fontWeight: 800, fontSize: 17, color: band.c }}>{nm}</div>
+                  <div style={{ fontSize: 12, color: band.c, opacity: 0.75, marginTop: 2 }}>수업 주기 설정</div>
+                </div>
+                <button onClick={() => setFreqModal(null)} style={{ border: "none", background: "none", fontSize: 22, cursor: "pointer", color: band.c, opacity: 0.6, lineHeight: 1 }}>×</button>
+              </div>
+              <div style={{ padding: "20px 22px" }}>
+                <div style={{ display: "flex", gap: 10, marginBottom: 24 }}>
+                  {["주2회", "주3회", "주5회"].map(opt => {
+                    const on = sel === opt;
+                    return (
+                      <button key={opt} onClick={() => setFreqModal(p => ({ ...p, sel: opt }))}
+                        style={{ flex: 1, padding: "14px 0", borderRadius: 12, border: `2px solid ${on ? band.c : X.bdr}`, background: on ? band.bg : "#fff", color: on ? band.c : X.sub, fontFamily: F.b, fontWeight: 700, fontSize: 14, cursor: "pointer", transition: "all .15s" }}
+                      >{opt}</button>
+                    );
+                  })}
+                </div>
+                <div style={{ display: "flex", gap: 10 }}>
+                  <Bt v="outline" style={{ flex: 1 }} onClick={() => setFreqModal(null)}>취소</Bt>
+                  <Bt v="primary" style={{ flex: 1 }} onClick={() => { setFreq(cId, sel); setFreqModal(null); showToast(`${nm} 수업 주기를 ${sel}로 변경했습니다`); }}>저장</Bt>
+                </div>
+              </div>
+            </div>
+          </div>
+        );
+      })()}
+
       {/* 기사 회수 확인 모달 */}
       {revokeModal && (() => {
         const { art, targets } = revokeModal;
@@ -2542,7 +2589,7 @@ export default function App() {
 
 
       {/* 학습현황 상세 모달 */}
-      {detailModal && <ProgDetailModal modal={detailModal} onClose={() => setDetailModal(null)} effProg={effProg} />}
+      {detailModal && <ProgDetailModal modal={detailModal} onClose={() => setDetailModal(null)} effProg={effProg} label={detailModal.label || "직전 과제"} />}
 
       {/* 토스트 */}
       {showAddModal && (() => {
