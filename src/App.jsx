@@ -902,7 +902,7 @@ function ProgDetailModal({ modal, onClose, effProg, scores = {}, label = "직전
 /* ═══════════════════════════════════════════
    STUDENT DETAIL MODAL
    ═══════════════════════════════════════════ */
-function StudentDetailModal({ modal, onClose, effProg, scores = {} }) {
+function StudentDetailModal({ modal, onClose, effProg, scores = {}, onDelete }) {
   const [recExpanded, setRecExpanded] = useState({});
   const [playingKey, setPlayingKey] = useState(null);
   const audioRef = useRef(null);
@@ -939,7 +939,15 @@ function StudentDetailModal({ modal, onClose, effProg, scores = {} }) {
             </div>
             <div style={{ fontSize: 12, color: band.c, opacity: 0.75, marginTop: 2 }}>{cls.nm} · 학습 상세 현황</div>
           </div>
-          <button onClick={onClose} style={{ border: "none", background: "none", fontSize: 22, cursor: "pointer", color: band.c, opacity: 0.6, lineHeight: 1, marginLeft: 12 }}>×</button>
+          <div style={{ display: "flex", alignItems: "center", gap: 8, flexShrink: 0, marginLeft: 12 }}>
+            {onDelete && (
+              <button
+                onClick={() => { if (window.confirm(`${st.nm} 학생을 삭제하시겠습니까?`)) { onDelete(st.id); onClose(); } }}
+                style={{ fontSize: 12, fontWeight: 700, color: "#ef4444", background: "#fff1f2", border: "1px solid #fecaca", borderRadius: 8, padding: "5px 12px", cursor: "pointer", fontFamily: F.b }}
+              >학생 삭제</button>
+            )}
+            <button onClick={onClose} style={{ border: "none", background: "none", fontSize: 22, cursor: "pointer", color: band.c, opacity: 0.6, lineHeight: 1 }}>×</button>
+          </div>
         </div>
         <div style={{ overflow: "auto", padding: "16px 22px 20px" }}>
           {artSeqs.length === 0
@@ -2141,12 +2149,7 @@ export default function App() {
                         <span style={{ fontSize: 14, fontWeight: 600 }}>{st.nm}</span>
                         {st.id.startsWith("s_") && <span style={{ fontSize: 10, fontWeight: 700, color: "#fff", background: "#a855f7", borderRadius: 4, padding: "1px 5px", letterSpacing: "0.03em" }}>NEW</span>}
                       </div>
-                      <button
-                        onClick={e => { e.stopPropagation(); if (window.confirm(`${st.nm} 학생을 삭제하시겠습니까?`)) removeStudent(st.id); }}
-                        style={{ border: "none", background: "none", cursor: "pointer", fontSize: 12, color: X.mt, padding: "4px 8px", borderRadius: 6 }}
-                      >
-                        삭제
-                      </button>
+                      <span style={{ fontSize: 12, color: X.mt }}>›</span>
                     </div>
                   ))}
                 </div>
@@ -3189,7 +3192,7 @@ export default function App() {
       />}
 
       {/* 학생별 상세 모달 */}
-      {studentDetailModal && <StudentDetailModal modal={studentDetailModal} onClose={() => setStudentDetailModal(null)} effProg={effProg} scores={scores} />}
+      {studentDetailModal && <StudentDetailModal modal={studentDetailModal} onClose={() => setStudentDetailModal(null)} effProg={effProg} scores={scores} onDelete={removeStudent} />}
 
       {/* 학생×기사 과제 상세 모달 */}
       {artProgModal && <ArticleProgressModal modal={artProgModal} onClose={() => setArtProgModal(null)} effProg={effProg} scores={scores} />}
