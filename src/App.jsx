@@ -2236,7 +2236,7 @@ export default function App() {
           <span style={{ fontFamily: F.h, fontWeight: 700, fontSize: 16, color: X.tx }}>이번 주 일정</span>
           <span style={{ fontSize: 11, color: X.sub, fontWeight: 600, background: "#f1f5f9", border: `1px solid ${X.bdr}`, borderRadius: 20, padding: "2px 8px" }}>{freq}</span>
         </div>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(5, 1fr)", gap: 8 }}>
+        <div className="ntc-week-grid" style={{ display: "grid", gridTemplateColumns: "repeat(5, 1fr)", gap: 8 }}>
           {[1, 2, 3, 4, 5].map(dow => {
             const isSlot = slotDays.includes(dow);
             const slotPos = slotDays.indexOf(dow);
@@ -2256,12 +2256,15 @@ export default function App() {
 
             return (
               <div key={dow}
+                className="ntc-week-card"
                 onClick={() => goToArt(entry)}
                 style={{
                   borderRadius: 14,
                   border: isToday ? `2px solid ${X.ac}` : `1px solid ${X.bdr}`,
                   background: "#fff",
                   overflow: "hidden",
+                  display: "flex",
+                  flexDirection: "column",
                   cursor: entry ? "pointer" : "default",
                   opacity: !isSlot ? 0.32 : 1,
                   transition: "box-shadow .15s, transform .15s",
@@ -2270,7 +2273,7 @@ export default function App() {
                 onMouseLeave={e => { e.currentTarget.style.boxShadow = ""; e.currentTarget.style.transform = ""; }}
               >
                 {/* 요일/날짜 헤더 */}
-                <div style={{ padding: "8px 10px 6px", display: "flex", alignItems: "center", justifyContent: "space-between", background: isToday ? X.abg : "#fafafa", borderBottom: `1px solid ${X.bdr}` }}>
+                <div className="ntc-week-header" style={{ padding: "8px 10px 6px", display: "flex", alignItems: "center", justifyContent: "space-between", background: isToday ? X.abg : "#fafafa", borderBottom: `1px solid ${X.bdr}` }}>
                   <span style={{ fontSize: 12, fontWeight: 700, color: isToday ? X.ac : X.sub }}>{DAY_KR[dow]}</span>
                   <div style={{ width: 26, height: 26, borderRadius: "50%", background: isToday ? X.ac : "transparent", color: isToday ? "#fff" : X.tx, fontSize: 12, fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center" }}>
                     {date.getDate()}
@@ -2279,9 +2282,9 @@ export default function App() {
 
                 {/* 기사 블록 */}
                 {art ? (
-                  <div>
+                  <div style={{ display: "flex", flexDirection: "column", flex: 1 }}>
                     {/* 이미지 — 4:3 비율 */}
-                    <div style={{ position: "relative", width: "100%", paddingTop: "75%" }}>
+                    <div className="ntc-week-img-wrap" style={{ position: "relative", width: "100%", paddingTop: "75%" }}>
                       <img src={art.img} alt="" style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover" }} />
                       {done && (
                         <div style={{ position: "absolute", inset: 0, background: "rgba(16,185,129,0.72)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 32, color: "#fff" }}>✓</div>
@@ -2291,7 +2294,7 @@ export default function App() {
                       )}
                     </div>
                     {/* 제목 + 진행바 */}
-                    <div style={{ padding: "8px 10px 10px" }}>
+                    <div className="ntc-week-body" style={{ padding: "8px 10px 10px" }}>
                       <div style={{ fontSize: 11, fontWeight: 700, color: isPast && !done ? X.mt : X.tx, lineHeight: 1.4, overflow: "hidden", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical" }}>
                         {art.title}
                       </div>
@@ -2303,7 +2306,7 @@ export default function App() {
                     </div>
                   </div>
                 ) : isSlot ? (
-                  <div style={{ padding: "24px 10px", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                  <div className="ntc-week-empty" style={{ padding: "24px 10px", display: "flex", alignItems: "center", justifyContent: "center" }}>
                     <span style={{ fontSize: 11, color: X.mt }}>과제 없음</span>
                   </div>
                 ) : (
