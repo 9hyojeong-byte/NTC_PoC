@@ -943,7 +943,7 @@ function StudentDetailModal({ modal, onClose, effProg, scores = {}, onDelete }) 
             {onDelete && (
               <button
                 onClick={() => { if (window.confirm(`${st.nm} 학생을 삭제하시겠습니까?`)) { onDelete(st.id); onClose(); } }}
-                style={{ fontSize: 12, fontWeight: 700, color: "#ef4444", background: "#fff1f2", border: "1px solid #fecaca", borderRadius: 8, padding: "5px 12px", cursor: "pointer", fontFamily: F.b }}
+                style={{ fontSize: 12, fontWeight: 500, color: X.mt, background: "transparent", border: "none", borderRadius: 8, padding: "5px 12px", cursor: "pointer", fontFamily: F.b }}
               >학생 삭제</button>
             )}
             <button onClick={onClose} style={{ border: "none", background: "none", fontSize: 22, cursor: "pointer", color: band.c, opacity: 0.6, lineHeight: 1 }}>×</button>
