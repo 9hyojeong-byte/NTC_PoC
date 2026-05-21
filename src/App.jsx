@@ -2136,22 +2136,51 @@ export default function App() {
                 </div>
               ) : (
                 <div style={{ padding: "8px 0" }}>
-                  {cls.sts.map(st => (
-                    <div
-                      key={st.id}
-                      onClick={() => setStudentDetailModal({ st, cls, artSeqs: (asgn[st.id] || []).map(a => a.seq) })}
-                      style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "10px 16px", borderBottom: `1px solid #f5f5f7`, cursor: "pointer" }}
-                    >
-                      <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                        <div style={{ width: 32, height: 32, borderRadius: 10, background: bBg, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 14, color: bColor, fontWeight: 700, fontFamily: F.h }}>
-                          {st.nm[0]}
+                  {cls.sts.map(st => {
+                    const stSeqs = (asgn[st.id] || []).map(a => a.seq);
+                    const doneCnt = stSeqs.filter(seq => iD(effProg, st.id, seq)).length;
+                    return (
+                      <div
+                        key={st.id}
+                        onClick={() => setStudentDetailModal({ st, cls, artSeqs: stSeqs })}
+                        style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "10px 16px", borderBottom: `1px solid #f5f5f7`, cursor: "pointer" }}
+                      >
+                        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                          <div style={{ width: 32, height: 32, borderRadius: 10, background: bBg, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 14, color: bColor, fontWeight: 700, fontFamily: F.h }}>
+                            {st.nm[0]}
+                          </div>
+                          <div>
+                            <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                              <span style={{ fontSize: 14, fontWeight: 600 }}>{st.nm}</span>
+                              {st.id.startsWith("s_") && <span style={{ fontSize: 10, fontWeight: 700, color: "#fff", background: "#a855f7", borderRadius: 4, padding: "1px 5px", letterSpacing: "0.03em" }}>NEW</span>}
+                            </div>
+                            {stSeqs.length > 0 ? (
+                              <div style={{ display: "flex", alignItems: "center", gap: 5, marginTop: 4 }}>
+                                <div style={{ display: "flex", gap: 3 }}>
+                                  {stSeqs.map(seq => {
+                                    const pg = gP(effProg, st.id, seq);
+                                    const steps = [pg.wl, pg.r, pg.v, pg.sb, pg.w];
+                                    const cnt = steps.filter(Boolean).length;
+                                    const bg = cnt === 5 ? X.gn : cnt > 0 ? X.am : "#e2e8f0";
+                                    return <div key={seq} style={{ width: 7, height: 7, borderRadius: "50%", background: bg }} />;
+                                  })}
+                                </div>
+                                <span style={{ fontSize: 11, color: X.sub }}>
+                                  {doneCnt === stSeqs.length
+                                    ? <span style={{ color: X.gn, fontWeight: 700 }}>전체 완료</span>
+                                    : <><span style={{ color: doneCnt > 0 ? X.am : X.mt, fontWeight: 600 }}>{doneCnt}/{stSeqs.length}</span> 완료</>
+                                  }
+                                </span>
+                              </div>
+                            ) : (
+                              <span style={{ fontSize: 11, color: X.mt, marginTop: 2, display: "block" }}>배정 과제 없음</span>
+                            )}
+                          </div>
                         </div>
-                        <span style={{ fontSize: 14, fontWeight: 600 }}>{st.nm}</span>
-                        {st.id.startsWith("s_") && <span style={{ fontSize: 10, fontWeight: 700, color: "#fff", background: "#a855f7", borderRadius: 4, padding: "1px 5px", letterSpacing: "0.03em" }}>NEW</span>}
+                        <span style={{ fontSize: 12, color: X.mt, flexShrink: 0 }}>›</span>
                       </div>
-                      <span style={{ fontSize: 12, color: X.mt }}>›</span>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               )}
             </Cd>
