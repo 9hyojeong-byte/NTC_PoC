@@ -2191,23 +2191,19 @@ export default function App() {
   );
 
   /* ─── WEEKLY CALENDAR ─── */
-  const WeekCalendar = () => {
-    // 서울 시간 기준 오늘
+  const WeekCalendar = ({ isMobile }) => {
     const now = new Date();
     const seoulMs = now.getTime() + (now.getTimezoneOffset() + 9 * 60) * 60000;
     const today = new Date(seoulMs);
     const todayDow = today.getDay();
 
-    // 이번 주 월요일
     const monday = new Date(today);
     monday.setDate(today.getDate() - (todayDow === 0 ? 6 : todayDow - 1));
     monday.setHours(0, 0, 0, 0);
 
-    // 기준일(2026-01-05)로부터 몇 번째 주인지
     const REF = new Date(2026, 0, 5);
     const weekIdx = Math.max(0, Math.round((monday - REF) / (7 * 24 * 60 * 60 * 1000)));
 
-    // 학생 반 & 수업 주기
     const stCls = clsData.find(c => c.sts.some(s => s.id === sSt));
     const freq = stCls ? (clsFreq[stCls.id] || "주2회") : "주2회";
     const FREQ_SLOTS = { "주2회": [2, 4], "주3회": [1, 3, 5], "주5회": [1, 2, 3, 4, 5] };
@@ -2230,83 +2226,149 @@ export default function App() {
       setVa({}); setWa({}); setVd(false); setWd(false);
     };
 
+    const days = [1, 2, 3, 4, 5].map(dow => {
+      const isSlot = slotDays.includes(dow);
+      const slotPos = slotDays.indexOf(dow);
+      const globalIdx = isSlot ? weekIdx * slotsPerWeek + slotPos : -1;
+      const artIdx = (isSlot && sAs.length > 0) ? globalIdx % sAs.length : -1;
+      const entry = artIdx >= 0 ? sAs[artIdx] : null;
+      const date = new Date(monday);
+      date.setDate(monday.getDate() + (dow - 1));
+      const dateKey = `${date.getFullYear()}-${date.getMonth()}-${date.getDate()}`;
+      return { dow, isSlot, entry, date, isToday: dateKey === todayKey, isPast: date < new Date(today.getFullYear(), today.getMonth(), today.getDate()) };
+    });
+
+    const headerRow = (
+      <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 12 }}>
+        <span style={{ fontFamily: F.h, fontWeight: 700, fontSize: 16, color: X.tx }}>이번 주 일정</span>
+        <span style={{ fontSize: 11, color: X.sub, fontWeight: 600, background: "#f1f5f9", border: `1px solid ${X.bdr}`, borderRadius: 20, padding: "2px 8px" }}>{freq}</span>
+      </div>
+    );
+
+    /* ── 모바일: 세로 리스트 ── */
+    if (isMobile) {
+      return (
+        <div style={{ marginBottom: 8 }}>
+          {headerRow}
+          <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+            {days.map(({ dow, isSlot, entry, date, isToday, isPast }) => {
+              const art = entry?.art;
+              const pg = entry?.pg;
+              const done = pg ? !!(pg.r && pg.wl && pg.v && pg.sb && pg.w) : false;
+              const stepVals = pg ? [pg.wl, pg.r, pg.v, pg.sb, pg.w] : [];
+              const stepDone = stepVals.filter(Boolean).length;
+
+              return (
+                <div key={dow}
+                  onClick={() => goToArt(entry)}
+                  style={{
+                    display: "flex", alignItems: "stretch", borderRadius: 14, overflow: "hidden",
+                    border: isToday ? `2px solid ${X.ac}` : `1px solid ${X.bdr}`,
+                    background: "#fff",
+                    opacity: !isSlot ? 0.35 : 1,
+                    cursor: entry ? "pointer" : "default",
+                    minHeight: 72,
+                  }}
+                >
+                  {/* 요일/날짜 뱃지 */}
+                  <div style={{
+                    width: 58, flexShrink: 0, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
+                    background: isToday ? X.abg : "#fafafa",
+                    borderRight: `1px solid ${X.bdr}`, gap: 2,
+                  }}>
+                    <span style={{ fontSize: 13, fontWeight: 800, color: isToday ? X.ac : X.sub, fontFamily: F.h }}>{DAY_KR[dow]}</span>
+                    <div style={{
+                      width: 28, height: 28, borderRadius: "50%", fontSize: 13, fontWeight: 700,
+                      display: "flex", alignItems: "center", justifyContent: "center",
+                      background: isToday ? X.ac : "transparent",
+                      color: isToday ? "#fff" : X.tx,
+                    }}>{date.getDate()}</div>
+                  </div>
+
+                  {/* 기사 썸네일 */}
+                  {art && (
+                    <div style={{ width: 80, flexShrink: 0, position: "relative", overflow: "hidden" }}>
+                      <img src={art.img} alt="" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
+                      {done && (
+                        <div style={{ position: "absolute", inset: 0, background: "rgba(16,185,129,0.7)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 22, color: "#fff" }}>✓</div>
+                      )}
+                    </div>
+                  )}
+
+                  {/* 기사 정보 */}
+                  <div style={{ flex: 1, minWidth: 0, padding: "10px 12px", display: "flex", flexDirection: "column", justifyContent: "center", gap: 6 }}>
+                    {art ? (
+                      <>
+                        <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                          {isToday && !done && <span style={{ fontSize: 10, fontWeight: 800, color: X.ac, background: X.abg, borderRadius: 6, padding: "1px 6px", flexShrink: 0 }}>오늘!</span>}
+                          <span style={{ fontSize: 13, fontWeight: 700, color: isPast && !done ? X.mt : X.tx, lineHeight: 1.35, overflow: "hidden", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical" }}>{art.title}</span>
+                        </div>
+                        <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                          <div style={{ display: "flex", gap: 2, flex: 1 }}>
+                            {stepVals.map((v, i) => <div key={i} style={{ flex: 1, height: 4, borderRadius: 2, background: v ? X.gn : X.bdr }} />)}
+                          </div>
+                          <span style={{ fontSize: 11, fontWeight: 700, color: done ? X.gn : stepDone > 0 ? X.am : X.mt, flexShrink: 0 }}>
+                            {done ? "완료" : `${stepDone}/5`}
+                          </span>
+                        </div>
+                      </>
+                    ) : isSlot ? (
+                      <span style={{ fontSize: 13, color: X.mt }}>과제 없음</span>
+                    ) : (
+                      <span style={{ fontSize: 13, color: "#d0d5dd" }}>수업 없음</span>
+                    )}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      );
+    }
+
+    /* ── 데스크톱: 5열 카드 그리드 ── */
     return (
       <div style={{ marginBottom: 8 }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 12 }}>
-          <span style={{ fontFamily: F.h, fontWeight: 700, fontSize: 16, color: X.tx }}>이번 주 일정</span>
-          <span style={{ fontSize: 11, color: X.sub, fontWeight: 600, background: "#f1f5f9", border: `1px solid ${X.bdr}`, borderRadius: 20, padding: "2px 8px" }}>{freq}</span>
-        </div>
-        <div className="ntc-week-grid" style={{ display: "grid", gridTemplateColumns: "repeat(5, 1fr)", gap: 8 }}>
-          {[1, 2, 3, 4, 5].map(dow => {
-            const isSlot = slotDays.includes(dow);
-            const slotPos = slotDays.indexOf(dow);
-            const globalIdx = isSlot ? weekIdx * slotsPerWeek + slotPos : -1;
-            const artIdx = (isSlot && sAs.length > 0) ? globalIdx % sAs.length : -1;
-            const entry = artIdx >= 0 ? sAs[artIdx] : null;
-
-            const date = new Date(monday);
-            date.setDate(monday.getDate() + (dow - 1));
-            const dateKey = `${date.getFullYear()}-${date.getMonth()}-${date.getDate()}`;
-            const isToday = dateKey === todayKey;
-            const isPast = date < new Date(today.getFullYear(), today.getMonth(), today.getDate());
-
+        {headerRow}
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(5, 1fr)", gap: 8 }}>
+          {days.map(({ dow, isSlot, entry, date, isToday, isPast }) => {
             const art = entry?.art;
             const pg = entry?.pg;
             const done = pg ? !!(pg.r && pg.wl && pg.v && pg.sb && pg.w) : false;
-
             return (
               <div key={dow}
-                className="ntc-week-card"
                 onClick={() => goToArt(entry)}
                 style={{
-                  borderRadius: 14,
-                  border: isToday ? `2px solid ${X.ac}` : `1px solid ${X.bdr}`,
-                  background: "#fff",
-                  overflow: "hidden",
-                  display: "flex",
-                  flexDirection: "column",
-                  cursor: entry ? "pointer" : "default",
-                  opacity: !isSlot ? 0.32 : 1,
+                  borderRadius: 14, border: isToday ? `2px solid ${X.ac}` : `1px solid ${X.bdr}`,
+                  background: "#fff", overflow: "hidden", display: "flex", flexDirection: "column",
+                  cursor: entry ? "pointer" : "default", opacity: !isSlot ? 0.32 : 1,
                   transition: "box-shadow .15s, transform .15s",
                 }}
                 onMouseEnter={e => { if (entry) { e.currentTarget.style.boxShadow = "0 4px 20px rgba(0,0,0,.10)"; e.currentTarget.style.transform = "translateY(-2px)"; }}}
                 onMouseLeave={e => { e.currentTarget.style.boxShadow = ""; e.currentTarget.style.transform = ""; }}
               >
-                {/* 요일/날짜 헤더 */}
-                <div className="ntc-week-header" style={{ padding: "8px 10px 6px", display: "flex", alignItems: "center", justifyContent: "space-between", background: isToday ? X.abg : "#fafafa", borderBottom: `1px solid ${X.bdr}` }}>
+                <div style={{ padding: "8px 10px 6px", display: "flex", alignItems: "center", justifyContent: "space-between", background: isToday ? X.abg : "#fafafa", borderBottom: `1px solid ${X.bdr}` }}>
                   <span style={{ fontSize: 12, fontWeight: 700, color: isToday ? X.ac : X.sub }}>{DAY_KR[dow]}</span>
                   <div style={{ width: 26, height: 26, borderRadius: "50%", background: isToday ? X.ac : "transparent", color: isToday ? "#fff" : X.tx, fontSize: 12, fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center" }}>
                     {date.getDate()}
                   </div>
                 </div>
-
-                {/* 기사 블록 */}
                 {art ? (
                   <div style={{ display: "flex", flexDirection: "column", flex: 1 }}>
-                    {/* 이미지 — 4:3 비율 */}
-                    <div className="ntc-week-img-wrap" style={{ position: "relative", width: "100%", paddingTop: "75%" }}>
+                    <div style={{ position: "relative", width: "100%", paddingTop: "75%" }}>
                       <img src={art.img} alt="" style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover" }} />
-                      {done && (
-                        <div style={{ position: "absolute", inset: 0, background: "rgba(16,185,129,0.72)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 32, color: "#fff" }}>✓</div>
-                      )}
-                      {isToday && !done && (
-                        <div style={{ position: "absolute", top: 6, right: 6, background: X.ac, color: "#fff", fontSize: 9, fontWeight: 800, borderRadius: 8, padding: "2px 7px", letterSpacing: "0.02em" }}>오늘!</div>
-                      )}
+                      {done && <div style={{ position: "absolute", inset: 0, background: "rgba(16,185,129,0.72)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 32, color: "#fff" }}>✓</div>}
+                      {isToday && !done && <div style={{ position: "absolute", top: 6, right: 6, background: X.ac, color: "#fff", fontSize: 9, fontWeight: 800, borderRadius: 8, padding: "2px 7px" }}>오늘!</div>}
                     </div>
-                    {/* 제목 + 진행바 */}
-                    <div className="ntc-week-body" style={{ padding: "8px 10px 10px" }}>
-                      <div style={{ fontSize: 11, fontWeight: 700, color: isPast && !done ? X.mt : X.tx, lineHeight: 1.4, overflow: "hidden", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical" }}>
-                        {art.title}
-                      </div>
+                    <div style={{ padding: "8px 10px 10px" }}>
+                      <div style={{ fontSize: 11, fontWeight: 700, color: isPast && !done ? X.mt : X.tx, lineHeight: 1.4, overflow: "hidden", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical" }}>{art.title}</div>
                       <div style={{ display: "flex", gap: 2, marginTop: 6 }}>
-                        {[pg.wl, pg.r, pg.v, pg.sb, pg.w].map((v, i) => (
-                          <div key={i} style={{ flex: 1, height: 3, borderRadius: 2, background: v ? X.gn : X.bdr }} />
-                        ))}
+                        {[pg.wl, pg.r, pg.v, pg.sb, pg.w].map((v, i) => <div key={i} style={{ flex: 1, height: 3, borderRadius: 2, background: v ? X.gn : X.bdr }} />)}
                       </div>
                     </div>
                   </div>
                 ) : isSlot ? (
-                  <div className="ntc-week-empty" style={{ padding: "24px 10px", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                  <div style={{ padding: "24px 10px", display: "flex", alignItems: "center", justifyContent: "center" }}>
                     <span style={{ fontSize: 11, color: X.mt }}>과제 없음</span>
                   </div>
                 ) : (
@@ -2321,23 +2383,39 @@ export default function App() {
   };
 
   /* ─── STUDENT TASKS ─── */
-  const STasks = () => (
-    <div className="fade-up">
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 20 }}>
-        <div>
-          <h2 style={{ fontFamily: F.h, fontWeight: 800, fontSize: 24 }}>나의 과제</h2>
-          <p style={{ fontSize: 13, color: X.sub, marginTop: 4 }}>선생님이 배정한 기사를 순서대로 학습하세요.</p>
+  const STasks = () => {
+    const [isMobile, setIsMobile] = useState(() => window.innerWidth <= 600);
+    useEffect(() => {
+      const mq = window.matchMedia("(max-width:600px)");
+      const handler = e => setIsMobile(e.matches);
+      mq.addEventListener("change", handler);
+      return () => mq.removeEventListener("change", handler);
+    }, []);
+
+    return (
+      <div className="fade-up">
+        {/* 헤더 */}
+        <div style={{ marginBottom: 20 }}>
+          <div style={{ display: "flex", alignItems: isMobile ? "flex-start" : "center", justifyContent: "space-between", flexDirection: isMobile ? "column" : "row", gap: isMobile ? 10 : 0 }}>
+            <div>
+              <h2 style={{ fontFamily: F.h, fontWeight: 800, fontSize: isMobile ? 20 : 24 }}>나의 과제</h2>
+              <p style={{ fontSize: 13, color: X.sub, marginTop: 4 }}>선생님이 배정한 기사를 순서대로 학습하세요.</p>
+            </div>
+            <select
+              style={{ padding: "7px 12px", borderRadius: 10, border: `1px solid ${X.bdr}`, fontSize: 13, fontFamily: F.b, color: X.tx, background: "#fff", width: isMobile ? "100%" : "auto" }}
+              value={sSt} onChange={e => { setSSt(e.target.value); setSArt(null); setSv("tasks"); }}
+            >
+              {dynALL.map(s => <option key={s.id} value={s.id}>{s.nm} ({s.cNm})</option>)}
+            </select>
+          </div>
         </div>
-        <select style={{ padding: "7px 12px", borderRadius: 10, border: `1px solid ${X.bdr}`, fontSize: 13, fontFamily: F.b, color: X.tx, background: "#fff", flexShrink: 0 }} value={sSt} onChange={e => { setSSt(e.target.value); setSArt(null); setSv("tasks"); }}>
-          {dynALL.map(s => <option key={s.id} value={s.id}>{s.nm} ({s.cNm})</option>)}
-        </select>
+        <WeekCalendar isMobile={isMobile} />
+        {!sAs.length && (
+          <Cd style={{ textAlign: "center", padding: 48, color: X.mt }}>배정된 과제가 없습니다.</Cd>
+        )}
       </div>
-      <WeekCalendar />
-      {!sAs.length && (
-        <Cd style={{ textAlign: "center", padding: 48, color: X.mt }}>배정된 과제가 없습니다.</Cd>
-      )}
-    </div>
-  );
+    );
+  };
 
   /* ─── STUDENT READING HERO (full-width, rendered outside container) ─── */
   const SReadHero = () => {

@@ -140,14 +140,4 @@ body { font-family:'Pretendard',sans-serif; }
 .ntc-speed-row { display:inline-flex; align-items:center; gap:6px; margin-left:4px; }
 @media (max-width:480px) { .ntc-speed-row { flex:0 0 100%; margin-left:0; } }
 .ntc-play-pulse { animation: ntcPlayPulse 1.1s ease-in-out infinite; }
-@media (max-width:600px) {
-  .ntc-week-grid { grid-template-columns:1fr !important; }
-  .ntc-week-card { flex-direction:row !important; align-items:stretch; }
-  .ntc-week-header { width:52px !important; flex-shrink:0; border-bottom:none !important; border-right:1px solid #e5e7eb; flex-direction:column !important; justify-content:center !important; }
-  .ntc-week-img-wrap { width:88px !important; flex-shrink:0; }
-  .ntc-week-img-wrap > div { padding-top:0 !important; height:88px !important; }
-  .ntc-week-img-wrap > div > img, .ntc-week-img-wrap > div > div { position:absolute; inset:0; width:100% !important; height:100% !important; }
-  .ntc-week-body { flex:1; min-width:0; }
-  .ntc-week-empty { padding:0 12px !important; display:flex; align-items:center; flex:1; }
-}
 `;
