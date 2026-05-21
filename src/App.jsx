@@ -581,6 +581,7 @@ function SentenceBuildStep({ sentences, onComplete, onBack }) {
   const [correct, setCorrect] = useState(false);
   const [correctCount, setCorrectCount] = useState(0);
   const [draggingIdx, setDraggingIdx] = useState(null);
+  const [dragOverIdx, setDragOverIdx] = useState(null);
   const dragSrcIdx = useRef(null);
 
   const onDragStart = (e, i) => {
@@ -591,17 +592,23 @@ function SentenceBuildStep({ sentences, onComplete, onBack }) {
   const onDragOver = (e, i) => {
     e.preventDefault();
     e.dataTransfer.dropEffect = "move";
-    if (dragSrcIdx.current === null || dragSrcIdx.current === i) return;
+    setDragOverIdx(i);
+  };
+  const onDrop = (e, i) => {
+    e.preventDefault();
+    const src = dragSrcIdx.current;
+    if (src === null || src === i) return;
     setSel(prev => {
       const next = [...prev];
-      const [removed] = next.splice(dragSrcIdx.current, 1);
+      const [removed] = next.splice(src, 1);
       next.splice(i, 0, removed);
-      dragSrcIdx.current = i;
-      setDraggingIdx(i);
       return next;
     });
+    dragSrcIdx.current = null;
+    setDraggingIdx(null);
+    setDragOverIdx(null);
   };
-  const onDragEnd = () => { dragSrcIdx.current = null; setDraggingIdx(null); };
+  const onDragEnd = () => { dragSrcIdx.current = null; setDraggingIdx(null); setDragOverIdx(null); };
 
   useEffect(() => {
     if (!sentences[idx]) return;
@@ -669,6 +676,7 @@ function SentenceBuildStep({ sentences, onComplete, onBack }) {
       {/* 선택된 단어 영역 */}
       <div
         onDragOver={e => e.preventDefault()}
+        onDrop={e => { e.preventDefault(); setDraggingIdx(null); setDragOverIdx(null); }}
         style={{ minHeight: 72, background: checked ? (correct ? "#f0fdf4" : "#fef2f2") : X.abg, border: `2px dashed ${checked ? (correct ? "#a7f3d0" : "#fecaca") : X.ac}`, borderRadius: 16, padding: "14px 18px", marginBottom: 16, display: "flex", flexWrap: "wrap", gap: 8, alignItems: "flex-start", alignContent: "flex-start" }}>
         {sel.length === 0 && !checked && (
           <span style={{ color: X.mt, fontSize: 13 }}>단어를 순서대로 선택하세요</span>
@@ -678,9 +686,10 @@ function SentenceBuildStep({ sentences, onComplete, onBack }) {
             draggable={!checked}
             onDragStart={e => onDragStart(e, i)}
             onDragOver={e => onDragOver(e, i)}
+            onDrop={e => onDrop(e, i)}
             onDragEnd={onDragEnd}
             onClick={() => unpickWord(token)}
-            style={{ padding: "6px 14px", borderRadius: 20, border: `2px solid ${checked ? (correct ? "#a7f3d0" : "#fecaca") : draggingIdx === i ? "#93c5fd" : X.ac}`, background: checked ? (correct ? "#dcfce7" : "#fee2e2") : draggingIdx === i ? "#dbeafe" : "#fff", color: X.tx, fontSize: 14, fontWeight: 600, cursor: checked ? "default" : draggingIdx === i ? "grabbing" : "grab", fontFamily: "inherit", transition: "all .15s", opacity: draggingIdx === i ? 0.6 : 1, transform: draggingIdx === i ? "scale(1.05)" : "scale(1)" }}>
+            style={{ padding: "6px 14px", borderRadius: 20, border: `2px solid ${checked ? (correct ? "#a7f3d0" : "#fecaca") : draggingIdx === i ? "#93c5fd" : dragOverIdx === i ? "#a78bfa" : X.ac}`, background: checked ? (correct ? "#dcfce7" : "#fee2e2") : draggingIdx === i ? "#dbeafe" : dragOverIdx === i ? "#ede9fe" : "#fff", color: X.tx, fontSize: 14, fontWeight: 600, cursor: checked ? "default" : draggingIdx === i ? "grabbing" : "grab", fontFamily: "inherit", transition: "all .15s", opacity: draggingIdx === i ? 0.5 : 1, transform: draggingIdx === i ? "scale(0.95)" : dragOverIdx === i ? "scale(1.08)" : "scale(1)" }}>
             {token.w}
           </button>
         ))}
