@@ -1623,15 +1623,25 @@ export default function App() {
 
   const cR = () => {
     uP(sSt, sArt, "r");
-    initVocOptions(cW.filter(w => w.pid).slice(0, 4));
+    initVocOptions(cW.filter(w => w.pid).slice(0, 4), cW);
     setSv("voc");
   };
-  const initVocOptions = (wordList) => {
-    const ak = wordList.map(w => w.kr);
+  const initVocOptions = (wordList, allWords) => {
+    // allWords: 해당 기사의 전체 단어 — 보기 풀(pool)로 사용
+    const pool = (allWords && allWords.length > wordList.length ? allWords : wordList);
     const o = {};
     wordList.forEach((w) => {
-      const wr = ak.filter((k) => k !== w.kr).sort(() => Math.random() - 0.5).slice(0, 2);
-      o[w.i] = [w.kr, ...wr].sort(() => Math.random() - 0.5);
+      const distractors = pool
+        .filter(pw => pw.kr !== w.kr)
+        .sort(() => Math.random() - 0.5)
+        .slice(0, 2)
+        .map(pw => pw.kr);
+      // 보기가 2개 미만이면 wordList 내에서 보충
+      const extra = wordList
+        .filter(pw => pw.kr !== w.kr && !distractors.includes(pw.kr))
+        .map(pw => pw.kr);
+      const opts3 = [...distractors, ...extra].slice(0, 2);
+      o[w.i] = [w.kr, ...opts3].sort(() => Math.random() - 0.5);
     });
     setVo(o);
     setVa({});
@@ -2182,7 +2192,7 @@ export default function App() {
       if (done) setSv("dn");
       else if (p.wl && p.r && p.v && p.sb && !p.w) setSv("rec");
       else if (p.wl && p.r && p.v && !p.sb) setSv("ssb");
-      else if (p.wl && p.r && !p.v) { initVocOptions((W[entry.seq] || []).filter(w => w.pid).slice(0, 4)); setSv("voc"); }
+      else if (p.wl && p.r && !p.v) { const _aw = W[entry.seq] || []; initVocOptions(_aw.filter(w => w.pid).slice(0, 4), _aw); setSv("voc"); }
       else if (p.wl && !p.r) setSv("rd");
       else setSv("wl");
       setVa({}); setWa({}); setVd(false); setWd(false);
@@ -2653,7 +2663,18 @@ export default function App() {
 
     /* 문제별 퀴즈 화면 */
     const w = ws[vocIdx];
-    const opts = w ? (vo[w.i] || [w.kr]) : [];
+    const opts = (() => {
+      if (!w) return [];
+      const cached = vo[w.i];
+      if (cached && cached.length >= 2) return cached;
+      // vo 미초기화 시 즉석 생성 — 기사 전체 단어를 보기 풀로 사용
+      const distractors = cW
+        .filter(pw => pw.kr !== w.kr)
+        .sort(() => Math.random() - 0.5)
+        .slice(0, 2)
+        .map(pw => pw.kr);
+      return [w.kr, ...distractors].sort(() => Math.random() - 0.5);
+    })();
     const sel = w ? va[w.i] : null;
     const isChecked = w ? !!vchecked[w.i] : false;
     const isCorrect = isChecked && sel === w?.kr;
