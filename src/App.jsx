@@ -1724,73 +1724,177 @@ export default function App() {
 
   /* ─── TEACHER PROGRESS ─── */
   const TProg = () => {
+    const [pView, setPView] = useState("summary"); // "summary" | "detail"
+
+    const STEP_LABELS = ["단어보기", "읽기", "단어퀴즈", "문장만들기", "녹음"];
+
+    const clsWithSts = clsData.filter(cls => cls.sts.length > 0);
+
+    const ClassCardHeader = ({ cls, band }) => (
+      <div style={{ padding: "12px 18px", background: band.bg, borderBottom: `1px solid ${band.r}`, display: "flex", alignItems: "center", gap: 8 }}>
+        <span style={{ fontFamily: F.h, fontWeight: 800, fontSize: 15, color: band.c }}>{cls.nm}</span>
+        <span style={{ fontSize: 10, fontWeight: 700, color: band.c, background: "rgba(255,255,255,0.7)", border: `1px solid ${band.r}`, borderRadius: 6, padding: "2px 7px", fontFamily: F.b }}>{(clsFreq[cls.id] || "주2회").replace("주", "주 ").replace("회", " 회")}</span>
+        <span style={{ fontSize: 11, color: band.c, marginLeft: 2 }}>{cls.sts.length}명</span>
+        <button onClick={e => { e.stopPropagation(); setAt({ t: "class", id: cls.id }); setAr(null); setAssignModal({ cls }); }} style={{ fontSize: 11, fontWeight: 700, color: "#fff", background: X.dk, borderRadius: 20, padding: "3px 11px", border: "none", cursor: "pointer", fontFamily: F.b, marginLeft: "auto" }}>+ 기사 배정</button>
+      </div>
+    );
+
     return (
       <div>
-        <p style={{ fontSize: 13, color: X.sub, marginBottom: 16 }}>이번 주에 발행된 콘텐츠의 학습 현황입니다.</p>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(300px,1fr))", gap: 16 }}>
-          {clsData.filter(cls => cls.sts.length > 0).map(cls => {
-            const levelKey = cls.level || cls.nm.replace("반", "");
-            const band = BANDS[levelKey] || { c: X.ac, bg: X.abg, r: "#bfdbfe" };
-            const allSeqs = [...new Set(cls.sts.flatMap(st => (asgn[st.id] || []).map(a => a.seq)))];
+        {/* 헤더 + 뷰 토글 */}
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
+          <p style={{ fontSize: 13, color: X.sub }}>이번 주에 발행된 콘텐츠의 학습 현황입니다.</p>
+          <div style={{ display: "flex", gap: 2, background: "#f1f5f9", borderRadius: 10, padding: 3 }}>
+            {[["summary", "요약"], ["detail", "상세"]].map(([v, l]) => (
+              <button key={v} onClick={() => setPView(v)}
+                style={{ padding: "5px 16px", borderRadius: 8, border: "none", fontSize: 12, fontWeight: 700, fontFamily: F.b, cursor: "pointer", background: pView === v ? "#fff" : "transparent", color: pView === v ? X.tx : X.sub, boxShadow: pView === v ? "0 1px 4px rgba(0,0,0,.08)" : "none", transition: "all .15s" }}>
+                {l}
+              </button>
+            ))}
+          </div>
+        </div>
 
-            const CardHeader = () => (
-              <div style={{ padding: "14px 18px", background: band.bg, borderBottom: `1px solid ${band.r}`, display: "flex", alignItems: "center", gap: 8 }}>
-                <span style={{ fontFamily: F.h, fontWeight: 800, fontSize: 16, color: band.c }}>{cls.nm}</span>
-                <span style={{ fontSize: 10, fontWeight: 700, color: band.c, background: "rgba(255,255,255,0.7)", border: `1px solid ${band.r}`, borderRadius: 6, padding: "2px 7px", fontFamily: F.b }}>{(clsFreq[cls.id] || "주2회").replace("주", "주 ").replace("회", " 회")}</span>
-                <button onClick={e => { e.stopPropagation(); setAt({ t: "class", id: cls.id }); setAr(null); setAssignModal({ cls }); }} style={{ fontSize: 11, fontWeight: 700, color: "#fff", background: X.dk, borderRadius: 20, padding: "3px 11px", border: "none", cursor: "pointer", fontFamily: F.b, marginLeft: "auto" }}>+ 기사 배정</button>
-              </div>
-            );
-
-            if (allSeqs.length === 0) {
+        {/* ── 요약 보기 ── */}
+        {pView === "summary" && (
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(300px,1fr))", gap: 16 }}>
+            {clsWithSts.map(cls => {
+              const levelKey = cls.level || cls.nm.replace("반", "");
+              const band = BANDS[levelKey] || { c: X.ac, bg: X.abg, r: "#bfdbfe" };
+              const allSeqs = [...new Set(cls.sts.flatMap(st => (asgn[st.id] || []).map(a => a.seq)))];
               return (
                 <Cd key={cls.id} className="card-hover" style={{ padding: 0, overflow: "hidden" }}>
-                  <CardHeader />
-                  <div style={{ padding: "24px 18px", textAlign: "center" }}>
-                    <p style={{ fontSize: 13, color: X.mt }}>배정된 과제 없음</p>
-                  </div>
+                  <ClassCardHeader cls={cls} band={band} />
+                  {allSeqs.length === 0 ? (
+                    <div style={{ padding: "24px 18px", textAlign: "center" }}>
+                      <p style={{ fontSize: 13, color: X.mt }}>배정된 과제 없음</p>
+                    </div>
+                  ) : (
+                    <div style={{ padding: "10px 14px", display: "flex", flexDirection: "column", gap: 8 }}>
+                      {allSeqs.map(seq => {
+                        const art = ARTS.find(a => a.seq === seq);
+                        const students = cls.sts
+                          .filter(st => (asgn[st.id] || []).some(a => a.seq === seq))
+                          .map(st => ({ st, done: iD(effProg, st.id, seq), arts: [{ seq }] }));
+                        const doneCount = students.filter(x => x.done).length;
+                        const total = students.length;
+                        const allDone = doneCount === total && total > 0;
+                        const bmLabel = BM[seq];
+                        return (
+                          <div key={seq}
+                            onClick={() => setDetailModal({ cls, prevStudents: students, label: art?.title || seq, seq })}
+                            style={{ padding: "10px 14px", borderRadius: 10, background: "#f8fafc", border: `1px solid ${X.bdr}`, cursor: "pointer", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                            <div style={{ minWidth: 0 }}>
+                              <div style={{ fontSize: 12, fontWeight: 700, color: X.tx, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", marginBottom: 3 }}>{art?.title || seq}</div>
+                              {bmLabel && BANDS[bmLabel] && <div style={{ fontSize: 11, color: X.sub, fontWeight: 500 }}>{BANDS[bmLabel].min}L–{BANDS[bmLabel].max}L</div>}
+                            </div>
+                            <div style={{ display: "flex", alignItems: "center", gap: 6, flexShrink: 0 }}>
+                              {allDone
+                                ? <span style={{ fontSize: 11, fontWeight: 700, color: X.gn, background: X.gbg, borderRadius: 20, padding: "3px 10px" }}>✓ 전원완료</span>
+                                : <span style={{ fontSize: 11, fontWeight: 700, color: X.sub, background: "#f1f5f9", borderRadius: 20, padding: "3px 10px" }}>{total - doneCount}명 진행중</span>
+                              }
+                              <span style={{ fontSize: 16, color: X.mt, lineHeight: 1 }}>›</span>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
                 </Cd>
               );
-            }
+            })}
+          </div>
+        )}
 
-            return (
-              <Cd key={cls.id} className="card-hover" style={{ padding: 0, overflow: "hidden" }}>
-                <CardHeader />
-                <div style={{ padding: "10px 14px", display: "flex", flexDirection: "column", gap: 8 }}>
-                  {allSeqs.map(seq => {
-                    const art = ARTS.find(a => a.seq === seq);
-                    const students = cls.sts
-                      .filter(st => (asgn[st.id] || []).some(a => a.seq === seq))
-                      .map(st => ({ st, done: iD(effProg, st.id, seq), arts: [{ seq }] }));
-                    const doneCount = students.filter(x => x.done).length;
-                    const total = students.length;
-                    const allDone = doneCount === total && total > 0;
-                    const bmLabel = BM[seq];
-                    const artBand = bmLabel ? BANDS[bmLabel] : null;
-                    return (
-                      <div
-                        key={seq}
-                        onClick={() => setDetailModal({ cls, prevStudents: students, label: art?.title || seq, seq })}
-                        style={{ padding: "10px 14px", borderRadius: 10, background: "#f8fafc", border: `1px solid ${X.bdr}`, cursor: "pointer", display: "flex", justifyContent: "space-between", alignItems: "center" }}
-                      >
-                        <div style={{ minWidth: 0 }}>
-                          <div style={{ fontSize: 12, fontWeight: 700, color: X.tx, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", marginBottom: 3 }}>{art?.title || seq}</div>
-                          {bmLabel && BANDS[bmLabel] && <div style={{ fontSize: 11, color: X.sub, fontWeight: 500 }}>{BANDS[bmLabel].min}L–{BANDS[bmLabel].max}L</div>}
-                        </div>
-                        <div style={{ display: "flex", alignItems: "center", gap: 6, flexShrink: 0 }}>
-                          {allDone
-                            ? <span style={{ fontSize: 11, fontWeight: 700, color: X.gn, background: X.gbg, borderRadius: 20, padding: "3px 10px" }}>✓ 전원완료</span>
-                            : <span style={{ fontSize: 11, fontWeight: 700, color: X.sub, background: "#f1f5f9", borderRadius: 20, padding: "3px 10px" }}>{total - doneCount}명 진행중</span>
-                          }
-                          <span style={{ fontSize: 16, color: X.mt, lineHeight: 1 }}>›</span>
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              </Cd>
-            );
-          })}
-        </div>
+        {/* ── 상세 보기 ── */}
+        {pView === "detail" && (
+          <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
+            {clsWithSts.map(cls => {
+              const levelKey = cls.level || cls.nm.replace("반", "");
+              const band = BANDS[levelKey] || { c: X.ac, bg: X.abg, r: "#bfdbfe" };
+              const allSeqs = [...new Set(cls.sts.flatMap(st => (asgn[st.id] || []).map(a => a.seq)))];
+              return (
+                <Cd key={cls.id} style={{ padding: 0, overflow: "hidden" }}>
+                  <ClassCardHeader cls={cls} band={band} />
+                  {allSeqs.length === 0 ? (
+                    <div style={{ padding: "24px", textAlign: "center" }}>
+                      <p style={{ fontSize: 13, color: X.mt }}>배정된 과제 없음</p>
+                    </div>
+                  ) : (
+                    <div style={{ overflowX: "auto" }}>
+                      <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13, tableLayout: "fixed" }}>
+                        <colgroup>
+                          <col style={{ width: 150 }} />
+                          {allSeqs.map(seq => <col key={seq} style={{ width: 160 }} />)}
+                        </colgroup>
+                        <thead>
+                          <tr style={{ background: "#f8fafc", height: 48 }}>
+                            <th style={{ padding: "0 18px", textAlign: "left", fontWeight: 700, color: X.sub, fontSize: 12, borderBottom: `2px solid ${X.bdr}`, verticalAlign: "middle" }}>학생</th>
+                            {allSeqs.map(seq => {
+                              const art = ARTS.find(a => a.seq === seq);
+                              const bmLabel = BM[seq];
+                              return (
+                                <th key={seq} style={{ padding: "0 16px", textAlign: "center", fontWeight: 700, color: X.tx, borderBottom: `2px solid ${X.bdr}`, borderLeft: `1px solid ${X.bdr}`, verticalAlign: "middle" }}>
+                                  <div style={{ fontSize: 12, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{art?.title || seq}</div>
+                                  {bmLabel && BANDS[bmLabel] && <div style={{ fontSize: 10, color: X.sub, fontWeight: 500, marginTop: 2 }}>{BANDS[bmLabel].min}L–{BANDS[bmLabel].max}L</div>}
+                                </th>
+                              );
+                            })}
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {cls.sts.map((st, stIdx) => {
+                            const stAsgn = (asgn[st.id] || []).map(a => a.seq);
+                            return (
+                              <tr key={st.id} style={{ borderBottom: `1px solid #f0f0f4`, background: stIdx % 2 === 0 ? "#fff" : "#fafbfc", height: 56 }}>
+                                <td style={{ padding: "0 18px", verticalAlign: "middle", fontWeight: 600, color: X.tx }}>
+                                  <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                                    <div style={{ width: 28, height: 28, borderRadius: 8, background: band.bg, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 13, color: band.c, fontWeight: 700, fontFamily: F.h, flexShrink: 0 }}>{st.nm[0]}</div>
+                                    <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{st.nm}</span>
+                                  </div>
+                                </td>
+                                {allSeqs.map(seq => {
+                                  if (!stAsgn.includes(seq)) {
+                                    return (
+                                      <td key={seq} style={{ padding: "0 16px", textAlign: "center", verticalAlign: "middle", borderLeft: `1px solid ${X.bdr}` }}>
+                                        <span style={{ color: X.bdr, fontSize: 16 }}>—</span>
+                                      </td>
+                                    );
+                                  }
+                                  const pg = gP(effProg, st.id, seq);
+                                  const steps = [pg.wl, pg.r, pg.v, pg.sb, pg.w];
+                                  const doneCnt = steps.filter(Boolean).length;
+                                  const allDone = doneCnt === 5;
+                                  return (
+                                    <td key={seq} style={{ padding: "0 16px", textAlign: "center", verticalAlign: "middle", borderLeft: `1px solid ${X.bdr}` }}>
+                                      <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 4 }}>
+                                        {allDone ? (
+                                          <span style={{ width: 30, height: 30, borderRadius: "50%", background: X.gbg, color: X.gn, fontWeight: 800, fontSize: 15, display: "flex", alignItems: "center", justifyContent: "center" }}>✓</span>
+                                        ) : doneCnt > 0 ? (
+                                          <span style={{ width: 30, height: 30, borderRadius: "50%", background: X.abg2, color: X.am, fontWeight: 800, fontSize: 11, display: "flex", alignItems: "center", justifyContent: "center" }}>{doneCnt}/5</span>
+                                        ) : (
+                                          <span style={{ width: 30, height: 30, borderRadius: "50%", background: "#f1f5f9", color: X.mt, fontWeight: 700, fontSize: 13, display: "flex", alignItems: "center", justifyContent: "center" }}>✕</span>
+                                        )}
+                                        <div style={{ display: "flex", gap: 2 }}>
+                                          {steps.map((v, i) => (
+                                            <div key={i} title={STEP_LABELS[i]} style={{ width: 7, height: 4, borderRadius: 2, background: v ? X.gn : "#e2e8f0" }} />
+                                          ))}
+                                        </div>
+                                      </div>
+                                    </td>
+                                  );
+                                })}
+                              </tr>
+                            );
+                          })}
+                        </tbody>
+                      </table>
+                    </div>
+                  )}
+                </Cd>
+              );
+            })}
+          </div>
+        )}
       </div>
     );
   };
@@ -1818,7 +1922,7 @@ export default function App() {
           const bColor = band.c;
           const bBg = band.bg;
           return (
-            <Cd key={cls.id} style={{ padding: 0, overflow: "hidden" }}>
+            <Cd key={cls.id} style={{ padding: 0, overflow: "hidden", display: "flex", flexDirection: "column" }}>
               <div style={{ padding: "12px 16px", background: bBg, borderBottom: `1px solid ${X.bdr}`, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                 <div style={{ display: "flex", alignItems: "center", gap: 7, minWidth: 0 }}>
                   <span style={{ fontFamily: F.h, fontWeight: 700, fontSize: 15, color: bColor, whiteSpace: "nowrap" }}>{cls.nm}</span>
@@ -1832,7 +1936,12 @@ export default function App() {
                 </div>
               </div>
               {cls.sts.length === 0 ? (
-                <div style={{ padding: "20px 16px", color: X.mt, fontSize: 13, textAlign: "center" }}>등록된 학생이 없습니다.</div>
+                <div style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                  <button
+                    onClick={openAddModal}
+                    style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "8px 18px", borderRadius: 10, border: `1px dashed ${X.bdr}`, background: "#f8f9fa", color: X.sub, fontSize: 13, fontWeight: 700, fontFamily: F.b, cursor: "pointer" }}
+                  >+ 학생 등록</button>
+                </div>
               ) : (
                 <div style={{ padding: "8px 0" }}>
                   {cls.sts.map(st => (
@@ -1865,10 +1974,137 @@ export default function App() {
     </div>
   );
 
+  /* ─── WEEKLY CALENDAR ─── */
+  const WeekCalendar = () => {
+    // 서울 시간 기준 오늘
+    const now = new Date();
+    const seoulMs = now.getTime() + (now.getTimezoneOffset() + 9 * 60) * 60000;
+    const today = new Date(seoulMs);
+    const todayDow = today.getDay();
+
+    // 이번 주 월요일
+    const monday = new Date(today);
+    monday.setDate(today.getDate() - (todayDow === 0 ? 6 : todayDow - 1));
+    monday.setHours(0, 0, 0, 0);
+
+    // 기준일(2026-01-05)로부터 몇 번째 주인지
+    const REF = new Date(2026, 0, 5);
+    const weekIdx = Math.max(0, Math.round((monday - REF) / (7 * 24 * 60 * 60 * 1000)));
+
+    // 학생 반 & 수업 주기
+    const stCls = clsData.find(c => c.sts.some(s => s.id === sSt));
+    const freq = stCls ? (clsFreq[stCls.id] || "주2회") : "주2회";
+    const FREQ_SLOTS = { "주2회": [2, 4], "주3회": [1, 3, 5], "주5회": [1, 2, 3, 4, 5] };
+    const slotDays = FREQ_SLOTS[freq] || [2, 4];
+    const slotsPerWeek = slotDays.length;
+    const DAY_KR = { 1: "월", 2: "화", 3: "수", 4: "목", 5: "금" };
+    const todayKey = `${today.getFullYear()}-${today.getMonth()}-${today.getDate()}`;
+
+    const goToArt = (entry) => {
+      if (!entry || !entry.art) return;
+      setSArt(entry.seq);
+      const p = entry.pg;
+      const done = p.r && p.wl && p.v && p.sb && p.w;
+      if (done) setSv("dn");
+      else if (p.wl && p.r && p.v && p.sb && !p.w) setSv("rec");
+      else if (p.wl && p.r && p.v && !p.sb) setSv("ssb");
+      else if (p.wl && p.r && !p.v) { initVocOptions((W[entry.seq] || []).filter(w => w.pid).slice(0, 4)); setSv("voc"); }
+      else if (p.wl && !p.r) setSv("rd");
+      else setSv("wl");
+      setVa({}); setWa({}); setVd(false); setWd(false);
+    };
+
+    return (
+      <div style={{ marginBottom: 8 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 12 }}>
+          <span style={{ fontFamily: F.h, fontWeight: 700, fontSize: 16, color: X.tx }}>이번 주 일정</span>
+          <span style={{ fontSize: 11, color: X.sub, fontWeight: 600, background: "#f1f5f9", border: `1px solid ${X.bdr}`, borderRadius: 20, padding: "2px 8px" }}>{freq}</span>
+        </div>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(5, 1fr)", gap: 8 }}>
+          {[1, 2, 3, 4, 5].map(dow => {
+            const isSlot = slotDays.includes(dow);
+            const slotPos = slotDays.indexOf(dow);
+            const globalIdx = isSlot ? weekIdx * slotsPerWeek + slotPos : -1;
+            const artIdx = (isSlot && sAs.length > 0) ? globalIdx % sAs.length : -1;
+            const entry = artIdx >= 0 ? sAs[artIdx] : null;
+
+            const date = new Date(monday);
+            date.setDate(monday.getDate() + (dow - 1));
+            const dateKey = `${date.getFullYear()}-${date.getMonth()}-${date.getDate()}`;
+            const isToday = dateKey === todayKey;
+            const isPast = date < new Date(today.getFullYear(), today.getMonth(), today.getDate());
+
+            const art = entry?.art;
+            const pg = entry?.pg;
+            const done = pg ? !!(pg.r && pg.wl && pg.v && pg.sb && pg.w) : false;
+
+            return (
+              <div key={dow}
+                onClick={() => goToArt(entry)}
+                style={{
+                  borderRadius: 14,
+                  border: isToday ? `2px solid ${X.ac}` : `1px solid ${X.bdr}`,
+                  background: "#fff",
+                  overflow: "hidden",
+                  cursor: entry ? "pointer" : "default",
+                  opacity: !isSlot ? 0.32 : 1,
+                  transition: "box-shadow .15s, transform .15s",
+                }}
+                onMouseEnter={e => { if (entry) { e.currentTarget.style.boxShadow = "0 4px 20px rgba(0,0,0,.10)"; e.currentTarget.style.transform = "translateY(-2px)"; }}}
+                onMouseLeave={e => { e.currentTarget.style.boxShadow = ""; e.currentTarget.style.transform = ""; }}
+              >
+                {/* 요일/날짜 헤더 */}
+                <div style={{ padding: "8px 10px 6px", display: "flex", alignItems: "center", justifyContent: "space-between", background: isToday ? X.abg : "#fafafa", borderBottom: `1px solid ${X.bdr}` }}>
+                  <span style={{ fontSize: 12, fontWeight: 700, color: isToday ? X.ac : X.sub }}>{DAY_KR[dow]}</span>
+                  <div style={{ width: 26, height: 26, borderRadius: "50%", background: isToday ? X.ac : "transparent", color: isToday ? "#fff" : X.tx, fontSize: 12, fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                    {date.getDate()}
+                  </div>
+                </div>
+
+                {/* 기사 블록 */}
+                {art ? (
+                  <div>
+                    {/* 이미지 — 4:3 비율 */}
+                    <div style={{ position: "relative", width: "100%", paddingTop: "75%" }}>
+                      <img src={art.img} alt="" style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover" }} />
+                      {done && (
+                        <div style={{ position: "absolute", inset: 0, background: "rgba(16,185,129,0.72)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 32, color: "#fff" }}>✓</div>
+                      )}
+                      {isToday && !done && (
+                        <div style={{ position: "absolute", top: 6, right: 6, background: X.ac, color: "#fff", fontSize: 9, fontWeight: 800, borderRadius: 8, padding: "2px 7px", letterSpacing: "0.02em" }}>오늘!</div>
+                      )}
+                    </div>
+                    {/* 제목 + 진행바 */}
+                    <div style={{ padding: "8px 10px 10px" }}>
+                      <div style={{ fontSize: 11, fontWeight: 700, color: isPast && !done ? X.mt : X.tx, lineHeight: 1.4, overflow: "hidden", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical" }}>
+                        {art.title}
+                      </div>
+                      <div style={{ display: "flex", gap: 2, marginTop: 6 }}>
+                        {[pg.wl, pg.r, pg.v, pg.sb, pg.w].map((v, i) => (
+                          <div key={i} style={{ flex: 1, height: 3, borderRadius: 2, background: v ? X.gn : X.bdr }} />
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                ) : isSlot ? (
+                  <div style={{ padding: "24px 10px", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                    <span style={{ fontSize: 11, color: X.mt }}>과제 없음</span>
+                  </div>
+                ) : (
+                  <div style={{ padding: "24px 10px" }} />
+                )}
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    );
+  };
+
   /* ─── STUDENT TASKS ─── */
   const STasks = () => (
     <div className="fade-up">
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 24 }}>
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 20 }}>
         <div>
           <h2 style={{ fontFamily: F.h, fontWeight: 800, fontSize: 24 }}>나의 과제</h2>
           <p style={{ fontSize: 13, color: X.sub, marginTop: 4 }}>선생님이 배정한 기사를 순서대로 학습하세요.</p>
@@ -1877,53 +2113,10 @@ export default function App() {
           {dynALL.map(s => <option key={s.id} value={s.id}>{s.nm} ({s.cNm})</option>)}
         </select>
       </div>
-      {!sAs.length
-        ? <Cd style={{ textAlign: "center", padding: 48, color: X.mt }}>배정된 과제가 없습니다.</Cd>
-        : (
-          <div style={{ display: "grid", gap: 14 }}>
-            {sAs.map(({ art, seq, pg }) => {
-              if (!art) return null;
-              const d = pg.r && pg.wl && pg.v && pg.sb && pg.w;
-              const s = [pg.wl, pg.r, pg.v, pg.sb, pg.w].filter(Boolean).length;
-              return (
-                <Cd key={seq} style={{ cursor: "pointer", padding: 20 }}
-                  onClick={() => {
-                    setSArt(seq);
-                    if (d) setSv("dn");
-                    else if (pg.wl && pg.r && pg.v && pg.sb && !pg.w) setSv("rec");
-                    else if (pg.wl && pg.r && pg.v && !pg.sb) setSv("ssb");
-                    else if (pg.wl && pg.r && !pg.v) { initVocOptions((W[seq] || []).filter(w => w.pid).slice(0, 4)); setSv("voc"); }
-                    else if (pg.wl && !pg.r) setSv("rd");
-                    else setSv("wl");
-                    setVa({});
-                    setWa({});
-                    setVd(false);
-                    setWd(false);
-                  }}
-                >
-                  <div style={{ display: "flex", gap: 20, alignItems: "center", marginBottom: 12 }}>
-                    <img src={art.img} style={{ width: 72, height: 72, objectFit: "cover", borderRadius: 12, flexShrink: 0 }} alt="" />
-                    <div style={{ flex: 1, minWidth: 0 }}>
-                      <div style={{ fontFamily: F.h, fontWeight: 700, fontSize: 17, marginBottom: 3 }}>{art.title}</div>
-                      <div style={{ fontSize: 12, color: X.sub }}>{art.topic}</div>
-                    </div>
-                    <div style={{ width: 44, height: 44, borderRadius: "50%", background: d ? X.gbg : s ? X.abg2 : "#f8f9fa", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: F.h, fontWeight: 800, fontSize: 15, color: d ? X.gn : s ? X.am : X.mt, flexShrink: 0 }}>
-                      {d ? "✓" : `${s}/5`}
-                    </div>
-                  </div>
-                  <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
-                    {["📋 단어보기", "📖 읽기", "📝 단어퀴즈", "✏️ 문장만들기", "🎤 녹음"].map((l, i) => (
-                      <span key={i} style={{ padding: "4px 12px", borderRadius: 20, fontSize: 11, fontWeight: 600, background: [pg.wl, pg.r, pg.v, pg.sb, pg.w][i] ? X.gbg : "#f8f9fa", color: [pg.wl, pg.r, pg.v, pg.sb, pg.w][i] ? X.gn : X.mt, border: `1px solid ${[pg.wl, pg.r, pg.v, pg.sb, pg.w][i] ? "#a7f3d0" : X.bdr}` }}>
-                        {[pg.wl, pg.r, pg.v, pg.sb, pg.w][i] ? "✓" : ""} {l}
-                      </span>
-                    ))}
-                  </div>
-                </Cd>
-              );
-            })}
-          </div>
-        )
-      }
+      <WeekCalendar />
+      {!sAs.length && (
+        <Cd style={{ textAlign: "center", padding: 48, color: X.mt }}>배정된 과제가 없습니다.</Cd>
+      )}
     </div>
   );
 
