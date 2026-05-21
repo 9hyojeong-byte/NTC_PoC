@@ -580,6 +580,7 @@ function SentenceBuildStep({ sentences, onComplete, onBack }) {
   const [checked, setChecked] = useState(false);
   const [correct, setCorrect] = useState(false);
   const [correctCount, setCorrectCount] = useState(0);
+  const [wrongSentences, setWrongSentences] = useState([]);
   const [draggingIdx, setDraggingIdx] = useState(null);
   const [dragOverIdx, setDragOverIdx] = useState(null);
   const dragSrcIdx = useRef(null);
@@ -636,8 +637,9 @@ function SentenceBuildStep({ sentences, onComplete, onBack }) {
   };
   const nextSentence = () => {
     const newCor = correctCount + (correct ? 1 : 0);
-    if (idx + 1 >= sentences.length) onComplete(newCor, sentences.length);
-    else { setCorrectCount(newCor); setIdx(i => i + 1); }
+    const newWrongs = correct ? wrongSentences : [...wrongSentences, { en: cur.en, kr: cur.kr }];
+    if (idx + 1 >= sentences.length) onComplete(newCor, sentences.length, newWrongs);
+    else { setCorrectCount(newCor); setWrongSentences(newWrongs); setIdx(i => i + 1); }
   };
   const retry = () => {
     setPool(shuffleArr(tokenizeSentence(cur.en)));
@@ -1028,6 +1030,184 @@ function StudentDetailModal({ modal, onClose, effProg, scores = {} }) {
               </table>
             )
           }
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ═══════════════════════════════════════════
+   ARTICLE PROGRESS MODAL (학생×기사 상세)
+   ═══════════════════════════════════════════ */
+function ArticleProgressModal({ modal, onClose, effProg, scores = {} }) {
+  const [playingKey, setPlayingKey] = useState(null);
+  const audioRef = useRef(null);
+
+  const { st, cls, seq } = modal;
+  const levelKey = cls.level || cls.nm.replace("반", "");
+  const band = BANDS[levelKey] || { c: X.ac, bg: X.abg, r: "#bfdbfe" };
+  const art = ARTS.find(a => a.seq === seq);
+  const b = BANDS[BM[seq]];
+
+  const pg = gP(effProg, st.id, seq);
+  const recKey = `${st.id}_${seq}`;
+  const sc = scores[recKey] || {};
+  const recMapData = pg.w ? loadRecMap(st.id, seq) : {};
+  const hasRec = Object.keys(recMapData).length > 0;
+
+  const allSentRows = art ? art.ps.flatMap(pa =>
+    splitSentenceRanges(pa.en).map((r, sIdx) => ({ key: `${pa.pid}_${sIdx}`, text: r.text }))
+  ) : [];
+  const recSentRows = allSentRows.filter((_, i) => [2, 5].includes(i));
+
+  const stopAudio = () => { if (audioRef.current) { audioRef.current.pause(); audioRef.current = null; } setPlayingKey(null); };
+  const togglePlay = (pKey, url) => {
+    if (playingKey === pKey) { stopAudio(); return; }
+    stopAudio();
+    const a = new Audio(url);
+    audioRef.current = a;
+    a.onended = () => setPlayingKey(null);
+    a.play().catch(() => {});
+    setPlayingKey(pKey);
+  };
+  useEffect(() => () => { if (audioRef.current) audioRef.current.pause(); }, []);
+
+  const steps = [
+    { key: "wl", icon: "📋", label: "단어보기", done: pg.wl },
+    { key: "r",  icon: "📖", label: "읽기",     done: pg.r },
+    { key: "v",  icon: "📝", label: "단어퀴즈", done: pg.v },
+    { key: "sb", icon: "✏️", label: "문장만들기", done: pg.sb },
+    { key: "w",  icon: "🎤", label: "녹음",     done: pg.w },
+  ];
+  const allDone = steps.every(s => s.done);
+
+  return (
+    <div
+      style={{ position: "fixed", inset: 0, zIndex: 600, background: "rgba(15,23,42,0.55)", display: "flex", alignItems: "center", justifyContent: "center", padding: 16 }}
+      onClick={e => { if (e.target === e.currentTarget) onClose(); }}
+    >
+      <div className="fade-up" style={{ background: "#fff", borderRadius: 20, width: "100%", maxWidth: 520, maxHeight: "90vh", display: "flex", flexDirection: "column", boxShadow: "0 24px 60px rgba(0,0,0,.18)" }}>
+        {/* 헤더 */}
+        <div style={{ padding: "18px 22px 16px", borderBottom: `1px solid ${band.r}`, display: "flex", justifyContent: "space-between", alignItems: "flex-start", background: band.bg, borderRadius: "20px 20px 0 0", flexShrink: 0 }}>
+          <div>
+            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+              <div style={{ fontFamily: F.h, fontWeight: 800, fontSize: 17, color: band.c }}>{st.nm}</div>
+              {st.id.startsWith("s_") && <span style={{ fontSize: 10, fontWeight: 700, color: "#fff", background: "#a855f7", borderRadius: 4, padding: "1px 5px" }}>NEW</span>}
+            </div>
+            <div style={{ fontSize: 12, color: band.c, opacity: 0.75, marginTop: 2 }}>{cls.nm} · 과제 상세</div>
+          </div>
+          <button onClick={onClose} style={{ border: "none", background: "none", fontSize: 22, cursor: "pointer", color: band.c, opacity: 0.6, lineHeight: 1, marginLeft: 12 }}>×</button>
+        </div>
+
+        {/* 스크롤 본문 */}
+        <div style={{ overflow: "auto", padding: "16px 22px 20px", display: "flex", flexDirection: "column", gap: 12 }}>
+          {/* 기사 정보 */}
+          <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "10px 12px", borderRadius: 10, background: "#f8fafc", border: `1px solid ${X.bdr}` }}>
+            {art?.img && <img src={art.img} style={{ width: 52, height: 36, objectFit: "cover", borderRadius: 6, flexShrink: 0 }} alt="" />}
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <div style={{ fontWeight: 600, fontSize: 13, color: X.tx, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{art?.title || seq}</div>
+              <div style={{ display: "flex", gap: 4, marginTop: 3 }}>
+                {b && <span style={{ fontSize: 10, fontWeight: 700, color: b.c, background: b.bg, borderRadius: 4, padding: "1px 5px" }}>{BM[seq]}</span>}
+                <span style={{ fontSize: 10, fontWeight: 700, color: allDone ? X.gn : X.am, background: allDone ? X.gbg : X.abg2, borderRadius: 4, padding: "1px 5px" }}>{allDone ? "완료" : "진행 중"}</span>
+              </div>
+            </div>
+          </div>
+
+          {/* 단계별 상세 */}
+          {steps.map(step => {
+            const isDone = step.done;
+            const isVoc = step.key === "v";
+            const isSb = step.key === "sb";
+            const isRec = step.key === "w";
+
+            return (
+              <div key={step.key} style={{ borderRadius: 12, border: `1px solid ${isDone ? "#e2e8f0" : "#f1f5f9"}`, overflow: "hidden" }}>
+                {/* 단계 헤더 */}
+                <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "10px 14px", background: isDone ? "#f8fafc" : "#fafbfc" }}>
+                  <span style={{ fontSize: 16 }}>{step.icon}</span>
+                  <span style={{ fontWeight: 700, fontSize: 13, color: X.tx, flex: 1 }}>{step.label}</span>
+                  {isVoc && isDone && sc.voc ? (
+                    <span style={{ fontSize: 12, fontWeight: 700, color: sc.voc.cor === sc.voc.tot ? X.gn : X.am }}>
+                      {sc.voc.cor} / {sc.voc.tot} 정답
+                    </span>
+                  ) : isSb && isDone && sc.sb ? (
+                    <span style={{ fontSize: 12, fontWeight: 700, color: sc.sb.cor === sc.sb.tot ? X.gn : X.am }}>
+                      {sc.sb.cor} / {sc.sb.tot} 정답
+                    </span>
+                  ) : (
+                    <span style={{ fontSize: 12, fontWeight: 700, color: isDone ? X.gn : X.mt }}>
+                      {isDone ? "완료" : "미완료"}
+                    </span>
+                  )}
+                </div>
+
+                {/* 단어퀴즈 오답 */}
+                {isVoc && isDone && sc.voc?.wrongs?.length > 0 && (
+                  <div style={{ padding: "8px 14px 12px", background: "#fff", display: "flex", flexDirection: "column", gap: 6 }}>
+                    <div style={{ fontSize: 11, fontWeight: 600, color: X.sub, marginBottom: 2 }}>오답 단어</div>
+                    {sc.voc.wrongs.map((w, i) => (
+                      <div key={i} style={{ display: "flex", alignItems: "center", gap: 8, padding: "8px 10px", borderRadius: 8, background: "#fef2f2", border: "1px solid #fecaca" }}>
+                        <span style={{ fontWeight: 700, fontSize: 13, color: X.rd, flexShrink: 0 }}>✗</span>
+                        <div style={{ flex: 1 }}>
+                          <div style={{ fontWeight: 700, fontSize: 13, color: X.tx }}>{w.en}</div>
+                          <div style={{ fontSize: 11, color: X.sub, marginTop: 1 }}>
+                            내 답: <span style={{ color: X.rd, fontWeight: 600 }}>{w.ans || "미선택"}</span>
+                            {" / "}정답: <span style={{ color: X.gn, fontWeight: 600 }}>{w.kr}</span>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+                {isVoc && isDone && sc.voc && (!sc.voc.wrongs || sc.voc.wrongs.length === 0) && sc.voc.cor === sc.voc.tot && (
+                  <div style={{ padding: "8px 14px 10px", background: "#fff" }}>
+                    <div style={{ fontSize: 12, color: X.gn, fontWeight: 600 }}>모두 정답!</div>
+                  </div>
+                )}
+
+                {/* 문장만들기 오답 */}
+                {isSb && isDone && sc.sb?.wrongs?.length > 0 && (
+                  <div style={{ padding: "8px 14px 12px", background: "#fff", display: "flex", flexDirection: "column", gap: 6 }}>
+                    <div style={{ fontSize: 11, fontWeight: 600, color: X.sub, marginBottom: 2 }}>오답 문장</div>
+                    {sc.sb.wrongs.map((s, i) => (
+                      <div key={i} style={{ padding: "8px 10px", borderRadius: 8, background: "#fef2f2", border: "1px solid #fecaca" }}>
+                        <div style={{ fontSize: 11, fontWeight: 700, color: X.rd, marginBottom: 3 }}>✗ 틀린 문장</div>
+                        <div style={{ fontSize: 12, color: X.tx, lineHeight: 1.5 }}>{s.en}</div>
+                        {s.kr && <div style={{ fontSize: 11, color: X.sub, marginTop: 2 }}>{s.kr}</div>}
+                      </div>
+                    ))}
+                  </div>
+                )}
+                {isSb && isDone && sc.sb && (!sc.sb.wrongs || sc.sb.wrongs.length === 0) && sc.sb.cor === sc.sb.tot && (
+                  <div style={{ padding: "8px 14px 10px", background: "#fff" }}>
+                    <div style={{ fontSize: 12, color: X.gn, fontWeight: 600 }}>모두 정답!</div>
+                  </div>
+                )}
+
+                {/* 녹음 재생 */}
+                {isRec && isDone && hasRec && (
+                  <div style={{ padding: "8px 14px 12px", background: "#fff", display: "flex", flexDirection: "column", gap: 8 }}>
+                    {recSentRows.map(sr => {
+                      const url = recMapData[sr.key];
+                      if (!url) return null;
+                      const pKey = `${recKey}_${sr.key}`;
+                      const isPlaying = playingKey === pKey;
+                      return (
+                        <div key={sr.key} style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                          <button
+                            onClick={() => togglePlay(pKey, url)}
+                            className={isPlaying ? "ntc-play-pulse" : ""}
+                            style={{ width: 30, height: 30, borderRadius: "50%", border: "none", background: isPlaying ? "#7c3aed" : "#ede9fe", color: isPlaying ? "#fff" : "#7c3aed", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 11, flexShrink: 0 }}
+                          >{isPlaying ? "■" : "▶"}</button>
+                          <span style={{ fontSize: 12, color: X.tx, lineHeight: 1.5 }}>{sr.text}</span>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+            );
+          })}
         </div>
       </div>
     </div>
@@ -1466,14 +1646,15 @@ export default function App() {
   const cV = () => {
     const ws = cW.filter(w => w.pid).slice(0, 4);
     const cor = ws.filter(w => va[w.i] === w.kr).length;
+    const wrongs = ws.filter(w => va[w.i] !== w.kr).map(w => ({ en: w.en, kr: w.kr, ans: va[w.i] || "" }));
     const k = `${sSt}_${sArt}`;
-    setScores(p => ({ ...p, [k]: { ...(p[k] || {}), voc: { cor, tot: ws.length } } }));
+    setScores(p => ({ ...p, [k]: { ...(p[k] || {}), voc: { cor, tot: ws.length, wrongs } } }));
     uP(sSt, sArt, "v");
     setSv("ssb");
   };
-  const cSb = (cor, tot) => {
+  const cSb = (cor, tot, wrongs = []) => {
     const k = `${sSt}_${sArt}`;
-    setScores(p => ({ ...p, [k]: { ...(p[k] || {}), sb: { cor, tot } } }));
+    setScores(p => ({ ...p, [k]: { ...(p[k] || {}), sb: { cor, tot, wrongs } } }));
     uP(sSt, sArt, "sb");
     setSv("rec");
   };
@@ -1533,6 +1714,7 @@ export default function App() {
   const [revokeModal, setRevokeModal] = useState(null); // { seq, art, targets }
   const [detailModal, setDetailModal] = useState(null); // { cls, prevStudents, label }
   const [studentDetailModal, setStudentDetailModal] = useState(null); // { st, cls, artSeqs }
+  const [artProgModal, setArtProgModal] = useState(null); // { st, cls, seq }
   const [assignModal, setAssignModal] = useState(null); // { cls }
   const [freqModal, setFreqModal] = useState(null); // { cId, nm, cur }
   const [clsSettingsModal, setClsSettingsModal] = useState(null); // { cls, nm, level, freq }
@@ -1724,8 +1906,6 @@ export default function App() {
 
   /* ─── TEACHER PROGRESS ─── */
   const TProg = () => {
-    const [pView, setPView] = useState("summary"); // "summary" | "detail"
-
     const STEP_LABELS = ["단어보기", "읽기", "단어퀴즈", "문장만들기", "녹음"];
 
     const clsWithSts = clsData.filter(cls => cls.sts.length > 0);
@@ -1740,22 +1920,12 @@ export default function App() {
     );
 
     return (
-      <div>
-        {/* 헤더 + 뷰 토글 */}
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
-          <p style={{ fontSize: 13, color: X.sub }}>이번 주에 발행된 콘텐츠의 학습 현황입니다.</p>
-          <div style={{ display: "flex", gap: 2, background: "#f1f5f9", borderRadius: 10, padding: 3 }}>
-            {[["summary", "요약"], ["detail", "상세"]].map(([v, l]) => (
-              <button key={v} onClick={() => setPView(v)}
-                style={{ padding: "5px 16px", borderRadius: 8, border: "none", fontSize: 12, fontWeight: 700, fontFamily: F.b, cursor: "pointer", background: pView === v ? "#fff" : "transparent", color: pView === v ? X.tx : X.sub, boxShadow: pView === v ? "0 1px 4px rgba(0,0,0,.08)" : "none", transition: "all .15s" }}>
-                {l}
-              </button>
-            ))}
-          </div>
-        </div>
+      <div style={{ display: "flex", flexDirection: "column", gap: 32 }}>
+        <p style={{ fontSize: 13, color: X.sub, margin: 0 }}>이번 주에 발행된 콘텐츠의 학습 현황입니다.</p>
 
-        {/* ── 요약 보기 ── */}
-        {pView === "summary" && (
+        {/* ── 요약 ── */}
+        <div>
+          <div style={{ fontFamily: F.h, fontWeight: 800, fontSize: 16, color: X.tx, marginBottom: 12 }}>요약</div>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(300px,1fr))", gap: 16 }}>
             {clsWithSts.map(cls => {
               const levelKey = cls.level || cls.nm.replace("반", "");
@@ -1803,10 +1973,11 @@ export default function App() {
               );
             })}
           </div>
-        )}
+        </div>
 
-        {/* ── 상세 보기 ── */}
-        {pView === "detail" && (
+        {/* ── 상세 ── */}
+        <div>
+          <div style={{ fontFamily: F.h, fontWeight: 800, fontSize: 16, color: X.tx, marginBottom: 12 }}>상세</div>
           <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
             {clsWithSts.map(cls => {
               const levelKey = cls.level || cls.nm.replace("반", "");
@@ -1865,7 +2036,10 @@ export default function App() {
                                   const doneCnt = steps.filter(Boolean).length;
                                   const allDone = doneCnt === 5;
                                   return (
-                                    <td key={seq} style={{ padding: "0 16px", textAlign: "center", verticalAlign: "middle", borderLeft: `1px solid ${X.bdr}` }}>
+                                    <td key={seq} style={{ padding: "0 16px", textAlign: "center", verticalAlign: "middle", borderLeft: `1px solid ${X.bdr}`, cursor: "pointer" }}
+                                      onClick={() => setArtProgModal({ st, cls, seq })}
+                                      title={`${st.nm} · ${ARTS.find(a => a.seq === seq)?.title || seq}`}
+                                    >
                                       <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 4 }}>
                                         {allDone ? (
                                           <span style={{ width: 30, height: 30, borderRadius: "50%", background: X.gbg, color: X.gn, fontWeight: 800, fontSize: 15, display: "flex", alignItems: "center", justifyContent: "center" }}>✓</span>
@@ -1894,7 +2068,7 @@ export default function App() {
               );
             })}
           </div>
-        )}
+        </div>
       </div>
     );
   };
@@ -2995,6 +3169,9 @@ export default function App() {
 
       {/* 학생별 상세 모달 */}
       {studentDetailModal && <StudentDetailModal modal={studentDetailModal} onClose={() => setStudentDetailModal(null)} effProg={effProg} scores={scores} />}
+
+      {/* 학생×기사 과제 상세 모달 */}
+      {artProgModal && <ArticleProgressModal modal={artProgModal} onClose={() => setArtProgModal(null)} effProg={effProg} scores={scores} />}
 
       {/* 반 추가 모달 */}
       {addClsModal && (() => {
