@@ -3363,6 +3363,31 @@ export default function App() {
                     })}
                   </div>
                 </div>
+                {/* 자동 발행 안내 메시지 */}
+                {level && (() => {
+                  const LK = { 입문: "Kinder", 기초: "Kids", 기본: "Junior", 심화: "Times" };
+                  const FD = { 주2회: { n: 2, days: "화·목" }, 주3회: { n: 3, days: "월·수·금" }, 주5회: { n: 5, days: "월·화·수·목·금" } };
+                  const lk = LK[level] || level;
+                  const { n, days } = FD[freq] || { n: 2, days: "화·목" };
+                  const lines = [
+                    <span>매주 월요일 <b>{lk} 기사 {n}개가 자동 발행</b>됩니다.</span>,
+                    <span>학생 화면에는 <b>{days}</b> 과제로 1개씩 배치되며, 난이도는 표시되지 않습니다.</span>,
+                    <span>학생 추가 시 이번 주 기사도 즉시 발행됩니다.</span>,
+                  ];
+                  return (
+                    <div style={{ padding: "12px 16px", borderRadius: 12, background: "#f0f9ff", border: "1px solid #bae6fd" }}>
+                      <div style={{ fontSize: 11, fontWeight: 700, color: "#0369a1", marginBottom: 7, display: "flex", alignItems: "center", gap: 5 }}>
+                        <span>📋</span> 자동 발행 안내
+                      </div>
+                      {lines.map((line, i) => (
+                        <div key={i} style={{ fontSize: 12, color: "#0c4a6e", lineHeight: 1.75, display: "flex", gap: 6 }}>
+                          <span style={{ color: "#7dd3fc", flexShrink: 0 }}>•</span>
+                          <span>{line}</span>
+                        </div>
+                      ))}
+                    </div>
+                  );
+                })()}
                 {/* 미리보기 */}
                 {band && nm.trim() && (
                   <div style={{ padding: "10px 14px", borderRadius: 10, background: band.bg, border: `1px solid ${band.r}`, display: "flex", alignItems: "center", gap: 8 }}>
