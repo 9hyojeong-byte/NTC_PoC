@@ -2229,17 +2229,25 @@ export default function App() {
 
   /* ─── WEEKLY CALENDAR ─── */
   const WeekCalendar = ({ isMobile }) => {
+    const [weekOffset, setWeekOffset] = useState(0); // 0=이번주, 1=지난주, ...
+
     const now = new Date();
     const seoulMs = now.getTime() + (now.getTimezoneOffset() + 9 * 60) * 60000;
     const today = new Date(seoulMs);
     const todayDow = today.getDay();
 
-    const monday = new Date(today);
-    monday.setDate(today.getDate() - (todayDow === 0 ? 6 : todayDow - 1));
-    monday.setHours(0, 0, 0, 0);
+    // 이번주 월요일 (기사 배정 기준 — 항상 현재 주)
+    const thisMonday = new Date(today);
+    thisMonday.setDate(today.getDate() - (todayDow === 0 ? 6 : todayDow - 1));
+    thisMonday.setHours(0, 0, 0, 0);
+
+    // 보여지는 주 월요일 (offset 적용)
+    const monday = new Date(thisMonday);
+    monday.setDate(thisMonday.getDate() - weekOffset * 7);
 
     const REF = new Date(2026, 0, 5);
-    const weekIdx = Math.max(0, Math.round((monday - REF) / (7 * 24 * 60 * 60 * 1000)));
+    // 기사 배정은 항상 이번 주 weekIdx 기준
+    const weekIdx = Math.max(0, Math.round((thisMonday - REF) / (7 * 24 * 60 * 60 * 1000)));
 
     const stCls = clsData.find(c => c.sts.some(s => s.id === sSt));
     const freq = stCls ? (clsFreq[stCls.id] || "주2회") : "주2회";
@@ -2275,10 +2283,28 @@ export default function App() {
       return { dow, isSlot, entry, date, isToday: dateKey === todayKey, isPast: date < new Date(today.getFullYear(), today.getMonth(), today.getDate()) };
     });
 
+    const friday = new Date(monday);
+    friday.setDate(monday.getDate() + 4);
+    const fmt = d => `${d.getMonth() + 1}/${d.getDate()}`;
+    const weekLabel = weekOffset === 0 ? "이번 주" : weekOffset === 1 ? "지난 주" : `${weekOffset}주 전`;
+
+    const navBtn = (label, onClick, disabled) => (
+      <button onClick={onClick} disabled={disabled} style={{
+        width: 28, height: 28, borderRadius: 8, border: `1px solid ${X.bdr}`,
+        background: disabled ? "#f8f9fa" : "#fff", color: disabled ? X.mt : X.tx,
+        fontSize: 14, fontWeight: 700, cursor: disabled ? "default" : "pointer",
+        display: "flex", alignItems: "center", justifyContent: "center",
+        transition: "background .15s",
+      }}>{label}</button>
+    );
+
     const headerRow = (
       <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 12 }}>
-        <span style={{ fontFamily: F.h, fontWeight: 700, fontSize: 16, color: X.tx }}>이번 주 일정</span>
-        <span style={{ fontSize: 11, color: X.sub, fontWeight: 600, background: "#f1f5f9", border: `1px solid ${X.bdr}`, borderRadius: 20, padding: "2px 8px" }}>{freq}</span>
+        {navBtn("‹", () => setWeekOffset(o => o + 1), false)}
+        {navBtn("›", () => setWeekOffset(o => o - 1), weekOffset === 0)}
+        <span style={{ fontFamily: F.h, fontWeight: 700, fontSize: 16, color: X.tx }}>{weekLabel} 일정</span>
+        <span style={{ fontSize: 11, color: X.sub }}>{fmt(monday)} – {fmt(friday)}</span>
+        <span style={{ fontSize: 11, color: X.sub, fontWeight: 600, background: "#f1f5f9", border: `1px solid ${X.bdr}`, borderRadius: 20, padding: "2px 8px", marginLeft: 2 }}>{freq}</span>
       </div>
     );
 
