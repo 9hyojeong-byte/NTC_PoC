@@ -1467,9 +1467,9 @@ export default function App() {
     return clsData[clsData.length - 1]?.id ?? "";
   };
 
-  const openAddModal = () => {
+  const openAddModal = (defaultCId) => {
     setAddName("");
-    setAddCId(clsData[0]?.id ?? "");
+    setAddCId(defaultCId ?? clsData[0]?.id ?? "");
     setLevelPick(null);
     setUseLevel(false);
     setShowAddModal(true);
@@ -2063,7 +2063,6 @@ export default function App() {
         <span style={{ fontFamily: F.h, fontWeight: 800, fontSize: 15, color: band.c }}>{cls.nm}</span>
         <span style={{ fontSize: 10, fontWeight: 700, color: band.c, background: "rgba(255,255,255,0.7)", border: `1px solid ${band.r}`, borderRadius: 6, padding: "2px 7px", fontFamily: F.b }}>{(clsFreq[cls.id] || "주2회").replace("주", "주 ").replace("회", " 회")}</span>
         <span style={{ fontSize: 11, color: band.c, marginLeft: 2 }}>{cls.sts.length}명</span>
-        <button onClick={e => { e.stopPropagation(); setAt({ t: "class", id: cls.id }); setAr(null); setAssignModal({ cls }); }} style={{ fontSize: 11, fontWeight: 700, color: "#fff", background: X.dk, borderRadius: 20, padding: "3px 11px", border: "none", cursor: "pointer", fontFamily: F.b, marginLeft: "auto" }}>+ 기사 배정</button>
       </div>
     );
 
@@ -2130,6 +2129,12 @@ export default function App() {
                       })}
                     </div>
                   )}
+                  <div style={{ padding: "8px 14px 12px" }}>
+                    <button
+                      onClick={e => { e.stopPropagation(); setAt({ t: "class", id: cls.id }); setAr(null); setAssignModal({ cls }); }}
+                      style={{ width: "100%", padding: "8px 0", fontSize: 12, fontWeight: 600, color: X.sub, background: "#f1f5f9", border: `1px solid ${X.bdr}`, borderRadius: 8, cursor: "pointer", fontFamily: F.b }}
+                    >+ 기사 추가 발행하기</button>
+                  </div>
                 </Cd>
               );
             })}
@@ -2229,6 +2234,12 @@ export default function App() {
                       </table>
                     </div>
                   )}
+                  <div style={{ padding: "8px 14px 12px", borderTop: `1px solid ${X.bdr}` }}>
+                    <button
+                      onClick={e => { e.stopPropagation(); setAt({ t: "class", id: cls.id }); setAr(null); setAssignModal({ cls }); }}
+                      style={{ width: "100%", padding: "8px 0", fontSize: 12, fontWeight: 600, color: X.sub, background: "#f1f5f9", border: `1px solid ${X.bdr}`, borderRadius: 8, cursor: "pointer", fontFamily: F.b }}
+                    >+ 기사 추가 발행하기</button>
+                  </div>
                 </Cd>
               );
             })}
@@ -2277,7 +2288,7 @@ export default function App() {
               {cls.sts.length === 0 ? (
                 <div style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center" }}>
                   <button
-                    onClick={openAddModal}
+                    onClick={() => openAddModal(cls.id)}
                     style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "8px 18px", borderRadius: 10, border: `1px dashed ${X.bdr}`, background: "#f8f9fa", color: X.sub, fontSize: 13, fontWeight: 700, fontFamily: F.b, cursor: "pointer" }}
                   >+ 학생 등록</button>
                 </div>
@@ -2471,7 +2482,6 @@ export default function App() {
               <div style={{ display: "flex", alignItems: "center", gap: 5, flexWrap: "wrap" }}>
                 {isToday && !done && <span style={{ fontSize: 10, fontWeight: 800, color: X.ac, background: X.abg, borderRadius: 6, padding: "1px 6px", flexShrink: 0 }}>오늘!</span>}
                 {isExtra && <span style={{ fontSize: 10, fontWeight: 800, color: "#92400e", background: "#fef3c7", border: "1px solid #fde68a", borderRadius: 6, padding: "1px 6px", flexShrink: 0 }}>추가</span>}
-                {lvBand && <span style={{ fontSize: 10, fontWeight: 700, color: lvBand.c, background: lvBand.bg, borderRadius: 6, padding: "1px 7px", flexShrink: 0 }}>{lvLabel}</span>}
               </div>
               <span style={{ fontSize: 13, fontWeight: 700, color: isPast && !done ? X.mt : X.tx, lineHeight: 1.35, overflow: "hidden", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical" }}>{art.title}</span>
               <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
@@ -2496,7 +2506,6 @@ export default function App() {
             <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 8, flexWrap: "wrap" }}>
               {isToday && !done && <span style={{ fontSize: 10, fontWeight: 800, color: "#fff", background: X.ac, borderRadius: 6, padding: "2px 8px", flexShrink: 0 }}>오늘!</span>}
               {isExtra && <span style={{ fontSize: 10, fontWeight: 800, color: "#92400e", background: "#fef3c7", border: "1px solid #fde68a", borderRadius: 6, padding: "2px 8px", flexShrink: 0 }}>추가</span>}
-              {lvBand && <span style={{ fontSize: 10, fontWeight: 700, color: lvBand.c, background: lvBand.bg, borderRadius: 6, padding: "2px 8px", flexShrink: 0 }}>{lvLabel}</span>}
               {art.topic && <span style={{ fontSize: 10, color: X.sub, background: "#f1f5f9", borderRadius: 6, padding: "2px 8px", flexShrink: 0 }}>{art.topic}</span>}
             </div>
             <div style={{ fontSize: 15, fontWeight: 700, color: isPast && !done ? X.mt : X.tx, lineHeight: 1.4, overflow: "hidden", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", marginBottom: 4 }}>{art.title}</div>
@@ -2650,7 +2659,6 @@ export default function App() {
           <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 12, flexWrap: "wrap" }}>
             <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: 1, padding: "3px 10px", borderRadius: 20, background: X.abg, color: X.ac }}>{cA.tp}</span>
             <span style={{ fontSize: 12, color: X.sub }}>{cA.topic}</span>
-            {BM[cA.seq] && <span style={{ marginLeft: "auto" }}><Bd b={BM[cA.seq]} /></span>}
           </div>
           <h1 style={{ fontFamily: F.h, fontWeight: 800, fontSize: "clamp(22px,3.5vw,32px)", letterSpacing: -0.5, lineHeight: 1.2, color: X.tx, marginBottom: 6 }}>{cA.title}</h1>
           <div style={{ fontSize: 16, color: X.sub, marginBottom: 20 }}>{cA.tkr}</div>
@@ -3794,11 +3802,17 @@ export default function App() {
                     })}
                   </div>
                 </div>
-                {addCId && (
-                  <div style={{ marginBottom: 20, padding: "10px 14px", borderRadius: 10, background: "#f8f9fa", fontSize: 12, color: X.sub }}>
-                    배정될 반: <strong style={{ color: X.tx }}>{clsData.find(c => c.id === addCId)?.nm ?? "미선택"}</strong>
-                  </div>
-                )}
+                {addCId && addName.trim() && (() => {
+                  const selCls = clsData.find(c => c.id === addCId);
+                  const freq = clsFreq[addCId] || "주2회";
+                  const level = selCls?.level || selCls?.nm.replace("반", "") || "";
+                  const artCount = (LEVEL_FREQ_SEQS[level]?.[freq] || []).length || { "주2회": 2, "주3회": 3, "주5회": 5 }[freq] || 2;
+                  return (
+                    <div style={{ marginBottom: 20, padding: "10px 14px", borderRadius: 10, background: "#f0fdf4", border: "1px solid #bbf7d0", fontSize: 13, color: "#166534" }}>
+                      <strong>{addName.trim()}</strong>학생에게 <strong>{artCount}개</strong>의 기사가 바로 발행됩니다.
+                    </div>
+                  );
+                })()}
                 <div style={{ display: "flex", gap: 10 }}>
                   <button onClick={closeAddModal} style={{ flex: 1, padding: "12px", borderRadius: 10, border: `1px solid ${X.bdr}`, background: "#fff", fontSize: 14, fontWeight: 600, fontFamily: F.b, cursor: "pointer", color: X.sub }}>취소</button>
                   <button onClick={submitAdd} disabled={!addName.trim() || !addCId}
