@@ -584,32 +584,53 @@ function SentenceBuildStep({ sentences, onComplete, onBack }) {
   const [draggingIdx, setDraggingIdx] = useState(null);
   const [dragOverIdx, setDragOverIdx] = useState(null);
   const dragSrcIdx = useRef(null);
+  const dragTargetIdx = useRef(null);
+  const hasDragged = useRef(false);
+  const tokenRefs = useRef([]);
 
-  const onDragStart = (e, i) => {
+  // Pointer Events 기반 D&D (마우스 + 터치 모두 지원)
+  const onPtrDown = (e, i) => {
+    if (checked) return;
+    hasDragged.current = false;
     dragSrcIdx.current = i;
+    dragTargetIdx.current = null;
     setDraggingIdx(i);
-    e.dataTransfer.effectAllowed = "move";
+    setDragOverIdx(null);
+    e.currentTarget.setPointerCapture(e.pointerId);
   };
-  const onDragOver = (e, i) => {
-    e.preventDefault();
-    e.dataTransfer.dropEffect = "move";
-    setDragOverIdx(i);
+  const onPtrMove = (e) => {
+    if (dragSrcIdx.current === null) return;
+    hasDragged.current = true;
+    let found = null;
+    for (let j = 0; j < tokenRefs.current.length; j++) {
+      if (j === dragSrcIdx.current) continue;
+      const el = tokenRefs.current[j];
+      if (!el) continue;
+      const r = el.getBoundingClientRect();
+      if (e.clientX >= r.left && e.clientX <= r.right && e.clientY >= r.top && e.clientY <= r.bottom) {
+        found = j;
+        break;
+      }
+    }
+    dragTargetIdx.current = found;
+    setDragOverIdx(found);
   };
-  const onDrop = (e, i) => {
-    e.preventDefault();
+  const onPtrUp = () => {
     const src = dragSrcIdx.current;
-    if (src === null || src === i) return;
-    setSel(prev => {
-      const next = [...prev];
-      const [removed] = next.splice(src, 1);
-      next.splice(i, 0, removed);
-      return next;
-    });
+    const tgt = dragTargetIdx.current;
+    if (src !== null && tgt !== null && src !== tgt) {
+      setSel(prev => {
+        const next = [...prev];
+        const [removed] = next.splice(src, 1);
+        next.splice(tgt, 0, removed);
+        return next;
+      });
+    }
     dragSrcIdx.current = null;
+    dragTargetIdx.current = null;
     setDraggingIdx(null);
     setDragOverIdx(null);
   };
-  const onDragEnd = () => { dragSrcIdx.current = null; setDraggingIdx(null); setDragOverIdx(null); };
 
   useEffect(() => {
     if (!sentences[idx]) return;
@@ -676,22 +697,19 @@ function SentenceBuildStep({ sentences, onComplete, onBack }) {
       </div>
 
       {/* 선택된 단어 영역 */}
-      <div
-        onDragOver={e => e.preventDefault()}
-        onDrop={e => { e.preventDefault(); setDraggingIdx(null); setDragOverIdx(null); }}
-        style={{ minHeight: 72, background: checked ? (correct ? "#f0fdf4" : "#fef2f2") : X.abg, border: `2px dashed ${checked ? (correct ? "#a7f3d0" : "#fecaca") : X.ac}`, borderRadius: 16, padding: "14px 18px", marginBottom: 16, display: "flex", flexWrap: "wrap", gap: 8, alignItems: "flex-start", alignContent: "flex-start" }}>
+      <div style={{ minHeight: 72, background: checked ? (correct ? "#f0fdf4" : "#fef2f2") : X.abg, border: `2px dashed ${checked ? (correct ? "#a7f3d0" : "#fecaca") : X.ac}`, borderRadius: 16, padding: "14px 18px", marginBottom: 16, display: "flex", flexWrap: "wrap", gap: 8, alignItems: "flex-start", alignContent: "flex-start" }}>
         {sel.length === 0 && !checked && (
           <span style={{ color: X.mt, fontSize: 13 }}>단어를 순서대로 선택하세요</span>
         )}
         {sel.map((token, i) => (
           <button key={token.id}
-            draggable={!checked}
-            onDragStart={e => onDragStart(e, i)}
-            onDragOver={e => onDragOver(e, i)}
-            onDrop={e => onDrop(e, i)}
-            onDragEnd={onDragEnd}
-            onClick={() => unpickWord(token)}
-            style={{ padding: "6px 14px", borderRadius: 20, border: `2px solid ${checked ? (correct ? "#a7f3d0" : "#fecaca") : draggingIdx === i ? "#93c5fd" : dragOverIdx === i ? "#a78bfa" : X.ac}`, background: checked ? (correct ? "#dcfce7" : "#fee2e2") : draggingIdx === i ? "#dbeafe" : dragOverIdx === i ? "#ede9fe" : "#fff", color: X.tx, fontSize: 14, fontWeight: 600, cursor: checked ? "default" : draggingIdx === i ? "grabbing" : "grab", fontFamily: "inherit", transition: "all .15s", opacity: draggingIdx === i ? 0.5 : 1, transform: draggingIdx === i ? "scale(0.95)" : dragOverIdx === i ? "scale(1.08)" : "scale(1)" }}>
+            ref={el => { tokenRefs.current[i] = el; }}
+            onPointerDown={e => onPtrDown(e, i)}
+            onPointerMove={onPtrMove}
+            onPointerUp={onPtrUp}
+            onPointerCancel={onPtrUp}
+            onClick={() => { if (!hasDragged.current) unpickWord(token); }}
+            style={{ padding: "6px 14px", borderRadius: 20, border: `2px solid ${checked ? (correct ? "#a7f3d0" : "#fecaca") : draggingIdx === i ? "#93c5fd" : dragOverIdx === i ? "#a78bfa" : X.ac}`, background: checked ? (correct ? "#dcfce7" : "#fee2e2") : draggingIdx === i ? "#dbeafe" : dragOverIdx === i ? "#ede9fe" : "#fff", color: X.tx, fontSize: 14, fontWeight: 600, cursor: checked ? "default" : draggingIdx === i ? "grabbing" : "grab", fontFamily: "inherit", transition: draggingIdx === i ? "none" : "all .15s", opacity: draggingIdx === i ? 0.5 : 1, transform: draggingIdx === i ? "scale(0.95)" : dragOverIdx === i ? "scale(1.08)" : "scale(1)", touchAction: "none", userSelect: "none" }}>
             {token.w}
           </button>
         ))}
