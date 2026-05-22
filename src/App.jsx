@@ -585,22 +585,33 @@ function SentenceBuildStep({ sentences, onComplete, onBack }) {
   const [dragOverIdx, setDragOverIdx] = useState(null);
   const dragSrcIdx = useRef(null);
   const dragTargetIdx = useRef(null);
-  const hasDragged = useRef(false);
+  const longPressTimer = useRef(null);
+  const pendingToken = useRef(null); // 롱프레스 전 취소 대기 중인 토큰
   const tokenRefs = useRef([]);
 
-  // Pointer Events 기반 D&D (마우스 + 터치 모두 지원)
-  const onPtrDown = (e, i) => {
+  // 언마운트 시 타이머 정리
+  useEffect(() => {
+    return () => { if (longPressTimer.current) clearTimeout(longPressTimer.current); };
+  }, []);
+
+  // 롱프레스(0.5s) → 드래그 모드 / 단순 탭 → 단어 취소
+  const onPtrDown = (e, i, token) => {
     if (checked) return;
-    hasDragged.current = false;
-    dragSrcIdx.current = i;
+    pendingToken.current = token;
+    dragSrcIdx.current = null;
     dragTargetIdx.current = null;
-    setDraggingIdx(i);
-    setDragOverIdx(null);
-    e.currentTarget.setPointerCapture(e.pointerId);
+    const el = e.currentTarget;
+    const pid = e.pointerId;
+    longPressTimer.current = setTimeout(() => {
+      longPressTimer.current = null;
+      pendingToken.current = null;
+      dragSrcIdx.current = i;
+      setDraggingIdx(i);
+      try { el.setPointerCapture(pid); } catch (_) {}
+    }, 500);
   };
   const onPtrMove = (e) => {
-    if (dragSrcIdx.current === null) return;
-    hasDragged.current = true;
+    if (dragSrcIdx.current === null) return; // 드래그 모드 아직 아님
     let found = null;
     for (let j = 0; j < tokenRefs.current.length; j++) {
       if (j === dragSrcIdx.current) continue;
@@ -608,14 +619,22 @@ function SentenceBuildStep({ sentences, onComplete, onBack }) {
       if (!el) continue;
       const r = el.getBoundingClientRect();
       if (e.clientX >= r.left && e.clientX <= r.right && e.clientY >= r.top && e.clientY <= r.bottom) {
-        found = j;
-        break;
+        found = j; break;
       }
     }
     dragTargetIdx.current = found;
     setDragOverIdx(found);
   };
   const onPtrUp = () => {
+    // 롱프레스 타이머 아직 살아있으면 = 단순 탭 → 단어 취소
+    if (longPressTimer.current) {
+      clearTimeout(longPressTimer.current);
+      longPressTimer.current = null;
+      if (pendingToken.current) unpickWord(pendingToken.current);
+      pendingToken.current = null;
+      return;
+    }
+    // 드래그 모드 종료 → 재정렬
     const src = dragSrcIdx.current;
     const tgt = dragTargetIdx.current;
     if (src !== null && tgt !== null && src !== tgt) {
@@ -628,6 +647,7 @@ function SentenceBuildStep({ sentences, onComplete, onBack }) {
     }
     dragSrcIdx.current = null;
     dragTargetIdx.current = null;
+    pendingToken.current = null;
     setDraggingIdx(null);
     setDragOverIdx(null);
   };
@@ -704,11 +724,10 @@ function SentenceBuildStep({ sentences, onComplete, onBack }) {
         {sel.map((token, i) => (
           <button key={token.id}
             ref={el => { tokenRefs.current[i] = el; }}
-            onPointerDown={e => onPtrDown(e, i)}
+            onPointerDown={e => onPtrDown(e, i, token)}
             onPointerMove={onPtrMove}
             onPointerUp={onPtrUp}
             onPointerCancel={onPtrUp}
-            onClick={() => { if (!hasDragged.current) unpickWord(token); }}
             style={{ padding: "6px 14px", borderRadius: 20, border: `2px solid ${checked ? (correct ? "#a7f3d0" : "#fecaca") : draggingIdx === i ? "#93c5fd" : dragOverIdx === i ? "#a78bfa" : X.ac}`, background: checked ? (correct ? "#dcfce7" : "#fee2e2") : draggingIdx === i ? "#dbeafe" : dragOverIdx === i ? "#ede9fe" : "#fff", color: X.tx, fontSize: 14, fontWeight: 600, cursor: checked ? "default" : draggingIdx === i ? "grabbing" : "grab", fontFamily: "inherit", transition: draggingIdx === i ? "none" : "all .15s", opacity: draggingIdx === i ? 0.5 : 1, transform: draggingIdx === i ? "scale(0.95)" : dragOverIdx === i ? "scale(1.08)" : "scale(1)", touchAction: "none", userSelect: "none" }}>
             {token.w}
           </button>
