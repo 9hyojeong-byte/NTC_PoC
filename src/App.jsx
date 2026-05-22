@@ -1,7 +1,7 @@
 import React, { useState, useMemo, useEffect, useRef } from "react";
 
 /* ── lib imports ── */
-import { GLOBAL_CSS, BANDS, BM, CLS, ALL, IA, IP, TL, F, X, CLASS_DEFAULT_SEQS, LEVEL_FREQ_SEQS } from "./lib/constants.js";
+import { GLOBAL_CSS, BANDS, BM, CLS, ALL, IA, IP, TL, F, X, CLASS_DEFAULT_SEQS, LEVEL_FREQ_SEQS, LEVEL_WEEK_SCHEDULE } from "./lib/constants.js";
 import { ARTS, W, WB } from "./lib/selectors.js";
 import { playWordAudio } from "./lib/audio.js";
 
@@ -2015,16 +2015,16 @@ export default function App() {
       const slotDays = FREQ_SLOTS[freq] || [2, 4];
       const slotsPerWeek = slotDays.length;
 
-      // ① 사이클링 기사 (assignedDow 없는 항목)
-      const cyclingSeqs = [...new Set(
-        cls.sts.flatMap(st => (asgn[st.id] || []).filter(a => !a.assignedDow).map(a => a.seq))
-      )];
-      const cyclingResult = cyclingSeqs.length > 0
-        ? [...new Set(slotDays.map((_, slotPos) => {
-            const globalIdx = viewedWeekIdx * slotsPerWeek + slotPos;
-            return cyclingSeqs[globalIdx % cyclingSeqs.length];
-          }))]
-        : [];
+      // ① 주차 스케줄에서 이번 주 기사 조회
+      const _clsLevelKey = cls.level || cls.nm.replace("반", "");
+      const cyclingResult = (LEVEL_WEEK_SCHEDULE[_clsLevelKey] || {})[viewedWeekIdx] || [];
+
+      // ① 스케줄 없는 신규 반: 이번 주에 한해 학생 asgn 기본 배정 기사로 폴백
+      const baseSeqs = cyclingResult.length > 0
+        ? cyclingResult
+        : weekOffset === 0
+          ? [...new Set(cls.sts.flatMap(st => (asgn[st.id] || []).filter(a => !a.assignedDow).map(a => a.seq)))]
+          : [];
 
       // ② 추가배정 기사 (이번 보여지는 주에 assignedWeekIdx가 일치하는 항목)
       const extraSeqs = [...new Set(
@@ -2035,7 +2035,7 @@ export default function App() {
         )
       )];
 
-      return [...new Set([...cyclingResult, ...extraSeqs])];
+      return [...new Set([...baseSeqs, ...extraSeqs])];
     };
 
     // 해당 반에서 추가배정된 seq 집합 (이번 보여지는 주 기준)
@@ -2097,14 +2097,16 @@ export default function App() {
                     <div style={{ padding: "10px 14px", display: "flex", flexDirection: "column", gap: 8 }}>
                       {allSeqs.map(seq => {
                         const art = ARTS.find(a => a.seq === seq);
-                        const students = cls.sts
-                          .filter(st => (asgn[st.id] || []).some(a => a.seq === seq))
-                          .map(st => ({ st, done: iD(effProg, st.id, seq), arts: [{ seq }] }));
+                        const isExtraSeq = extraSeqSet.has(seq);
+                        const students = (isExtraSeq
+                          ? cls.sts.filter(st => (asgn[st.id] || []).some(a => a.seq === seq))
+                          : cls.sts
+                        ).map(st => ({ st, done: iD(effProg, st.id, seq), arts: [{ seq }] }));
                         const doneCount = students.filter(x => x.done).length;
                         const total = students.length;
                         const allDone = doneCount === total && total > 0;
                         const bmLabel = BM[seq];
-                        const isExtra = extraSeqSet.has(seq);
+                        const isExtra = isExtraSeq;
                         return (
                           <div key={seq}
                             onClick={() => setDetailModal({ cls, prevStudents: students, label: art?.title || seq, seq })}
@@ -2186,7 +2188,8 @@ export default function App() {
                                   </div>
                                 </td>
                                 {allSeqs.map(seq => {
-                                  if (!stAsgn.includes(seq)) {
+                                  // 추가 기사(extra)이면서 이 학생에게 배정 안된 경우만 —
+                                  if (extraSeqSetD.has(seq) && !stAsgn.includes(seq)) {
                                     return (
                                       <td key={seq} style={{ padding: "0 16px", textAlign: "center", verticalAlign: "middle", borderLeft: `1px solid ${X.bdr}` }}>
                                         <span style={{ color: X.bdr, fontSize: 16 }}>—</span>
@@ -2381,24 +2384,31 @@ export default function App() {
     // 보여지는 주의 weekIdx (추가배정 기사 매칭용)
     const viewedWeekIdx = Math.max(0, weekIdx - weekOffset);
 
-    // 사이클링 기사(assignedDow 없음) vs 추가배정 기사(assignedDow 있음) 분리
-    const cyclingArts = sAs.filter(a => !a.assignedDow);
-    const extraArts   = sAs.filter(a =>  a.assignedDow);
+    // 해당 주 발행 기사: 레벨별 주차 스케줄에서 조회
+    const _levelKey = stCls?.level || "";
+    const _scheduledSeqs = (LEVEL_WEEK_SCHEDULE[_levelKey] || {})[viewedWeekIdx] || [];
+    // 스케줄 없는 신규 반: 이번 주에 한해 학생 asgn 기본 배정 기사로 폴백
+    const _weekSeqs = _scheduledSeqs.length > 0
+      ? _scheduledSeqs
+      : weekOffset === 0
+        ? sAs.filter(a => !a.assignedDow).map(a => a.seq)
+        : [];
+    const weeklyArts = _weekSeqs
+      .map(seq => { const art = ARTS.find(a => a.seq === seq); return art ? { seq, art, pg: gP(prog, sSt, seq) } : null; })
+      .filter(Boolean);
+    // 추가배정 기사(assignedDow 있음)
+    const extraArts = sAs.filter(a => a.assignedDow);
 
     const days = [1, 2, 3, 4, 5].map(dow => {
-      // ① 사이클링 기사 (슬롯 요일만)
+      // ① 주차 스케줄 기사 — 슬롯 요일에 순서대로 배정
       const isSlot = slotDays.includes(dow);
       const slotPos = slotDays.indexOf(dow);
-      let cyclingEntry = null;
-      if (isSlot && cyclingArts.length > 0) {
-        const globalIdx = weekIdx * slotsPerWeek + slotPos;
-        cyclingEntry = cyclingArts[globalIdx % cyclingArts.length];
-      }
+      const scheduledEntry = (isSlot && slotPos < weeklyArts.length) ? weeklyArts[slotPos] : null;
 
       // ② 추가배정 기사 (이 요일 & 보여지는 주차에 해당하는 것)
       const extras = extraArts.filter(a => a.assignedDow === dow && a.assignedWeekIdx === viewedWeekIdx);
 
-      const allEntries = [...(cyclingEntry ? [cyclingEntry] : []), ...extras];
+      const allEntries = [...(scheduledEntry ? [scheduledEntry] : []), ...extras];
       const hasContent = allEntries.length > 0;
 
       const date = new Date(monday);
