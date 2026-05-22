@@ -1749,7 +1749,28 @@ export default function App() {
 
   const dAs = (seq) => {
     const ts = getTargetStudents();
-    setAsgn(p => { const n = { ...p }; ts.forEach(s => { if (!n[s.id]) n[s.id] = []; if (!n[s.id].some(a => a.seq === seq)) n[s.id] = [...n[s.id], { seq }]; }); return n; });
+    // 서울 기준 현재 요일·주차 계산
+    const _now = new Date();
+    const _sMs = _now.getTime() + (_now.getTimezoneOffset() + 9 * 60) * 60000;
+    const _td = new Date(_sMs);
+    const _tdDow = _td.getDay();
+    const _assignedDow = _tdDow === 0 ? 7 : _tdDow; // 1=월 ... 7=일 (캘린더는 1-5만 사용)
+    const _mon = new Date(_td);
+    _mon.setDate(_td.getDate() - (_tdDow === 0 ? 6 : _tdDow - 1));
+    _mon.setHours(0, 0, 0, 0);
+    const _REF = new Date(2026, 0, 5);
+    const _assignedWeekIdx = Math.max(0, Math.round((_mon - _REF) / (7 * 24 * 60 * 60 * 1000)));
+
+    setAsgn(p => {
+      const n = { ...p };
+      ts.forEach(s => {
+        if (!n[s.id]) n[s.id] = [];
+        // 같은 seq·요일·주차의 완전 중복은 방지
+        const isDup = n[s.id].some(a => a.seq === seq && a.assignedDow === _assignedDow && a.assignedWeekIdx === _assignedWeekIdx);
+        if (!isDup) n[s.id] = [...n[s.id], { seq, assignedDow: _assignedDow, assignedWeekIdx: _assignedWeekIdx }];
+      });
+      return n;
+    });
     setAr(null);
     const art = ARTS.find(a => a.seq === seq);
     const targetLabel = at.t === "students"
@@ -1962,6 +1983,67 @@ export default function App() {
   /* ─── TEACHER PROGRESS ─── */
   const TProg = () => {
     const STEP_LABELS = ["단어보기", "읽기", "단어퀴즈", "문장만들기", "녹음"];
+    const [weekOffset, setWeekOffset] = useState(0); // 0=이번주, 1=지난주, ...
+
+    // 현재 주 weekIdx (서울 시간 기준)
+    const _now = new Date();
+    const _seoulMs = _now.getTime() + (_now.getTimezoneOffset() + 9 * 60) * 60000;
+    const _today = new Date(_seoulMs);
+    const _dow = _today.getDay();
+    const _thisMonday = new Date(_today);
+    _thisMonday.setDate(_today.getDate() - (_dow === 0 ? 6 : _dow - 1));
+    _thisMonday.setHours(0, 0, 0, 0);
+    const _REF = new Date(2026, 0, 5);
+    const curWeekIdx = Math.max(0, Math.round((_thisMonday - _REF) / (7 * 24 * 60 * 60 * 1000)));
+    const viewedWeekIdx = Math.max(0, curWeekIdx - weekOffset);
+
+    // 보여지는 주 날짜 범위
+    const viewedMonday = new Date(_thisMonday);
+    viewedMonday.setDate(_thisMonday.getDate() - weekOffset * 7);
+    const viewedFriday = new Date(viewedMonday);
+    viewedFriday.setDate(viewedMonday.getDate() + 4);
+    const _fmt = d => `${d.getMonth() + 1}/${d.getDate()}`;
+    const weekLabel = weekOffset === 0 ? "이번 주" : weekOffset === 1 ? "지난 주" : `${weekOffset}주 전`;
+
+    const FREQ_SLOTS = { "주2회": [2, 4], "주3회": [1, 3, 5], "주5회": [1, 2, 3, 4, 5] };
+
+    // 반별 해당 주의 기사 seqs 계산 (사이클링 + 추가배정 모두 포함)
+    const getWeekSeqs = (cls) => {
+      const freq = clsFreq[cls.id] || "주2회";
+      const slotDays = FREQ_SLOTS[freq] || [2, 4];
+      const slotsPerWeek = slotDays.length;
+
+      // ① 사이클링 기사 (assignedDow 없는 항목)
+      const cyclingSeqs = [...new Set(
+        cls.sts.flatMap(st => (asgn[st.id] || []).filter(a => !a.assignedDow).map(a => a.seq))
+      )];
+      const cyclingResult = cyclingSeqs.length > 0
+        ? [...new Set(slotDays.map((_, slotPos) => {
+            const globalIdx = viewedWeekIdx * slotsPerWeek + slotPos;
+            return cyclingSeqs[globalIdx % cyclingSeqs.length];
+          }))]
+        : [];
+
+      // ② 추가배정 기사 (이번 보여지는 주에 assignedWeekIdx가 일치하는 항목)
+      const extraSeqs = [...new Set(
+        cls.sts.flatMap(st =>
+          (asgn[st.id] || [])
+            .filter(a => a.assignedDow && a.assignedWeekIdx === viewedWeekIdx)
+            .map(a => a.seq)
+        )
+      )];
+
+      return [...new Set([...cyclingResult, ...extraSeqs])];
+    };
+
+    const tNavBtn = (label, onClick, disabled) => (
+      <button onClick={onClick} disabled={disabled} style={{
+        width: 28, height: 28, borderRadius: 8, border: `1px solid ${X.bdr}`,
+        background: disabled ? "#f8f9fa" : "#fff", color: disabled ? X.mt : X.tx,
+        fontSize: 14, fontWeight: 700, cursor: disabled ? "default" : "pointer",
+        display: "flex", alignItems: "center", justifyContent: "center",
+      }}>{label}</button>
+    );
 
     const clsWithSts = clsData.filter(cls => cls.sts.length > 0);
 
@@ -1976,7 +2058,13 @@ export default function App() {
 
     return (
       <div style={{ display: "flex", flexDirection: "column", gap: 32 }}>
-        <p style={{ fontSize: 13, color: X.sub, margin: 0 }}>이번 주에 발행된 콘텐츠의 학습 현황입니다.</p>
+        {/* 주간 네비게이션 */}
+        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+          {tNavBtn("‹", () => setWeekOffset(o => o + 1), false)}
+          {tNavBtn("›", () => setWeekOffset(o => o - 1), weekOffset === 0)}
+          <span style={{ fontFamily: F.h, fontWeight: 700, fontSize: 15, color: X.tx }}>{weekLabel} 학습 현황</span>
+          <span style={{ fontSize: 12, color: X.sub }}>{_fmt(viewedMonday)} – {_fmt(viewedFriday)}</span>
+        </div>
 
         {/* ── 요약 ── */}
         <div>
@@ -1985,7 +2073,7 @@ export default function App() {
             {clsWithSts.map(cls => {
               const levelKey = cls.level || cls.nm.replace("반", "");
               const band = BANDS[levelKey] || { c: X.ac, bg: X.abg, r: "#bfdbfe" };
-              const allSeqs = [...new Set(cls.sts.flatMap(st => (asgn[st.id] || []).map(a => a.seq)))];
+              const allSeqs = getWeekSeqs(cls);
               return (
                 <Cd key={cls.id} className="card-hover" style={{ padding: 0, overflow: "hidden" }}>
                   <ClassCardHeader cls={cls} band={band} />
@@ -2037,7 +2125,7 @@ export default function App() {
             {clsWithSts.map(cls => {
               const levelKey = cls.level || cls.nm.replace("반", "");
               const band = BANDS[levelKey] || { c: X.ac, bg: X.abg, r: "#bfdbfe" };
-              const allSeqs = [...new Set(cls.sts.flatMap(st => (asgn[st.id] || []).map(a => a.seq)))];
+              const allSeqs = getWeekSeqs(cls);
               return (
                 <Cd key={cls.id} style={{ padding: 0, overflow: "hidden" }}>
                   <ClassCardHeader cls={cls} band={band} />
@@ -2236,7 +2324,7 @@ export default function App() {
     const today = new Date(seoulMs);
     const todayDow = today.getDay();
 
-    // 이번주 월요일 (기사 배정 기준 — 항상 현재 주)
+    // 이번주 월요일 (사이클링 기사 배정 기준 — 항상 현재 주)
     const thisMonday = new Date(today);
     thisMonday.setDate(today.getDate() - (todayDow === 0 ? 6 : todayDow - 1));
     thisMonday.setHours(0, 0, 0, 0);
@@ -2271,16 +2359,37 @@ export default function App() {
       setVa({}); setWa({}); setVd(false); setWd(false);
     };
 
+    // 보여지는 주의 weekIdx (추가배정 기사 매칭용)
+    const viewedWeekIdx = Math.max(0, weekIdx - weekOffset);
+
+    // 사이클링 기사(assignedDow 없음) vs 추가배정 기사(assignedDow 있음) 분리
+    const cyclingArts = sAs.filter(a => !a.assignedDow);
+    const extraArts   = sAs.filter(a =>  a.assignedDow);
+
     const days = [1, 2, 3, 4, 5].map(dow => {
+      // ① 사이클링 기사 (슬롯 요일만)
       const isSlot = slotDays.includes(dow);
       const slotPos = slotDays.indexOf(dow);
-      const globalIdx = isSlot ? weekIdx * slotsPerWeek + slotPos : -1;
-      const artIdx = (isSlot && sAs.length > 0) ? globalIdx % sAs.length : -1;
-      const entry = artIdx >= 0 ? sAs[artIdx] : null;
+      let cyclingEntry = null;
+      if (isSlot && cyclingArts.length > 0) {
+        const globalIdx = weekIdx * slotsPerWeek + slotPos;
+        cyclingEntry = cyclingArts[globalIdx % cyclingArts.length];
+      }
+
+      // ② 추가배정 기사 (이 요일 & 보여지는 주차에 해당하는 것)
+      const extras = extraArts.filter(a => a.assignedDow === dow && a.assignedWeekIdx === viewedWeekIdx);
+
+      const allEntries = [...(cyclingEntry ? [cyclingEntry] : []), ...extras];
+      const hasContent = allEntries.length > 0;
+
       const date = new Date(monday);
       date.setDate(monday.getDate() + (dow - 1));
       const dateKey = `${date.getFullYear()}-${date.getMonth()}-${date.getDate()}`;
-      return { dow, isSlot, entry, date, isToday: dateKey === todayKey, isPast: date < new Date(today.getFullYear(), today.getMonth(), today.getDate()) };
+      return {
+        dow, isSlot: isSlot || extras.length > 0, allEntries, hasContent,
+        date, isToday: dateKey === todayKey,
+        isPast: date < new Date(today.getFullYear(), today.getMonth(), today.getDate()),
+      };
     });
 
     const friday = new Date(monday);
@@ -2308,141 +2417,130 @@ export default function App() {
       </div>
     );
 
-    /* ── 모바일: 세로 리스트 ── */
-    if (isMobile) {
-      return (
-        <div style={{ marginBottom: 8 }}>
-          {headerRow}
-          <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-            {days.map(({ dow, isSlot, entry, date, isToday, isPast }) => {
-              const art = entry?.art;
-              const pg = entry?.pg;
-              const done = pg ? !!(pg.r && pg.wl && pg.v && pg.sb && pg.w) : false;
-              const stepVals = pg ? [pg.wl, pg.r, pg.v, pg.sb, pg.w] : [];
-              const stepDone = stepVals.filter(Boolean).length;
+    const STEP_LABELS = ["단어보기", "읽기", "단어퀴즈", "문장만들기", "녹음"];
 
-              return (
-                <div key={dow}
-                  onClick={() => goToArt(entry)}
-                  style={{
-                    display: "flex", alignItems: "stretch", borderRadius: 14, overflow: "hidden",
-                    border: isToday ? `2px solid ${X.ac}` : `1px solid ${X.bdr}`,
-                    background: "#fff",
-                    opacity: !isSlot ? 0.35 : 1,
-                    cursor: entry ? "pointer" : "default",
-                    minHeight: 72,
-                  }}
-                >
-                  {/* 요일/날짜 뱃지 */}
-                  <div style={{
-                    width: 58, flexShrink: 0, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
-                    background: isToday ? X.abg : "#fafafa",
-                    borderRight: `1px solid ${X.bdr}`, gap: 2,
-                  }}>
-                    <span style={{ fontSize: 13, fontWeight: 800, color: isToday ? X.ac : X.sub, fontFamily: F.h }}>{DAY_KR[dow]}</span>
-                    <div style={{
-                      width: 28, height: 28, borderRadius: "50%", fontSize: 13, fontWeight: 700,
-                      display: "flex", alignItems: "center", justifyContent: "center",
-                      background: isToday ? X.ac : "transparent",
-                      color: isToday ? "#fff" : X.tx,
-                    }}>{date.getDate()}</div>
-                  </div>
+    /* ── 공통: 단일 기사 카드 (mobile=compact, desktop=rich) ── */
+    const renderSingle = (entry, isToday, isPast, compact) => {
+      const art = entry?.art;
+      const pg = entry?.pg;
+      const done = pg ? !!(pg.r && pg.wl && pg.v && pg.sb && pg.w) : false;
+      const stepVals = pg ? [pg.wl, pg.r, pg.v, pg.sb, pg.w] : [false,false,false,false,false];
+      const stepDone = stepVals.filter(Boolean).length;
+      const lvLabel = BM[entry?.seq];
+      const lvBand = lvLabel ? BANDS[lvLabel] : null;
 
-                  {/* 기사 썸네일 */}
-                  {art && (
-                    <div style={{ width: 80, flexShrink: 0, position: "relative", overflow: "hidden" }}>
-                      <img src={art.img} alt="" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
-                      {done && (
-                        <div style={{ position: "absolute", inset: 0, background: "rgba(16,185,129,0.7)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 22, color: "#fff" }}>✓</div>
-                      )}
-                    </div>
-                  )}
-
-                  {/* 기사 정보 */}
-                  <div style={{ flex: 1, minWidth: 0, padding: "10px 12px", display: "flex", flexDirection: "column", justifyContent: "center", gap: 6 }}>
-                    {art ? (
-                      <>
-                        <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                          {isToday && !done && <span style={{ fontSize: 10, fontWeight: 800, color: X.ac, background: X.abg, borderRadius: 6, padding: "1px 6px", flexShrink: 0 }}>오늘!</span>}
-                          <span style={{ fontSize: 13, fontWeight: 700, color: isPast && !done ? X.mt : X.tx, lineHeight: 1.35, overflow: "hidden", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical" }}>{art.title}</span>
-                        </div>
-                        <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                          <div style={{ display: "flex", gap: 2, flex: 1 }}>
-                            {stepVals.map((v, i) => <div key={i} style={{ flex: 1, height: 4, borderRadius: 2, background: v ? X.gn : X.bdr }} />)}
-                          </div>
-                          <span style={{ fontSize: 11, fontWeight: 700, color: done ? X.gn : stepDone > 0 ? X.am : X.mt, flexShrink: 0 }}>
-                            {done ? "완료" : `${stepDone}/5`}
-                          </span>
-                        </div>
-                      </>
-                    ) : isSlot ? (
-                      <span style={{ fontSize: 13, color: X.mt }}>과제 없음</span>
-                    ) : (
-                      <span style={{ fontSize: 13, color: "#d0d5dd" }}>수업 없음</span>
-                    )}
-                  </div>
+      if (compact) {
+        // 모바일 단일 기사
+        return (
+          <>
+            <div onClick={() => goToArt(entry)} style={{ width: 90, flexShrink: 0, position: "relative", overflow: "hidden", cursor: "pointer" }}>
+              <img src={art.img} alt="" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
+              {done && <div style={{ position: "absolute", inset: 0, background: "rgba(16,185,129,0.7)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 22, color: "#fff" }}>✓</div>}
+            </div>
+            <div onClick={() => goToArt(entry)} style={{ flex: 1, minWidth: 0, padding: "10px 12px", display: "flex", flexDirection: "column", justifyContent: "center", gap: 5, cursor: "pointer" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 5, flexWrap: "wrap" }}>
+                {isToday && !done && <span style={{ fontSize: 10, fontWeight: 800, color: X.ac, background: X.abg, borderRadius: 6, padding: "1px 6px", flexShrink: 0 }}>오늘!</span>}
+                {lvBand && <span style={{ fontSize: 10, fontWeight: 700, color: lvBand.c, background: lvBand.bg, borderRadius: 6, padding: "1px 7px", flexShrink: 0 }}>{lvLabel}</span>}
+              </div>
+              <span style={{ fontSize: 13, fontWeight: 700, color: isPast && !done ? X.mt : X.tx, lineHeight: 1.35, overflow: "hidden", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical" }}>{art.title}</span>
+              <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                <div style={{ display: "flex", gap: 2, flex: 1 }}>
+                  {stepVals.map((v, i) => <div key={i} style={{ flex: 1, height: 4, borderRadius: 2, background: v ? X.gn : X.bdr }} />)}
                 </div>
-              );
-            })}
+                <span style={{ fontSize: 11, fontWeight: 700, color: done ? X.gn : stepDone > 0 ? X.am : X.mt, flexShrink: 0 }}>{done ? "완료" : `${stepDone}/5`}</span>
+              </div>
+            </div>
+          </>
+        );
+      }
+
+      // 데스크톱 리치 카드
+      return (
+        <div onClick={() => goToArt(entry)} style={{ flex: 1, display: "flex", cursor: "pointer", minHeight: 120 }}>
+          <div style={{ width: 160, flexShrink: 0, position: "relative", overflow: "hidden" }}>
+            <img src={art.img} alt="" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
+            {done && <div style={{ position: "absolute", inset: 0, background: "rgba(16,185,129,0.72)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 36, color: "#fff" }}>✓</div>}
+          </div>
+          <div style={{ flex: 1, minWidth: 0, padding: "14px 18px", display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 8, flexWrap: "wrap" }}>
+              {isToday && !done && <span style={{ fontSize: 10, fontWeight: 800, color: "#fff", background: X.ac, borderRadius: 6, padding: "2px 8px", flexShrink: 0 }}>오늘!</span>}
+              {lvBand && <span style={{ fontSize: 10, fontWeight: 700, color: lvBand.c, background: lvBand.bg, borderRadius: 6, padding: "2px 8px", flexShrink: 0 }}>{lvLabel}</span>}
+              {art.topic && <span style={{ fontSize: 10, color: X.sub, background: "#f1f5f9", borderRadius: 6, padding: "2px 8px", flexShrink: 0 }}>{art.topic}</span>}
+            </div>
+            <div style={{ fontSize: 15, fontWeight: 700, color: isPast && !done ? X.mt : X.tx, lineHeight: 1.4, overflow: "hidden", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", marginBottom: 4 }}>{art.title}</div>
+            {art.tkr && <div style={{ fontSize: 12, color: X.sub, marginBottom: 10, overflow: "hidden", whiteSpace: "nowrap", textOverflow: "ellipsis" }}>{art.tkr}</div>}
+            <div style={{ display: "flex", alignItems: "flex-end", gap: 4, marginTop: "auto" }}>
+              {STEP_LABELS.map((label, i) => {
+                const v = stepVals[i];
+                return (
+                  <div key={i} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 4, flex: 1 }}>
+                    <div style={{ width: "100%", height: 5, borderRadius: 3, background: v ? X.gn : X.bdr }} />
+                    <span style={{ fontSize: 9, fontWeight: 600, color: v ? X.gn : X.mt, whiteSpace: "nowrap" }}>{label}</span>
+                  </div>
+                );
+              })}
+              <span style={{ fontSize: 12, fontWeight: 800, color: done ? X.gn : stepDone > 0 ? X.am : X.mt, flexShrink: 0, marginLeft: 6, paddingBottom: 14 }}>
+                {done ? "✓ 완료" : `${stepDone}/5`}
+              </span>
+            </div>
           </div>
         </div>
       );
-    }
+    };
 
-    /* ── 데스크톱: 5열 카드 그리드 ── */
-    return (
+    /* ── 공통: 다중 기사 — 단일 카드와 동일한 크기로 세로 나열 ── */
+    const renderMulti = (allEntries, isToday, compact) => (
+      <div style={{ flex: 1, display: "flex", flexDirection: "column" }}>
+        {allEntries.map((entry, idx) => (
+          <div key={idx} style={{ borderTop: idx > 0 ? `1px solid ${X.bdr}` : "none", display: "flex", flex: 1 }}>
+            {renderSingle(entry, isToday && idx === 0, false, compact)}
+          </div>
+        ))}
+      </div>
+    );
+
+    /* ── 공통 세로 목록 렌더러 ── */
+    const renderDayList = (compact) => (
       <div style={{ marginBottom: 8 }}>
         {headerRow}
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(5, 1fr)", gap: 8 }}>
-          {days.map(({ dow, isSlot, entry, date, isToday, isPast }) => {
-            const art = entry?.art;
-            const pg = entry?.pg;
-            const done = pg ? !!(pg.r && pg.wl && pg.v && pg.sb && pg.w) : false;
+        <div style={{ display: "flex", flexDirection: "column", gap: compact ? 8 : 10 }}>
+          {days.map(({ dow, isSlot, allEntries, date, isToday, isPast }) => {
+            const isMulti = allEntries.length > 1;
+            const hasContent = allEntries.length > 0;
+            const dayW = compact ? 58 : 72;
             return (
-              <div key={dow}
-                onClick={() => goToArt(entry)}
-                style={{
-                  borderRadius: 14, border: isToday ? `2px solid ${X.ac}` : `1px solid ${X.bdr}`,
-                  background: "#fff", overflow: "hidden", display: "flex", flexDirection: "column",
-                  cursor: entry ? "pointer" : "default", opacity: !isSlot ? 0.32 : 1,
-                  transition: "box-shadow .15s, transform .15s",
-                }}
-                onMouseEnter={e => { if (entry) { e.currentTarget.style.boxShadow = "0 4px 20px rgba(0,0,0,.10)"; e.currentTarget.style.transform = "translateY(-2px)"; }}}
-                onMouseLeave={e => { e.currentTarget.style.boxShadow = ""; e.currentTarget.style.transform = ""; }}
+              <div key={dow} style={{
+                display: "flex", alignItems: "stretch",
+                borderRadius: compact ? 14 : 16, overflow: "hidden",
+                border: isToday ? `2px solid ${X.ac}` : `1px solid ${X.bdr}`,
+                background: "#fff", opacity: !isSlot ? 0.35 : 1,
+                minHeight: compact ? 72 : (isMulti ? "auto" : 110),
+                transition: "box-shadow .15s, transform .15s",
+              }}
+                onMouseEnter={e => { if (!compact && hasContent) { e.currentTarget.style.boxShadow = "0 4px 24px rgba(0,0,0,.09)"; e.currentTarget.style.transform = "translateY(-1px)"; }}}
+                onMouseLeave={e => { if (!compact) { e.currentTarget.style.boxShadow = ""; e.currentTarget.style.transform = ""; }}}
               >
-                <div style={{ padding: "8px 10px 6px", display: "flex", alignItems: "center", justifyContent: "space-between", background: isToday ? X.abg : "#fafafa", borderBottom: `1px solid ${X.bdr}` }}>
-                  <span style={{ fontSize: 12, fontWeight: 700, color: isToday ? X.ac : X.sub }}>{DAY_KR[dow]}</span>
-                  <div style={{ width: 26, height: 26, borderRadius: "50%", background: isToday ? X.ac : "transparent", color: isToday ? "#fff" : X.tx, fontSize: 12, fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center" }}>
-                    {date.getDate()}
-                  </div>
+                {/* 요일/날짜 뱃지 */}
+                <div style={{ width: dayW, flexShrink: 0, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", background: isToday ? X.abg : "#fafafa", borderRight: `1px solid ${X.bdr}`, gap: 3 }}>
+                  <span style={{ fontSize: compact ? 13 : 15, fontWeight: 800, color: isToday ? X.ac : X.sub, fontFamily: F.h }}>{DAY_KR[dow]}</span>
+                  <div style={{ width: compact ? 28 : 34, height: compact ? 28 : 34, borderRadius: "50%", fontSize: compact ? 13 : 14, fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center", background: isToday ? X.ac : "transparent", color: isToday ? "#fff" : X.tx }}>{date.getDate()}</div>
                 </div>
-                {art ? (
-                  <div style={{ display: "flex", flexDirection: "column", flex: 1 }}>
-                    <div style={{ position: "relative", width: "100%", paddingTop: "75%" }}>
-                      <img src={art.img} alt="" style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover" }} />
-                      {done && <div style={{ position: "absolute", inset: 0, background: "rgba(16,185,129,0.72)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 32, color: "#fff" }}>✓</div>}
-                      {isToday && !done && <div style={{ position: "absolute", top: 6, right: 6, background: X.ac, color: "#fff", fontSize: 9, fontWeight: 800, borderRadius: 8, padding: "2px 7px" }}>오늘!</div>}
+
+                {/* 기사 영역 */}
+                {isMulti ? renderMulti(allEntries, isToday, compact)
+                  : hasContent ? renderSingle(allEntries[0], isToday, isPast, compact)
+                  : <div style={{ flex: 1, display: "flex", alignItems: "center", padding: `0 ${compact ? 12 : 16}px` }}>
+                      <span style={{ fontSize: compact ? 13 : 14, color: isSlot ? X.mt : "#d0d5dd" }}>{isSlot ? "과제 없음" : "수업 없음"}</span>
                     </div>
-                    <div style={{ padding: "8px 10px 10px" }}>
-                      <div style={{ fontSize: 11, fontWeight: 700, color: isPast && !done ? X.mt : X.tx, lineHeight: 1.4, overflow: "hidden", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical" }}>{art.title}</div>
-                      <div style={{ display: "flex", gap: 2, marginTop: 6 }}>
-                        {[pg.wl, pg.r, pg.v, pg.sb, pg.w].map((v, i) => <div key={i} style={{ flex: 1, height: 3, borderRadius: 2, background: v ? X.gn : X.bdr }} />)}
-                      </div>
-                    </div>
-                  </div>
-                ) : isSlot ? (
-                  <div style={{ padding: "24px 10px", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                    <span style={{ fontSize: 11, color: X.mt }}>과제 없음</span>
-                  </div>
-                ) : (
-                  <div style={{ padding: "24px 10px" }} />
-                )}
+                }
               </div>
             );
           })}
         </div>
       </div>
     );
+
+    return renderDayList(isMobile);
   };
 
   /* ─── STUDENT TASKS ─── */
