@@ -608,7 +608,7 @@ function SentenceBuildStep({ sentences, onComplete, onBack }) {
       dragSrcIdx.current = i;
       setDraggingIdx(i);
       try { el.setPointerCapture(pid); } catch (_) {}
-    }, 500);
+    }, 200);
   };
   const onPtrMove = (e) => {
     if (dragSrcIdx.current === null) return; // 드래그 모드 아직 아님
@@ -1668,7 +1668,8 @@ export default function App() {
 
   const cR = () => {
     uP(sSt, sArt, "r");
-    initVocOptions(cW.filter(w => w.pid).slice(0, 4), cW);
+    const _wp1 = cW.filter(w => w.pid);
+    initVocOptions((_wp1.length > 0 ? _wp1 : cW).slice(0, 4), cW);
     setSv("voc");
   };
   const initVocOptions = (wordList, allWords) => {
@@ -1699,7 +1700,8 @@ export default function App() {
     setSv("rd");
   };
   const cV = () => {
-    const ws = cW.filter(w => w.pid).slice(0, 4);
+    const _wp2 = cW.filter(w => w.pid);
+    const ws = (_wp2.length > 0 ? _wp2 : cW).slice(0, 4);
     const cor = ws.filter(w => va[w.i] === w.kr).length;
     const wrongs = ws.filter(w => va[w.i] !== w.kr).map(w => ({ en: w.en, kr: w.kr, ans: va[w.i] || "" }));
     const k = `${sSt}_${sArt}`;
@@ -2036,6 +2038,15 @@ export default function App() {
       return [...new Set([...cyclingResult, ...extraSeqs])];
     };
 
+    // 해당 반에서 추가배정된 seq 집합 (이번 보여지는 주 기준)
+    const getExtraSeqSet = (cls) => new Set(
+      cls.sts.flatMap(st =>
+        (asgn[st.id] || [])
+          .filter(a => a.assignedDow && a.assignedWeekIdx === viewedWeekIdx)
+          .map(a => a.seq)
+      )
+    );
+
     const tNavBtn = (label, onClick, disabled) => (
       <button onClick={onClick} disabled={disabled} style={{
         width: 28, height: 28, borderRadius: 8, border: `1px solid ${X.bdr}`,
@@ -2074,6 +2085,7 @@ export default function App() {
               const levelKey = cls.level || cls.nm.replace("반", "");
               const band = BANDS[levelKey] || { c: X.ac, bg: X.abg, r: "#bfdbfe" };
               const allSeqs = getWeekSeqs(cls);
+              const extraSeqSet = getExtraSeqSet(cls);
               return (
                 <Cd key={cls.id} className="card-hover" style={{ padding: 0, overflow: "hidden" }}>
                   <ClassCardHeader cls={cls} band={band} />
@@ -2092,12 +2104,16 @@ export default function App() {
                         const total = students.length;
                         const allDone = doneCount === total && total > 0;
                         const bmLabel = BM[seq];
+                        const isExtra = extraSeqSet.has(seq);
                         return (
                           <div key={seq}
                             onClick={() => setDetailModal({ cls, prevStudents: students, label: art?.title || seq, seq })}
-                            style={{ padding: "10px 14px", borderRadius: 10, background: "#f8fafc", border: `1px solid ${X.bdr}`, cursor: "pointer", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                            style={{ padding: "10px 14px", borderRadius: 10, background: "#f8fafc", border: `1px solid ${isExtra ? "#fde68a" : X.bdr}`, cursor: "pointer", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                             <div style={{ minWidth: 0 }}>
-                              <div style={{ fontSize: 12, fontWeight: 700, color: X.tx, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", marginBottom: 3 }}>{art?.title || seq}</div>
+                              <div style={{ display: "flex", alignItems: "center", gap: 5, marginBottom: 3 }}>
+                                {isExtra && <span style={{ fontSize: 10, fontWeight: 800, color: "#92400e", background: "#fef3c7", border: "1px solid #fde68a", borderRadius: 5, padding: "1px 6px", flexShrink: 0 }}>추가</span>}
+                                <div style={{ fontSize: 12, fontWeight: 700, color: X.tx, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{art?.title || seq}</div>
+                              </div>
                               {bmLabel && BANDS[bmLabel] && <div style={{ fontSize: 11, color: X.sub, fontWeight: 500 }}>{BANDS[bmLabel].min}L–{BANDS[bmLabel].max}L</div>}
                             </div>
                             <div style={{ display: "flex", alignItems: "center", gap: 6, flexShrink: 0 }}>
@@ -2126,6 +2142,7 @@ export default function App() {
               const levelKey = cls.level || cls.nm.replace("반", "");
               const band = BANDS[levelKey] || { c: X.ac, bg: X.abg, r: "#bfdbfe" };
               const allSeqs = getWeekSeqs(cls);
+              const extraSeqSetD = getExtraSeqSet(cls);
               return (
                 <Cd key={cls.id} style={{ padding: 0, overflow: "hidden" }}>
                   <ClassCardHeader cls={cls} band={band} />
@@ -2146,8 +2163,10 @@ export default function App() {
                             {allSeqs.map(seq => {
                               const art = ARTS.find(a => a.seq === seq);
                               const bmLabel = BM[seq];
+                              const isExtraD = extraSeqSetD.has(seq);
                               return (
-                                <th key={seq} style={{ padding: "0 16px", textAlign: "center", fontWeight: 700, color: X.tx, borderBottom: `2px solid ${X.bdr}`, borderLeft: `1px solid ${X.bdr}`, verticalAlign: "middle" }}>
+                                <th key={seq} style={{ padding: "0 16px", textAlign: "center", fontWeight: 700, color: X.tx, borderBottom: `2px solid ${X.bdr}`, borderLeft: `1px solid ${X.bdr}`, verticalAlign: "middle", background: isExtraD ? "#fffbeb" : undefined }}>
+                                  {isExtraD && <div style={{ fontSize: 10, fontWeight: 800, color: "#92400e", background: "#fef3c7", border: "1px solid #fde68a", borderRadius: 5, padding: "1px 6px", display: "inline-block", marginBottom: 3 }}>추가</div>}
                                   <div style={{ fontSize: 12, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{art?.title || seq}</div>
                                   {bmLabel && BANDS[bmLabel] && <div style={{ fontSize: 10, color: X.sub, fontWeight: 500, marginTop: 2 }}>{BANDS[bmLabel].min}L–{BANDS[bmLabel].max}L</div>}
                                 </th>
@@ -2353,7 +2372,7 @@ export default function App() {
       if (done) setSv("dn");
       else if (p.wl && p.r && p.v && p.sb && !p.w) setSv("rec");
       else if (p.wl && p.r && p.v && !p.sb) setSv("ssb");
-      else if (p.wl && p.r && !p.v) { const _aw = W[entry.seq] || []; initVocOptions(_aw.filter(w => w.pid).slice(0, 4), _aw); setSv("voc"); }
+      else if (p.wl && p.r && !p.v) { const _aw = W[entry.seq] || []; const _awp = _aw.filter(w => w.pid); initVocOptions((_awp.length > 0 ? _awp : _aw).slice(0, 4), _aw); setSv("voc"); }
       else if (p.wl && !p.r) setSv("rd");
       else setSv("wl");
       setVa({}); setWa({}); setVd(false); setWd(false);
@@ -2428,6 +2447,7 @@ export default function App() {
       const stepDone = stepVals.filter(Boolean).length;
       const lvLabel = BM[entry?.seq];
       const lvBand = lvLabel ? BANDS[lvLabel] : null;
+      const isExtra = !!entry?.assignedDow;
 
       if (compact) {
         // 모바일 단일 기사
@@ -2440,6 +2460,7 @@ export default function App() {
             <div onClick={() => goToArt(entry)} style={{ flex: 1, minWidth: 0, padding: "10px 12px", display: "flex", flexDirection: "column", justifyContent: "center", gap: 5, cursor: "pointer" }}>
               <div style={{ display: "flex", alignItems: "center", gap: 5, flexWrap: "wrap" }}>
                 {isToday && !done && <span style={{ fontSize: 10, fontWeight: 800, color: X.ac, background: X.abg, borderRadius: 6, padding: "1px 6px", flexShrink: 0 }}>오늘!</span>}
+                {isExtra && <span style={{ fontSize: 10, fontWeight: 800, color: "#92400e", background: "#fef3c7", border: "1px solid #fde68a", borderRadius: 6, padding: "1px 6px", flexShrink: 0 }}>추가</span>}
                 {lvBand && <span style={{ fontSize: 10, fontWeight: 700, color: lvBand.c, background: lvBand.bg, borderRadius: 6, padding: "1px 7px", flexShrink: 0 }}>{lvLabel}</span>}
               </div>
               <span style={{ fontSize: 13, fontWeight: 700, color: isPast && !done ? X.mt : X.tx, lineHeight: 1.35, overflow: "hidden", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical" }}>{art.title}</span>
@@ -2464,6 +2485,7 @@ export default function App() {
           <div style={{ flex: 1, minWidth: 0, padding: "14px 18px", display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
             <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 8, flexWrap: "wrap" }}>
               {isToday && !done && <span style={{ fontSize: 10, fontWeight: 800, color: "#fff", background: X.ac, borderRadius: 6, padding: "2px 8px", flexShrink: 0 }}>오늘!</span>}
+              {isExtra && <span style={{ fontSize: 10, fontWeight: 800, color: "#92400e", background: "#fef3c7", border: "1px solid #fde68a", borderRadius: 6, padding: "2px 8px", flexShrink: 0 }}>추가</span>}
               {lvBand && <span style={{ fontSize: 10, fontWeight: 700, color: lvBand.c, background: lvBand.bg, borderRadius: 6, padding: "2px 8px", flexShrink: 0 }}>{lvLabel}</span>}
               {art.topic && <span style={{ fontSize: 10, color: X.sub, background: "#f1f5f9", borderRadius: 6, padding: "2px 8px", flexShrink: 0 }}>{art.topic}</span>}
             </div>
@@ -2801,7 +2823,8 @@ export default function App() {
   /* ─── STUDENT WORD LIST (단어보기 — 플래시카드) ─── */
   const SWl = () => {
     if (!cA) return null;
-    const words = cW.filter((w) => w.pid).sort((a, b) => Number(a.i) - Number(b.i));
+    const _withPid = cW.filter((w) => w.pid);
+    const words = (_withPid.length > 0 ? _withPid : cW).sort((a, b) => Number(a.i) - Number(b.i));
     if (words.length === 0) return (
       <div>
         <Bt v="ghost" onClick={bk} style={{ marginBottom: 12 }}>← 과제 목록</Bt>
@@ -2896,7 +2919,8 @@ export default function App() {
   /* ─── STUDENT VOCAB ─── */
   const SVoc = () => {
     if (!cA) return null;
-    const ws = cW.filter(w => w.pid).slice(0, 4);
+    const _wpV = cW.filter(w => w.pid);
+    const ws = (_wpV.length > 0 ? _wpV : cW).slice(0, 4);
     const isLast = vocIdx >= ws.length - 1;
 
     /* 전체 결과 요약 화면 */
@@ -2941,13 +2965,15 @@ export default function App() {
       if (!w) return [];
       const cached = vo[w.i];
       if (cached && cached.length >= 2) return cached;
-      // vo 미초기화 시 즉석 생성 — 기사 전체 단어를 보기 풀로 사용
+      // vo 미초기화 시 즉석 생성 — wordIndex를 시드로 한 고정 순서(매 렌더 동일)
+      const seed = w.i;
       const distractors = cW
         .filter(pw => pw.kr !== w.kr)
-        .sort(() => Math.random() - 0.5)
+        .sort((a, b) => ((a.i * 31 + seed) % 97) - ((b.i * 31 + seed) % 97))
         .slice(0, 2)
         .map(pw => pw.kr);
-      return [w.kr, ...distractors].sort(() => Math.random() - 0.5);
+      const all = [w.kr, ...distractors];
+      return all.sort((a, b) => ((a.charCodeAt(0) * seed) % 53) - ((b.charCodeAt(0) * seed) % 53));
     })();
     const sel = w ? va[w.i] : null;
     const isChecked = w ? !!vchecked[w.i] : false;
@@ -3174,7 +3200,8 @@ export default function App() {
 
   /* ─── STUDENT DONE ─── */
   const SDn = () => {
-    const ws = cW.filter(w => w.pid).slice(0, 4);
+    const _wpD = cW.filter(w => w.pid);
+    const ws = (_wpD.length > 0 ? _wpD : cW).slice(0, 4);
     const vocCor = ws.filter(w => va[w.i] === w.kr).length;
     const scVoc = scores[`${sSt}_${sArt}`]?.voc;
     const vocLabel = scVoc && scVoc.tot > 0 ? `${scVoc.cor} / ${scVoc.tot} 정답` : (ws.length > 0 ? `${vocCor} / ${ws.length} 정답` : "완료");
@@ -3244,7 +3271,16 @@ export default function App() {
           return (
             <button key={s}
               className="ntc-step-item"
-              onClick={() => { if (allowed && !active) setSv(s); }}
+              onClick={() => {
+                if (allowed && !active) {
+                  if (s === "voc") {
+                    const _aw = W[sArt] || [];
+                    const _awp = _aw.filter(w => w.pid);
+                    initVocOptions((_awp.length > 0 ? _awp : _aw).slice(0, 4), _aw);
+                  }
+                  setSv(s);
+                }
+              }}
               style={{ padding: "9px 4px", borderRadius: 10, border: "none", fontSize: 11, fontWeight: 700, fontFamily: F.b, whiteSpace: "nowrap", textAlign: "center", background: active ? X.dk : past ? X.gbg : "#f1f5f9", color: active ? "#fff" : past ? X.gn : X.mt, cursor: allowed && !active ? "pointer" : "default", transition: "all .2s", opacity: allowed ? 1 : 0.5 }}
             >{ls[i]}</button>
           );
