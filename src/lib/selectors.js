@@ -46,34 +46,17 @@ export const ARTS = articlesRaw.articles.map((a) => {
 });
 
 /* ─── W: { [articleSeq]: wordArray } ─── */
-// articleSeq → wordsUrl 룩업 (신규 기사 CDN 단어 음원 생성용)
-const wordsUrlBySeq = Object.fromEntries(
-  articlesRaw.articles.map((a) => [a.articleSeq, a.wordsUrl || ""])
-);
-
 export const W = Object.fromEntries(
-  wordsRaw.items.map((item) => {
-    const baseWordsUrl = wordsUrlBySeq[item.articleSeq] || "";
-    return [
-      item.articleSeq,
-      item.words.map((w) => {
-        let mp3 = w.mp3File || "";
-        // mp3File가 없으면 wordsUrl 패턴으로 CDN URL 동적 생성
-        // 패턴: .../voca_xxx_pxx_01.mp3 → 인덱스만 교체
-        if (!mp3 && baseWordsUrl) {
-          const idx = String(w.wordIndex).padStart(2, "0");
-          mp3 = baseWordsUrl.replace(/\d+\.mp3$/, `${idx}.mp3`);
-        }
-        return {
-          i: w.wordIndex,
-          en: w.english,
-          kr: w.meaning_kr,
-          mp3,
-          pid: w.pid ?? null,
-        };
-      }),
-    ];
-  })
+  wordsRaw.items.map((item) => [
+    item.articleSeq,
+    item.words.map((w) => ({
+      i: w.wordIndex,
+      en: w.english,
+      kr: w.meaning_kr,
+      mp3: w.mp3File || "",
+      pid: w.pid ?? null,
+    })),
+  ])
 );
 
 /* ─── WB: { [articleSeq]: activityArray } ─── */

@@ -16,12 +16,23 @@ export function wordAudioUrl(articleSeq, mp3File) {
 
 /**
  * 단어 오디오를 재생한다.
+ * mp3File이 없으면 Web Speech API(TTS)로 영어 단어를 읽어준다.
  * @param {string} articleSeq
  * @param {string} mp3File
+ * @param {string} [englishWord] - mp3File 없을 때 TTS 폴백용 영어 단어
  */
-export function playWordAudio(articleSeq, mp3File) {
-  if (!mp3File) return;
-  // 전체 URL(CDN)이면 그대로 사용, 파일명만이면 로컬 경로 조합
+export function playWordAudio(articleSeq, mp3File, englishWord) {
+  if (!mp3File) {
+    // TTS 폴백: 브라우저 내장 Web Speech API로 발음
+    if (englishWord && window.speechSynthesis) {
+      window.speechSynthesis.cancel();
+      const utt = new SpeechSynthesisUtterance(englishWord);
+      utt.lang = "en-US";
+      utt.rate = 0.85;
+      window.speechSynthesis.speak(utt);
+    }
+    return;
+  }
   const url = mp3File.startsWith("http")
     ? mp3File
     : wordAudioUrl(articleSeq, mp3File);

@@ -2826,7 +2826,7 @@ export default function App() {
                             <div style={{ fontSize: 13, color: X.sub, marginBottom: 10 }}>{seg.w.kr}</div>
                             <div style={{ display: "flex", gap: 6 }}>
                               <Bt v="outline" style={{ fontSize: 11, padding: "3px 8px" }}
-                                onClick={e => { e.stopPropagation(); playWordAudio(cA.seq, seg.w.mp3); }}>
+                                onClick={e => { e.stopPropagation(); playWordAudio(cA.seq, seg.w.mp3, seg.w.en); }}>
                                 🔊 발음
                               </Bt>
                               <Bt v="ghost" style={{ fontSize: 11, padding: "3px 8px" }} onClick={() => setPw(null)}>닫기</Bt>
@@ -2919,10 +2919,10 @@ export default function App() {
                   뜻 보기
                 </button>
               )}
-              {w.mp3 && (
+              {(w.mp3 || w.en) && (
                 <button
                   type="button"
-                  onClick={() => playWordAudio(cA.seq, w.mp3)}
+                  onClick={() => playWordAudio(cA.seq, w.mp3, w.en)}
                   style={{ marginTop: 4, display: "inline-flex", alignItems: "center", gap: 6, padding: "7px 16px", borderRadius: 20, border: `1px solid ${X.bdr}`, background: "#f8f9fa", cursor: "pointer", fontSize: 13, color: X.sub, fontFamily: F.b }}
                 >
                   🔊 발음 듣기
@@ -2989,7 +2989,7 @@ export default function App() {
                       <div style={{ fontWeight: 700, fontSize: 14 }}>{i + 1}. {w.en}</div>
                       {!ok && <div style={{ fontSize: 12, color: X.sub, marginTop: 2 }}>내 답: <span style={{ color: X.rd }}>{ans || "미선택"}</span> / 정답: <span style={{ color: X.gn, fontWeight: 600 }}>{w.kr}</span></div>}
                     </div>
-                    {w.mp3 && <button onClick={() => playWordAudio(cA.seq, w.mp3)} style={{ border: `1px solid ${X.bdr}`, background: "#fff", borderRadius: 7, width: 28, height: 28, cursor: "pointer", fontSize: 13 }}>🔊</button>}
+                    {(w.mp3 || w.en) && <button onClick={() => playWordAudio(cA.seq, w.mp3, w.en)} style={{ border: `1px solid ${X.bdr}`, background: "#fff", borderRadius: 7, width: 28, height: 28, cursor: "pointer", fontSize: 13 }}>🔊</button>}
                   </div>
                 );
               })}
@@ -3073,8 +3073,8 @@ export default function App() {
             <div style={{ background: "#fff", borderRadius: 20, border: `1px solid ${X.bdr}`, boxShadow: "0 4px 24px rgba(0,0,0,.07)", padding: "32px 28px", marginBottom: 16 }}>
               <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 24, justifyContent: "center" }}>
                 <span style={{ fontFamily: F.h, fontWeight: 800, fontSize: 28, color: X.tx }}>{w.en}</span>
-                {w.mp3 && (
-                  <button onClick={() => playWordAudio(cA.seq, w.mp3)}
+                {(w.mp3 || w.en) && (
+                  <button onClick={() => playWordAudio(cA.seq, w.mp3, w.en)}
                     style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", width: 32, height: 32, borderRadius: 8, border: `1px solid ${X.bdr}`, background: "#f8f9fa", cursor: "pointer", fontSize: 15, flexShrink: 0 }}>
                     🔊
                   </button>
