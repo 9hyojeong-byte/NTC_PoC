@@ -3305,12 +3305,14 @@ export default function App() {
     const ci = ss.indexOf(sv);
     const pg = sArt ? gP(prog, sSt, sArt) : { r: false, wl: false, v: false, sb: false, w: false };
     const done = pg.r && pg.wl && pg.v && pg.sb && pg.w;
+    // 각 스텝의 실제 완료 여부 (녹색 표시 기준)
+    const stepDone = { wl: pg.wl, rd: pg.r, voc: pg.v, ssb: pg.sb, rec: pg.w, dn: done };
     const canGo = () => true;
     return (
       <div className="ntc-step-bar" style={{ marginBottom: 20, background: X.card, borderRadius: 14, padding: 4, border: `1px solid ${X.bdr}` }}>
         {ss.map((s, i) => {
           const active = i === ci;
-          const past = i < ci;
+          const isCompleted = stepDone[s];
           const allowed = canGo(i);
           return (
             <button key={s}
@@ -3325,7 +3327,7 @@ export default function App() {
                   setSv(s);
                 }
               }}
-              style={{ padding: "9px 4px", borderRadius: 10, border: "none", fontSize: 11, fontWeight: 700, fontFamily: F.b, whiteSpace: "nowrap", textAlign: "center", background: active ? X.dk : past ? X.gbg : "#f1f5f9", color: active ? "#fff" : past ? X.gn : X.mt, cursor: allowed && !active ? "pointer" : "default", transition: "all .2s", opacity: allowed ? 1 : 0.5 }}
+              style={{ padding: "9px 4px", borderRadius: 10, border: "none", fontSize: 11, fontWeight: 700, fontFamily: F.b, whiteSpace: "nowrap", textAlign: "center", background: active ? X.dk : isCompleted ? X.gbg : "#f1f5f9", color: active ? "#fff" : isCompleted ? X.gn : X.mt, cursor: allowed && !active ? "pointer" : "default", transition: "all .2s", opacity: allowed ? 1 : 0.5 }}
             >{ls[i]}</button>
           );
         })}
