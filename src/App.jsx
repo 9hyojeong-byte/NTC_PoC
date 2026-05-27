@@ -2674,6 +2674,8 @@ export default function App() {
     if (!cA) return null;
     const pidW = cW.filter(w => w.pid);
     const noP = cW.filter(w => !w.pid);
+    // pid가 없는 기사(신규 기사)는 전체 단어를 본문 전체에 걸쳐 하이라이트
+    const useGlobalWords = pidW.length === 0 && cW.length > 0;
 
     return (
       <div onClick={() => setPw(null)}>
@@ -2749,7 +2751,7 @@ export default function App() {
         {/* ── Body ── */}
         <div style={{ maxWidth: 720, margin: "0 auto", padding: "28px 24px 40px" }}>
           {cA.ps.map(pa => {
-            const pw2 = pidW.filter(w => w.pid === pa.pid);
+            const pw2 = useGlobalWords ? cW : pidW.filter(w => w.pid === pa.pid);
             const segs = hl(pa.en, pw2);
             const sentenceRanges = sentenceMeta.byPid[pa.pid] || [];
             const isH = pa.en.length < 50 && !pa.en.includes(".");
@@ -2842,7 +2844,7 @@ export default function App() {
             );
           })}
 
-          {noP.length > 0 && (
+          {!useGlobalWords && noP.length > 0 && (
             <div style={{ marginTop: 32, padding: "16px 20px", background: "#f8fafc", borderRadius: 12, border: `1px solid ${X.bdr}` }}>
               <div style={{ fontSize: 12, fontWeight: 700, color: X.sub, letterSpacing: .5, marginBottom: 10 }}>추가 단어</div>
               {noP.map((w, i) => (
