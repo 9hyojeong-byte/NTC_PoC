@@ -21,7 +21,10 @@ export function wordAudioUrl(articleSeq, mp3File) {
  */
 export function playWordAudio(articleSeq, mp3File) {
   if (!mp3File) return;
-  const url = wordAudioUrl(articleSeq, mp3File);
+  // 전체 URL(CDN)이면 그대로 사용, 파일명만이면 로컬 경로 조합
+  const url = mp3File.startsWith("http")
+    ? mp3File
+    : wordAudioUrl(articleSeq, mp3File);
   const audio = new Audio(url);
   audio.play().catch(() => {
     // 오디오 파일 없거나 브라우저 정책으로 재생 실패 시 무시
