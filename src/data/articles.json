@@ -17,10 +17,26 @@
           "sid": "S1",
           "heading": null,
           "paragraphs": [
-            { "pid": "S1P1", "text_with_placeholders": "The movie “The King’s Warden” has become a huge hit in Korea. It opened on February 4th. It is the first historical film by director Jang Hang-jun.", "text_kr": "영화 “왕과 사는 남자”가 한국에서 큰 흥행을 이루었다. 그것은 2월 4일에 개봉했다. 그것은 장항준 감독의 첫 번째 사극 영화이다." },
-            { "pid": "S1P2", "text_with_placeholders": "The movie is set in the Joseon Dynasty during the 15th century. It tells the story of the exile of King Danjong. He was removed from the throne at a young age and sent to a small mountain village. There, local villagers take care of him. The village chief plays an especially important role in his life.", "text_kr": "그 영화는 15세기 조선 시대를 배경으로 한다. 그것은 단종의 유배 이야기를 말한다. 그는 어린 나이에 왕위에서 제거되었고 작은 산골 마을로 보내졌다. 그곳에서, 지역 주민들은 그를 돌본다. 그 마을의 촌장은 그의 삶에서 특히 중요한 역할을 한다." },
-            { "pid": "S1P3", "text_with_placeholders": "The cast includes Yoo Hae-jin and Park Ji-hoon in leading roles. Yoo Hae-jin plays the village chief, while Park Ji-hoon plays the young King Danjong. Other actors, such as Yoo Ji-tae and Jeon Mi-do, also appear in important roles.", "text_kr": "그 출연진에는 주연 역할들로 유해진과 박지훈이 포함된다. 유해진은 촌장을 연기하고, 반면에 박지훈은 어린 단종을 연기한다. 유지태와 전미도와 같은 다른 배우들 또한 중요한 역할들로 출연한다." },
-            { "pid": "S1P4", "text_with_placeholders": "The film has become a box-office success in Korea. It has reached the 10-million-viewer mark, becoming the first Korean movie to do so in two years.", "text_kr": "그 영화는 한국에서 흥행에 성공했다. 그것은 천만 관객에 도달했으며, 2년 만에 그렇게 한 첫 번째 한국 영화가 되었다." }
+            {
+              "pid": "S1P1",
+              "text_with_placeholders": "The movie “The King’s Warden” has become a huge hit in Korea. It opened on February 4th. It is the first historical film by director Jang Hang-jun.",
+              "text_kr": "영화 “왕과 사는 남자”가 한국에서 큰 흥행을 이루었다. 그것은 2월 4일에 개봉했다. 그것은 장항준 감독의 첫 번째 사극 영화이다."
+            },
+            {
+              "pid": "S1P2",
+              "text_with_placeholders": "The movie is set in the Joseon Dynasty during the 15th century. It tells the story of the exile of King Danjong. He was removed from the throne at a young age and sent to a small mountain village. There, local villagers take care of him. The village chief plays an especially important role in his life.",
+              "text_kr": "그 영화는 15세기 조선 시대를 배경으로 한다. 그것은 단종의 유배 이야기를 말한다. 그는 어린 나이에 왕위에서 제거되었고 작은 산골 마을로 보내졌다. 그곳에서, 지역 주민들은 그를 돌본다. 그 마을의 촌장은 그의 삶에서 특히 중요한 역할을 한다."
+            },
+            {
+              "pid": "S1P3",
+              "text_with_placeholders": "The cast includes Yoo Hae-jin and Park Ji-hoon in leading roles. Yoo Hae-jin plays the village chief, while Park Ji-hoon plays the young King Danjong. Other actors, such as Yoo Ji-tae and Jeon Mi-do, also appear in important roles.",
+              "text_kr": "그 출연진에는 주연 역할들로 유해진과 박지훈이 포함된다. 유해진은 촌장을 연기하고, 반면에 박지훈은 어린 단종을 연기한다. 유지태와 전미도와 같은 다른 배우들 또한 중요한 역할들로 출연한다."
+            },
+            {
+              "pid": "S1P4",
+              "text_with_placeholders": "The film has become a box-office success in Korea. It has reached the 10-million-viewer mark, becoming the first Korean movie to do so in two years.",
+              "text_kr": "그 영화는 한국에서 흥행에 성공했다. 그것은 천만 관객에 도달했으며, 2년 만에 그렇게 한 첫 번째 한국 영화가 되었다."
+            }
           ]
         }
       ],
@@ -48,11 +64,31 @@
           "sid": "S1",
           "heading": null,
           "paragraphs": [
-            { "pid": "S1P1", "text_with_placeholders": "On April 1st, people around the world play pranks for April Fools' Day. Here are some well-known April Fools' Day pranks.", "text_kr": "4월 1일, 전 세계의 사람들은 만우절을 맞아 장난들을 친다. 여기 몇 가지 잘 알려진 만우절 장난들이 있다." },
-            { "pid": "S1P2", "text_with_placeholders": "In 1957, the BBC in the United Kingdom played a hilarious prank on viewers. During a broadcast, it was announced that Swiss farmers were enjoying a bountiful spaghetti harvest. A video showed farmers plucking strands of spaghetti from trees. Many viewers were fooled and wanted to grow their own “spaghetti trees.”", "text_kr": "1957년, 영국의 BBC는 시청자들에게 매우 웃긴 장난을 쳤다. 한 방송에서, 스위스 농부들이 풍성한 스파게티 수확을 즐기고 있다고 발표되었다. 한 영상은 농부들이 나무들에서 스파게티 가닥들을 뽑는 모습을 보여주었다. 많은 시청자들은 속았고 그들 자신의 “스파게티 나무들”을 기르고 싶어 했다." },
-            { "pid": "S1P3", "text_with_placeholders": "In 1965, a newspaper in Copenhagen, Denmark, reported that a new law had been passed. This law required all black dogs to be painted white. Citizens immediately began to oppose the law, not realizing that it was, in fact, just an April Fools' Day prank.", "text_kr": "1965년에는, 덴마크 코펜하겐의 한 신문이 새로운 법이 통과되었다고 보도했다. 이 법은 모든 검은 개들이 흰색으로 칠해져야 한다고 요구했다. 시민들은 그것이 사실은 단지 만우절 장난이라는 것을 깨닫지 못한 채 즉시 그 법에 반대하기 시작했다." },
-            { "pid": "S1P4", "text_with_placeholders": "Later, in 1976, BBC Radio played a memorable April Fools' Day prank. This one was invented by an astronomer who claimed that a space phenomenon would affect Earth's gravity. He encouraged listeners to jump to experience the reduced gravity. Of course, when the listeners jumped, nothing out of the ordinary happened.", "text_kr": "이후 1976년에, BBC 라디오는 기억에 남는 만우절 장난을 했다. 이것은 우주 현상이 지구의 중력에 영향을 미칠 것이라고 주장한 한 천문학자에 의해 지어졌다. 그는 청취자들에게 감소한 중력을 경험하기 위해 점프할 것을 권했다. 물론, 청취자들이 점프했을 때 평범하지 않은 일은 아무것도 일어나지 않았다." },
-            { "pid": "S1P5", "text_with_placeholders": "* April Fools' Day 만우절", "text_kr": null }
+            {
+              "pid": "S1P1",
+              "text_with_placeholders": "On April 1st, people around the world play pranks for April Fools' Day. Here are some well-known April Fools' Day pranks.",
+              "text_kr": "4월 1일, 전 세계의 사람들은 만우절을 맞아 장난들을 친다. 여기 몇 가지 잘 알려진 만우절 장난들이 있다."
+            },
+            {
+              "pid": "S1P2",
+              "text_with_placeholders": "In 1957, the BBC in the United Kingdom played a hilarious prank on viewers. During a broadcast, it was announced that Swiss farmers were enjoying a bountiful spaghetti harvest. A video showed farmers plucking strands of spaghetti from trees. Many viewers were fooled and wanted to grow their own “spaghetti trees.”",
+              "text_kr": "1957년, 영국의 BBC는 시청자들에게 매우 웃긴 장난을 쳤다. 한 방송에서, 스위스 농부들이 풍성한 스파게티 수확을 즐기고 있다고 발표되었다. 한 영상은 농부들이 나무들에서 스파게티 가닥들을 뽑는 모습을 보여주었다. 많은 시청자들은 속았고 그들 자신의 “스파게티 나무들”을 기르고 싶어 했다."
+            },
+            {
+              "pid": "S1P3",
+              "text_with_placeholders": "In 1965, a newspaper in Copenhagen, Denmark, reported that a new law had been passed. This law required all black dogs to be painted white. Citizens immediately began to oppose the law, not realizing that it was, in fact, just an April Fools' Day prank.",
+              "text_kr": "1965년에는, 덴마크 코펜하겐의 한 신문이 새로운 법이 통과되었다고 보도했다. 이 법은 모든 검은 개들이 흰색으로 칠해져야 한다고 요구했다. 시민들은 그것이 사실은 단지 만우절 장난이라는 것을 깨닫지 못한 채 즉시 그 법에 반대하기 시작했다."
+            },
+            {
+              "pid": "S1P4",
+              "text_with_placeholders": "Later, in 1976, BBC Radio played a memorable April Fools' Day prank. This one was invented by an astronomer who claimed that a space phenomenon would affect Earth's gravity. He encouraged listeners to jump to experience the reduced gravity. Of course, when the listeners jumped, nothing out of the ordinary happened.",
+              "text_kr": "이후 1976년에, BBC 라디오는 기억에 남는 만우절 장난을 했다. 이것은 우주 현상이 지구의 중력에 영향을 미칠 것이라고 주장한 한 천문학자에 의해 지어졌다. 그는 청취자들에게 감소한 중력을 경험하기 위해 점프할 것을 권했다. 물론, 청취자들이 점프했을 때 평범하지 않은 일은 아무것도 일어나지 않았다."
+            },
+            {
+              "pid": "S1P5",
+              "text_with_placeholders": "* April Fools' Day 만우절",
+              "text_kr": null
+            }
           ]
         }
       ],
@@ -80,16 +116,56 @@
           "sid": "S1",
           "heading": null,
           "paragraphs": [
-            { "pid": "S1P1", "text_with_placeholders": "People all around the world care about the environment. Two special events help protect the planet and the living things that call it home.", "text_kr": "전 세계의 사람들은 환경에 관심을 가지고 있다. 두 가지 특별한 행사들은 그 행성과 그것을 집으로 부르는 살아있는 것들을 보호하는 데 도움을 준다." },
-            { "pid": "S1P2", "text_with_placeholders": "Let's learn about them.", "text_kr": "그것들에 대해 알아보자." },
-            { "pid": "S1P3", "text_with_placeholders": "Earth Hour", "text_kr": "어스 아워" },
-            { "pid": "S1P4", "text_with_placeholders": "Earth Hour is on March 28th. On this day, people turn off their lights for one hour to save energy and help the environment.", "text_kr": "어스 아워는 3월 28일이다. 이 날에 사람들은 에너지를 절약하고 환경을 돕기 위해 한 시간 동안 그들의 불들을 끈다." },
-            { "pid": "S1P5", "text_with_placeholders": "Millions of homes and buildings around the world take part. Turning off the lights can reduce pollution and protect the natural world.", "text_kr": "전 세계 수백만의 가정들과 건물들이 참여한다. 불들을 끄는 것은 오염을 줄이고 자연 세계를 보호할 수 있다." },
-            { "pid": "S1P6", "text_with_placeholders": "Many cities join Earth Hour to show they care about nature. It reminds us to use less energy every day.", "text_kr": "많은 도시들은 그것들이 자연에 관심을 가지는 것을 보여 주기 위해 어스 아워에 참여한다. 그것은 우리에게 매일 더 적은 에너지를 사용하도록 상기시켜 준다." },
-            { "pid": "S1P7", "text_with_placeholders": "Earth Day", "text_kr": "어스 데이 (지구의 날)" },
-            { "pid": "S1P8", "text_with_placeholders": "Earth Day is a big event celebrated every April 22nd. It started in 1970 to protect the planet and all living things.", "text_kr": "지구의 날은 매년 4월 22일에 기념되는 큰 행사이다. 그것은 1970년에 그 행성과 모든 생물들을 보호하기 위해 시작되었다." },
-            { "pid": "S1P9", "text_with_placeholders": "On this day, people plant trees and clean parks and beaches. Schools also teach children about animals and nature.", "text_kr": "이 날 사람들은 나무들을 심고 공원들과 해변들을 청소한다. 학교들도 아이들에게 동물들과 자연에 대해 가르친다." },
-            { "pid": "S1P10", "text_with_placeholders": "Earth Day helps millions of people think about how to protect Earth. It encourages everyone to take action for a greener future.", "text_kr": "지구의 날은 수백만의 사람들이 지구를 어떻게 보호할 수 있는지 생각하도록 돕는다. 그것은 모두가 더 푸른 미래를 위해 행동하도록 격려한다." }
+            {
+              "pid": "S1P1",
+              "text_with_placeholders": "People all around the world care about the environment. Two special events help protect the planet and the living things that call it home.",
+              "text_kr": "전 세계의 사람들은 환경에 관심을 가지고 있다. 두 가지 특별한 행사들은 그 행성과 그것을 집으로 부르는 살아있는 것들을 보호하는 데 도움을 준다."
+            },
+            {
+              "pid": "S1P2",
+              "text_with_placeholders": "Let's learn about them.",
+              "text_kr": "그것들에 대해 알아보자."
+            },
+            {
+              "pid": "S1P3",
+              "text_with_placeholders": "Earth Hour",
+              "text_kr": "어스 아워"
+            },
+            {
+              "pid": "S1P4",
+              "text_with_placeholders": "Earth Hour is on March 28th. On this day, people turn off their lights for one hour to save energy and help the environment.",
+              "text_kr": "어스 아워는 3월 28일이다. 이 날에 사람들은 에너지를 절약하고 환경을 돕기 위해 한 시간 동안 그들의 불들을 끈다."
+            },
+            {
+              "pid": "S1P5",
+              "text_with_placeholders": "Millions of homes and buildings around the world take part. Turning off the lights can reduce pollution and protect the natural world.",
+              "text_kr": "전 세계 수백만의 가정들과 건물들이 참여한다. 불들을 끄는 것은 오염을 줄이고 자연 세계를 보호할 수 있다."
+            },
+            {
+              "pid": "S1P6",
+              "text_with_placeholders": "Many cities join Earth Hour to show they care about nature. It reminds us to use less energy every day.",
+              "text_kr": "많은 도시들은 그것들이 자연에 관심을 가지는 것을 보여 주기 위해 어스 아워에 참여한다. 그것은 우리에게 매일 더 적은 에너지를 사용하도록 상기시켜 준다."
+            },
+            {
+              "pid": "S1P7",
+              "text_with_placeholders": "Earth Day",
+              "text_kr": "어스 데이 (지구의 날)"
+            },
+            {
+              "pid": "S1P8",
+              "text_with_placeholders": "Earth Day is a big event celebrated every April 22nd. It started in 1970 to protect the planet and all living things.",
+              "text_kr": "지구의 날은 매년 4월 22일에 기념되는 큰 행사이다. 그것은 1970년에 그 행성과 모든 생물들을 보호하기 위해 시작되었다."
+            },
+            {
+              "pid": "S1P9",
+              "text_with_placeholders": "On this day, people plant trees and clean parks and beaches. Schools also teach children about animals and nature.",
+              "text_kr": "이 날 사람들은 나무들을 심고 공원들과 해변들을 청소한다. 학교들도 아이들에게 동물들과 자연에 대해 가르친다."
+            },
+            {
+              "pid": "S1P10",
+              "text_with_placeholders": "Earth Day helps millions of people think about how to protect Earth. It encourages everyone to take action for a greener future.",
+              "text_kr": "지구의 날은 수백만의 사람들이 지구를 어떻게 보호할 수 있는지 생각하도록 돕는다. 그것은 모두가 더 푸른 미래를 위해 행동하도록 격려한다."
+            }
           ]
         }
       ],
@@ -117,11 +193,31 @@
           "sid": "S1",
           "heading": null,
           "paragraphs": [
-            { "pid": "S1P1", "text_with_placeholders": "Hyundai is a Korean motor company. It recently created a firefighting robot.", "text_kr": "현대는 한국의 자동차 회사이다. 그것은 최근에 소방 로봇을 만들었다." },
-            { "pid": "S1P2", "text_with_placeholders": "The robot looks like a small tank. It sprays water to put out fires and protect itself from heat. It can also climb over small obstacles.", "text_kr": "그 로봇은 작은 탱크처럼 보인다. 그것은 불들을 끄기 위해 물을 뿌리고 열로부터 자신을 보호한다. 그것은 또한 작은 장애물들을 넘어 올라갈 수 있다." },
-            { "pid": "S1P3", "text_with_placeholders": "The robot helps firefighters in many ways. It can enter dangerous buildings filled with toxic gases.", "text_kr": "그 로봇은 여러 가지 방법들로 소방관들을 돕는다. 그것은 유독 가스로 가득 찬 위험한 건물들 안으로 들어갈 수 있다." },
-            { "pid": "S1P4", "text_with_placeholders": "Recently, the company donated four firefighting robots to the National Fire Agency* in Korea. They will help keep firefighters safer during rescue work.", "text_kr": "최근에 그 회사는 한국의 소방청에 소방 로봇 네 대를 기부했다. 그것들은 구조 작업 동안 소방관들을 더 안전하게 지키는 데 도움을 줄 것이다." },
-            { "pid": "S1P5", "text_with_placeholders": "* the National Fire Agency 소방청", "text_kr": null }
+            {
+              "pid": "S1P1",
+              "text_with_placeholders": "Hyundai is a Korean motor company. It recently created a firefighting robot.",
+              "text_kr": "현대는 한국의 자동차 회사이다. 그것은 최근에 소방 로봇을 만들었다."
+            },
+            {
+              "pid": "S1P2",
+              "text_with_placeholders": "The robot looks like a small tank. It sprays water to put out fires and protect itself from heat. It can also climb over small obstacles.",
+              "text_kr": "그 로봇은 작은 탱크처럼 보인다. 그것은 불들을 끄기 위해 물을 뿌리고 열로부터 자신을 보호한다. 그것은 또한 작은 장애물들을 넘어 올라갈 수 있다."
+            },
+            {
+              "pid": "S1P3",
+              "text_with_placeholders": "The robot helps firefighters in many ways. It can enter dangerous buildings filled with toxic gases.",
+              "text_kr": "그 로봇은 여러 가지 방법들로 소방관들을 돕는다. 그것은 유독 가스로 가득 찬 위험한 건물들 안으로 들어갈 수 있다."
+            },
+            {
+              "pid": "S1P4",
+              "text_with_placeholders": "Recently, the company donated four firefighting robots to the National Fire Agency* in Korea. They will help keep firefighters safer during rescue work.",
+              "text_kr": "최근에 그 회사는 한국의 소방청에 소방 로봇 네 대를 기부했다. 그것들은 구조 작업 동안 소방관들을 더 안전하게 지키는 데 도움을 줄 것이다."
+            },
+            {
+              "pid": "S1P5",
+              "text_with_placeholders": "* the National Fire Agency 소방청",
+              "text_kr": null
+            }
           ]
         }
       ],
@@ -145,17 +241,33 @@
       "kr_match_status": "OK",
       "type": "나열형",
       "imageUrl": "http://upfile.neungyule.com/upload_admin/2026/05/246_p02.jpg",
-      "wordsUrl": "http://upfile.neungyule.com/upload_admin/2026/05/kinder_voca_246_p02_01.mp3",
-      "mp3Url": "http://upfile.neungyule.com/upload_admin/2026/05/kinder_246_p02_01.mp3",
+      "wordsUrl": "https://upfile.neungyule.com/upload_admin/2026/05/kinder_voca_246_p02_01.mp3",
+      "mp3Url": "https://upfile.neungyule.com/upload_admin/2026/05/kinder_246_p02_01.mp3",
       "sections": [
         {
           "sid": "S1",
           "heading": null,
           "paragraphs": [
-            { "pid": "S1P1", "text_with_placeholders": "A new park opened at Disneyland. It is in Paris. It is the World of Frozen!", "text_kr": "새로운 공원이 디즈니랜드에 문을 열었다. 그것은 파리에 있다. 그것은 월드 오브 프로즌(World of Frozen)이다!" },
-            { "pid": "S1P2", "text_with_placeholders": "There is a big mountain. People see Elsa's ice palace.", "text_kr": "거대한 산이 있다. 사람들은 엘사의 얼음 궁전을 본다." },
-            { "pid": "S1P3", "text_with_placeholders": "They can ride a fun boat. They can meet Anna, Elsa, and Olaf, too.", "text_kr": "그들은 재미있는 보트를 탈 수 있다. 그들은 안나와 엘사와 올라프도 만날 수 있다." },
-            { "pid": "S1P4", "text_with_placeholders": "The park is magical. Everyone is very happy!", "text_kr": "그 공원은 마법 같다. 모든 사람이 매우 행복하다!" }
+            {
+              "pid": "S1P1",
+              "text_with_placeholders": "A new park opened at Disneyland. It is in Paris. It is the World of Frozen!",
+              "text_kr": "새로운 공원이 디즈니랜드에 문을 열었다. 그것은 파리에 있다. 그것은 월드 오브 프로즌(World of Frozen)이다!"
+            },
+            {
+              "pid": "S1P2",
+              "text_with_placeholders": "There is a big mountain. People see Elsa's ice palace.",
+              "text_kr": "거대한 산이 있다. 사람들은 엘사의 얼음 궁전을 본다."
+            },
+            {
+              "pid": "S1P3",
+              "text_with_placeholders": "They can ride a fun boat. They can meet Anna, Elsa, and Olaf, too.",
+              "text_kr": "그들은 재미있는 보트를 탈 수 있다. 그들은 안나와 엘사와 올라프도 만날 수 있다."
+            },
+            {
+              "pid": "S1P4",
+              "text_with_placeholders": "The park is magical. Everyone is very happy!",
+              "text_kr": "그 공원은 마법 같다. 모든 사람이 매우 행복하다!"
+            }
           ]
         }
       ],
@@ -176,19 +288,43 @@
       "kr_match_status": "OK",
       "type": "나열형",
       "imageUrl": "http://upfile.neungyule.com/upload_admin/2026/05/246_p06.jpg",
-      "wordsUrl": "http://upfile.neungyule.com/upload_admin/2026/05/kinder_voca_246_p06_01.mp3",
-      "mp3Url": "http://upfile.neungyule.com/upload_admin/2026/05/kinder_246_p06_01.mp3",
+      "wordsUrl": "https://upfile.neungyule.com/upload_admin/2026/05/kinder_voca_246_p06_01.mp3",
+      "mp3Url": "https://upfile.neungyule.com/upload_admin/2026/05/kinder_246_p06_01.mp3",
       "sections": [
         {
           "sid": "S1",
           "heading": null,
           "paragraphs": [
-            { "pid": "S1P1", "text_with_placeholders": "Vincent van Gogh was a great artist. He was born in 1853.*", "text_kr": "빈센트 반 고흐는 위대한 화가였다. 그는 1853년에 태어났다." },
-            { "pid": "S1P2", "text_with_placeholders": "He painted many pictures. He used many colors.", "text_kr": "그는 그림을 많이 그렸다. 그는 많은 색을 사용했다." },
-            { "pid": "S1P3", "text_with_placeholders": "Van Gogh painted flowers and stars. He also painted himself.", "text_kr": "반 고흐는 꽃들과 별들을 그렸다. 그는 자신의 모습도 그렸다." },
-            { "pid": "S1P4", "text_with_placeholders": "His most famous paintings are \"Sunflowers\" and \"The Starry Night.\"", "text_kr": "그의 가장 유명한 그림은 '해바라기'와 '별이 빛나는 밤'이다." },
-            { "pid": "S1P5", "text_with_placeholders": "Van Gogh was not famous during his life. But now, many people love his art!", "text_kr": "반 고흐는 그 시절에 유명하지 않았다. 하지만 지금은 많은 사람들이 그의 예술을 사랑한다!" },
-            { "pid": "S1P6", "text_with_placeholders": "* 1853 <연도> eighteen fifty-three", "text_kr": null }
+            {
+              "pid": "S1P1",
+              "text_with_placeholders": "Vincent van Gogh was a great artist. He was born in 1853.*",
+              "text_kr": "빈센트 반 고흐는 위대한 화가였다. 그는 1853년에 태어났다."
+            },
+            {
+              "pid": "S1P2",
+              "text_with_placeholders": "He painted many pictures. He used many colors.",
+              "text_kr": "그는 그림을 많이 그렸다. 그는 많은 색을 사용했다."
+            },
+            {
+              "pid": "S1P3",
+              "text_with_placeholders": "Van Gogh painted flowers and stars. He also painted himself.",
+              "text_kr": "반 고흐는 꽃들과 별들을 그렸다. 그는 자신의 모습도 그렸다."
+            },
+            {
+              "pid": "S1P4",
+              "text_with_placeholders": "His most famous paintings are \"Sunflowers\" and \"The Starry Night.\"",
+              "text_kr": "그의 가장 유명한 그림은 '해바라기'와 '별이 빛나는 밤'이다."
+            },
+            {
+              "pid": "S1P5",
+              "text_with_placeholders": "Van Gogh was not famous during his life. But now, many people love his art!",
+              "text_kr": "반 고흐는 그 시절에 유명하지 않았다. 하지만 지금은 많은 사람들이 그의 예술을 사랑한다!"
+            },
+            {
+              "pid": "S1P6",
+              "text_with_placeholders": "* 1853 <연도> eighteen fifty-three",
+              "text_kr": null
+            }
           ]
         }
       ],
@@ -209,17 +345,33 @@
       "kr_match_status": "OK",
       "type": "나열형",
       "imageUrl": "http://upfile.neungyule.com/upload_admin/2026/05/244_p12.jpg",
-      "wordsUrl": "http://upfile.neungyule.com/upload_admin/2026/05/kinder_voca_244_p12_01.mp3",
-      "mp3Url": "http://upfile.neungyule.com/upload_admin/2026/05/kinder_244_p12_01.mp3",
+      "wordsUrl": "https://upfile.neungyule.com/upload_admin/2026/05/kinder_voca_244_p12_01.mp3",
+      "mp3Url": "https://upfile.neungyule.com/upload_admin/2026/05/kinder_244_p12_01.mp3",
       "sections": [
         {
           "sid": "S1",
           "heading": null,
           "paragraphs": [
-            { "pid": "S1P1", "text_with_placeholders": "Today, I went to John's house. He is my best friend.", "text_kr": "오늘 나는 존의 집에 갔다. 그는 나의 가장 친한 친구이다." },
-            { "pid": "S1P2", "text_with_placeholders": "I brought some cookies to share. We ate them together.", "text_kr": "나는 함께 나눠 먹을 쿠키를 조금 가져갔다. 우리는 그것들을 같이 먹었다." },
-            { "pid": "S1P3", "text_with_placeholders": "Then, we built tall blocks. We also played fun board games.", "text_kr": "그런 다음, 우리는 높은 블록을 쌓았다. 우리는 또한 재미있는 보드게임도 했다." },
-            { "pid": "S1P4", "text_with_placeholders": "We had a great time. Next time, I will invite John to my house!", "text_kr": "우리는 즐거운 시간을 보냈다. 다음에는 내가 존을 우리 집에 초대할 것이다!" }
+            {
+              "pid": "S1P1",
+              "text_with_placeholders": "Today, I went to John's house. He is my best friend.",
+              "text_kr": "오늘 나는 존의 집에 갔다. 그는 나의 가장 친한 친구이다."
+            },
+            {
+              "pid": "S1P2",
+              "text_with_placeholders": "I brought some cookies to share. We ate them together.",
+              "text_kr": "나는 함께 나눠 먹을 쿠키를 조금 가져갔다. 우리는 그것들을 같이 먹었다."
+            },
+            {
+              "pid": "S1P3",
+              "text_with_placeholders": "Then, we built tall blocks. We also played fun board games.",
+              "text_kr": "그런 다음, 우리는 높은 블록을 쌓았다. 우리는 또한 재미있는 보드게임도 했다."
+            },
+            {
+              "pid": "S1P4",
+              "text_with_placeholders": "We had a great time. Next time, I will invite John to my house!",
+              "text_kr": "우리는 즐거운 시간을 보냈다. 다음에는 내가 존을 우리 집에 초대할 것이다!"
+            }
           ]
         }
       ],
@@ -240,19 +392,43 @@
       "kr_match_status": "OK",
       "type": "나열형",
       "imageUrl": "http://upfile.neungyule.com/upload_admin/2026/04/243_p12.jpg",
-      "wordsUrl": "http://upfile.neungyule.com/upload_admin/2026/04/kinder_voca_243_p12_01.mp3",
-      "mp3Url": "http://upfile.neungyule.com/upload_admin/2026/04/kinder_243_p12_01.mp3",
+      "wordsUrl": "https://upfile.neungyule.com/upload_admin/2026/04/kinder_voca_243_p12_01.mp3",
+      "mp3Url": "https://upfile.neungyule.com/upload_admin/2026/04/kinder_243_p12_01.mp3",
       "sections": [
         {
           "sid": "S1",
           "heading": null,
           "paragraphs": [
-            { "pid": "S1P1", "text_with_placeholders": "Dad: Jake, the package is here!", "text_kr": "아빠: 제이크, 택배가 왔어!" },
-            { "pid": "S1P2", "text_with_placeholders": "Jake: What is inside the box?", "text_kr": "제이크: 상자 안에 무엇이 들어 있어요?" },
-            { "pid": "S1P3", "text_with_placeholders": "Dad: I ordered something. Let's open it together.", "text_kr": "아빠: 아빠가 주문한 게 있단다. 그것을 같이 열어 보자." },
-            { "pid": "S1P4", "text_with_placeholders": "Jake: Okay! I am curious.", "text_kr": "제이크: 좋아요! 궁금해요." },
-            { "pid": "S1P5", "text_with_placeholders": "Dad: Look! It is a surprise for you. It is your new toy!", "text_kr": "아빠: 보렴! 너를 위한 깜짝선물이란다. 네 새 장난감이야!" },
-            { "pid": "S1P6", "text_with_placeholders": "Jake: Yay! Thank you, Dad. You are the best!", "text_kr": "제이크: 야호! 고마워요, 아빠. 아빠가 최고예요!" }
+            {
+              "pid": "S1P1",
+              "text_with_placeholders": "Dad: Jake, the package is here!",
+              "text_kr": "아빠: 제이크, 택배가 왔어!"
+            },
+            {
+              "pid": "S1P2",
+              "text_with_placeholders": "Jake: What is inside the box?",
+              "text_kr": "제이크: 상자 안에 무엇이 들어 있어요?"
+            },
+            {
+              "pid": "S1P3",
+              "text_with_placeholders": "Dad: I ordered something. Let's open it together.",
+              "text_kr": "아빠: 아빠가 주문한 게 있단다. 그것을 같이 열어 보자."
+            },
+            {
+              "pid": "S1P4",
+              "text_with_placeholders": "Jake: Okay! I am curious.",
+              "text_kr": "제이크: 좋아요! 궁금해요."
+            },
+            {
+              "pid": "S1P5",
+              "text_with_placeholders": "Dad: Look! It is a surprise for you. It is your new toy!",
+              "text_kr": "아빠: 보렴! 너를 위한 깜짝선물이란다. 네 새 장난감이야!"
+            },
+            {
+              "pid": "S1P6",
+              "text_with_placeholders": "Jake: Yay! Thank you, Dad. You are the best!",
+              "text_kr": "제이크: 야호! 고마워요, 아빠. 아빠가 최고예요!"
+            }
           ]
         }
       ],
@@ -273,17 +449,33 @@
       "kr_match_status": "OK",
       "type": "나열형",
       "imageUrl": "http://upfile.neungyule.com/upload_admin/2026/04/242_p02.jpg",
-      "wordsUrl": "http://upfile.neungyule.com/upload_admin/2026/04/kinder_voca_242_p02_01.mp3",
-      "mp3Url": "http://upfile.neungyule.com/upload_admin/2026/04/kinder_242_p02_01.mp3",
+      "wordsUrl": "https://upfile.neungyule.com/upload_admin/2026/04/kinder_voca_242_p02_01.mp3",
+      "mp3Url": "https://upfile.neungyule.com/upload_admin/2026/04/kinder_242_p02_01.mp3",
       "sections": [
         {
           "sid": "S1",
           "heading": null,
           "paragraphs": [
-            { "pid": "S1P1", "text_with_placeholders": "People saw a small owl. The owl was in a store. It was on a shelf.", "text_kr": "사람들이 작은 부엉이 한 마리를 보았다. 그 부엉이는 가게 안에 있었다. 그것은 선반 위에 있었다." },
-            { "pid": "S1P2", "text_with_placeholders": "People thought the owl was a toy. But it was a real owl!", "text_kr": "사람들은 그 부엉이가 장난감이라고 생각했다. 하지만 그것은 진짜 부엉이였다!" },
-            { "pid": "S1P3", "text_with_placeholders": "The owl was sleeping. It was very cute and quiet.", "text_kr": "그 부엉이는 잠자고 있었다. 그것은 매우 귀엽고 조용했다." },
-            { "pid": "S1P4", "text_with_placeholders": "Police officers took the owl outside. It flew away!", "text_kr": "경찰관들이 그 부엉이를 밖으로 데리고 나갔다. 그것은 날아갔다!" }
+            {
+              "pid": "S1P1",
+              "text_with_placeholders": "People saw a small owl. The owl was in a store. It was on a shelf.",
+              "text_kr": "사람들이 작은 부엉이 한 마리를 보았다. 그 부엉이는 가게 안에 있었다. 그것은 선반 위에 있었다."
+            },
+            {
+              "pid": "S1P2",
+              "text_with_placeholders": "People thought the owl was a toy. But it was a real owl!",
+              "text_kr": "사람들은 그 부엉이가 장난감이라고 생각했다. 하지만 그것은 진짜 부엉이였다!"
+            },
+            {
+              "pid": "S1P3",
+              "text_with_placeholders": "The owl was sleeping. It was very cute and quiet.",
+              "text_kr": "그 부엉이는 잠자고 있었다. 그것은 매우 귀엽고 조용했다."
+            },
+            {
+              "pid": "S1P4",
+              "text_with_placeholders": "Police officers took the owl outside. It flew away!",
+              "text_kr": "경찰관들이 그 부엉이를 밖으로 데리고 나갔다. 그것은 날아갔다!"
+            }
           ]
         }
       ],
@@ -304,16 +496,28 @@
       "kr_match_status": "OK",
       "type": "나열형",
       "imageUrl": "http://upfile.neungyule.com/upload_admin/2026/05/1074_p05-1.jpg",
-      "wordsUrl": "http://upfile.neungyule.com/upload_admin/2026/05/times_voca_1074_p05_01.mp3",
-      "mp3Url": "http://upfile.neungyule.com/upload_admin/2026/05/times_1074_p05_01.mp3",
+      "wordsUrl": "https://upfile.neungyule.com/upload_admin/2026/05/times_voca_1074_p05_01.mp3",
+      "mp3Url": "https://upfile.neungyule.com/upload_admin/2026/05/times_1074_p05_01.mp3",
       "sections": [
         {
           "sid": "S1",
           "heading": null,
           "paragraphs": [
-            { "pid": "S1P1", "text_with_placeholders": "Anabela Chan, a London-based jewelry designer, is known for her creative use of unusual materials. Her latest project, the \"Fruit Gems\" collection, uses discarded fruits and vegetables to make lab-grown gemstones. These stones are then set into rings, earrings, and necklaces, giving the food waste a second life as luxury jewelry.", "text_kr": "런던에 기반을 둔 보석 디자이너인 아나벨라 찬은 독특한 재료들을 창의적으로 사용하는 것으로 알려져 있다. 그녀의 최근 프로젝트인 \"프루트 젬스(Fruit Gems)\" 컬렉션은 실험실 배양 보석을 만들기 위해 버려진 과일들과 채소들을 사용한다. 이 보석들은 그 후 반지, 귀걸이, 그리고 목걸이들에 끼워져, 그 음식쓰레기에 고급 보석으로서의 두 번째 삶을 부여한다." },
-            { "pid": "S1P2", "text_with_placeholders": "Chan began exploring gemstone alternatives after seeing poor working conditions in traditional gem mining. She wanted to create jewelry that was both beautiful and ethical. By combining science, design, and imagination, she found a way to turn food waste into colorful gems that shine like natural stones.", "text_kr": "찬은 전통적인 보석 채굴에서의 열악한 노동 환경을 본 후 보석 원석들의 대안들을 탐구하기 시작했다. 그녀는 아름다우면서도 윤리적인 보석을 만들기를 원했다. 과학, 디자인, 그리고 상상력을 결합함으로써, 그녀는 음식쓰레기를 천연석처럼 빛나는 다채로운 보석들로 바꾸는 방법을 찾아냈다." },
-            { "pid": "S1P3", "text_with_placeholders": "The collection has gained global attention, with pieces displayed in her bright London showroom. Chan hopes her innovative work will give a message to think differently about waste and to see sustainability as part of everyday modern luxury.", "text_kr": "이 컬렉션은 그녀의 밝은 런던 전시장에 작품들이 전시되면서 세계적인 관심을 얻었다. 찬은 그녀의 혁신적인 작업이 폐기물에 대해 다르게 생각하고 지속 가능성을 일상적인 현대 사치품의 일부로 바라보게 하는 메시지를 전달하기를 희망한다." }
+            {
+              "pid": "S1P1",
+              "text_with_placeholders": "Anabela Chan, a London-based jewelry designer, is known for her creative use of unusual materials. Her latest project, the \"Fruit Gems\" collection, uses discarded fruits and vegetables to make lab-grown gemstones. These stones are then set into rings, earrings, and necklaces, giving the food waste a second life as luxury jewelry.",
+              "text_kr": "런던에 기반을 둔 보석 디자이너인 아나벨라 찬은 독특한 재료들을 창의적으로 사용하는 것으로 알려져 있다. 그녀의 최근 프로젝트인 \"프루트 젬스(Fruit Gems)\" 컬렉션은 실험실 배양 보석을 만들기 위해 버려진 과일들과 채소들을 사용한다. 이 보석들은 그 후 반지, 귀걸이, 그리고 목걸이들에 끼워져, 그 음식쓰레기에 고급 보석으로서의 두 번째 삶을 부여한다."
+            },
+            {
+              "pid": "S1P2",
+              "text_with_placeholders": "Chan began exploring gemstone alternatives after seeing poor working conditions in traditional gem mining. She wanted to create jewelry that was both beautiful and ethical. By combining science, design, and imagination, she found a way to turn food waste into colorful gems that shine like natural stones.",
+              "text_kr": "찬은 전통적인 보석 채굴에서의 열악한 노동 환경을 본 후 보석 원석들의 대안들을 탐구하기 시작했다. 그녀는 아름다우면서도 윤리적인 보석을 만들기를 원했다. 과학, 디자인, 그리고 상상력을 결합함으로써, 그녀는 음식쓰레기를 천연석처럼 빛나는 다채로운 보석들로 바꾸는 방법을 찾아냈다."
+            },
+            {
+              "pid": "S1P3",
+              "text_with_placeholders": "The collection has gained global attention, with pieces displayed in her bright London showroom. Chan hopes her innovative work will give a message to think differently about waste and to see sustainability as part of everyday modern luxury.",
+              "text_kr": "이 컬렉션은 그녀의 밝은 런던 전시장에 작품들이 전시되면서 세계적인 관심을 얻었다. 찬은 그녀의 혁신적인 작업이 폐기물에 대해 다르게 생각하고 지속 가능성을 일상적인 현대 사치품의 일부로 바라보게 하는 메시지를 전달하기를 희망한다."
+            }
           ]
         }
       ],
@@ -334,19 +538,43 @@
       "kr_match_status": "OK",
       "type": "나열형",
       "imageUrl": "http://upfile.neungyule.com/upload_admin/2026/05/1074_p10.jpg",
-      "wordsUrl": "http://upfile.neungyule.com/upload_admin/2026/05/times_voca_1074_p10_01.mp3",
-      "mp3Url": "http://upfile.neungyule.com/upload_admin/2026/05/times_1074_p10_01.mp3",
+      "wordsUrl": "https://upfile.neungyule.com/upload_admin/2026/05/times_voca_1074_p10_01.mp3",
+      "mp3Url": "https://upfile.neungyule.com/upload_admin/2026/05/times_1074_p10_01.mp3",
       "sections": [
         {
           "sid": "S1",
           "heading": null,
           "paragraphs": [
-            { "pid": "S1P1", "text_with_placeholders": "In the past, students commonly wrote their class notes in notebooks or on paper during lessons. Today, with laptops widely available, many students prefer to type their notes using computers instead.", "text_kr": "과거에, 학생들은 보통 수업 중에 공책이나 종이에 수업 내용을 적었다. 오늘날, 노트북을 널리 이용할 수 있게 되면서, 많은 학생들이 대신 컴퓨터를 사용하여 필기를 타이핑하는 것을 선호한다." },
-            { "pid": "S1P2", "text_with_placeholders": "This has led to debate about whether it is better to write notes on paper or on a computer. Supporters of handwritten notes argue that they help to retain information better and improve focus. Meanwhile, advocates of digital notes claim they are more efficient and provide access to more learning tools.", "text_kr": "이것은 종이에 필기를 하는 것이 더 나은지 아니면 컴퓨터에 하는 것이 더 나은지에 대한 논쟁으로 이어졌다. 손 글씨 필기의 지지자들은 그것들이 정보를 더 잘 간직하도록 돕고 집중력을 향상시킨다고 주장한다. 반면에 디지털 필기의 옹호자들은 그것들이 더 효율적이고 더 많은 학습 도구에 대한 접근을 제공한다고 주장한다." },
-            { "pid": "S1P3", "text_with_placeholders": "Supporters of writing notes on paper argue that doing so by hand helps improve memory retention and recall. The physical act of writing forces students to process information more carefully and understand the material. As a result, students may remember key points better and perform more effectively on assignments and exams.", "text_kr": "종이에 필기하는 것의 지지자들은 손으로 그렇게 하는 것이 기억 보유와 기억력을 향상시키는 데 도움이 된다고 주장한다. 쓰는 신체적 행위는 학생들이 어쩔 수 없이 정보를 더 주의 깊게 처리하고 자료를 이해하도록 만든다. 결과적으로 학생들은 핵심 사항들을 더 잘 기억하고 과제들과 시험들에서 더 효과적으로 수행할 수 있다." },
-            { "pid": "S1P4", "text_with_placeholders": "Advocates also claim that taking notes by hand helps students to focus better during class lectures and discussions. Unlike computers, notebooks do not provide access to distracting notifications, games, or social media. They allow students to pay closer attention and obtain a deeper understanding of the material.", "text_kr": "옹호자들은 또한 손으로 필기하는 것이 학생들이 수업 강의와 토론 동안 더 잘 집중하도록 돕는다고 주장한다. 컴퓨터와 달리 공책은 주의를 방해하는 알림들, 게임들, 또는 소셜 미디어에 대한 접근을 제공하지 않는다. 그것들은 학생들이 더 세심하게 집중하고 자료에 대한 더 깊은 이해를 얻도록 해준다." },
-            { "pid": "S1P5", "text_with_placeholders": "In contrast, supporters of typing notes on computers argue that digital notes are much faster, and they are easier to organize and manage. Students can quickly sort, edit, and search their notes, which can be helpful when reviewing large amounts of information. Thus, this efficiency can save time and make studying more productive.", "text_kr": "대조적으로 컴퓨터에 필기를 타이핑하는 것의 지지자들은 디지털 필기가 훨씬 더 빠르고, 정리하고 관리하기에 더 쉽다고 주장한다. 학생들은 자신의 필기를 빠르게 분류하고, 수정하고, 검색할 수 있으며, 이는 많은 양의 정보를 복습할 때 도움이 될 수 있다. 따라서 이러한 효율성은 시간을 절약하고 공부를 더 생산적으로 만들 수 있다." },
-            { "pid": "S1P6", "text_with_placeholders": "Critics of writing notes on paper also point out that computers allow students to include multimedia elements in their notes. Digital notes can contain images, audio recordings, videos, and links to additional resources. Furthermore, students can store notes on a computer or cloud service, making them accessible at any time or place.", "text_kr": "종이에 필기하는 것에 대한 비판자들은 또한 컴퓨터가 학생들이 필기에 멀티미디어 요소들을 포함하도록 해준다는 점을 지적한다. 디지털 필기는 이미지들, 오디오 녹음들, 비디오들, 그리고 추가 자료들에 대한 링크들을 포함할 수 있다. 더욱이 학생들은 컴퓨터나 클라우드 서비스에 필기를 저장할 수 있으며, 그것들을 언제 어디서나 이용 가능하게 만든다." }
+            {
+              "pid": "S1P1",
+              "text_with_placeholders": "In the past, students commonly wrote their class notes in notebooks or on paper during lessons. Today, with laptops widely available, many students prefer to type their notes using computers instead.",
+              "text_kr": "과거에, 학생들은 보통 수업 중에 공책이나 종이에 수업 내용을 적었다. 오늘날, 노트북을 널리 이용할 수 있게 되면서, 많은 학생들이 대신 컴퓨터를 사용하여 필기를 타이핑하는 것을 선호한다."
+            },
+            {
+              "pid": "S1P2",
+              "text_with_placeholders": "This has led to debate about whether it is better to write notes on paper or on a computer. Supporters of handwritten notes argue that they help to retain information better and improve focus. Meanwhile, advocates of digital notes claim they are more efficient and provide access to more learning tools.",
+              "text_kr": "이것은 종이에 필기를 하는 것이 더 나은지 아니면 컴퓨터에 하는 것이 더 나은지에 대한 논쟁으로 이어졌다. 손 글씨 필기의 지지자들은 그것들이 정보를 더 잘 간직하도록 돕고 집중력을 향상시킨다고 주장한다. 반면에 디지털 필기의 옹호자들은 그것들이 더 효율적이고 더 많은 학습 도구에 대한 접근을 제공한다고 주장한다."
+            },
+            {
+              "pid": "S1P3",
+              "text_with_placeholders": "Supporters of writing notes on paper argue that doing so by hand helps improve memory retention and recall. The physical act of writing forces students to process information more carefully and understand the material. As a result, students may remember key points better and perform more effectively on assignments and exams.",
+              "text_kr": "종이에 필기하는 것의 지지자들은 손으로 그렇게 하는 것이 기억 보유와 기억력을 향상시키는 데 도움이 된다고 주장한다. 쓰는 신체적 행위는 학생들이 어쩔 수 없이 정보를 더 주의 깊게 처리하고 자료를 이해하도록 만든다. 결과적으로 학생들은 핵심 사항들을 더 잘 기억하고 과제들과 시험들에서 더 효과적으로 수행할 수 있다."
+            },
+            {
+              "pid": "S1P4",
+              "text_with_placeholders": "Advocates also claim that taking notes by hand helps students to focus better during class lectures and discussions. Unlike computers, notebooks do not provide access to distracting notifications, games, or social media. They allow students to pay closer attention and obtain a deeper understanding of the material.",
+              "text_kr": "옹호자들은 또한 손으로 필기하는 것이 학생들이 수업 강의와 토론 동안 더 잘 집중하도록 돕는다고 주장한다. 컴퓨터와 달리 공책은 주의를 방해하는 알림들, 게임들, 또는 소셜 미디어에 대한 접근을 제공하지 않는다. 그것들은 학생들이 더 세심하게 집중하고 자료에 대한 더 깊은 이해를 얻도록 해준다."
+            },
+            {
+              "pid": "S1P5",
+              "text_with_placeholders": "In contrast, supporters of typing notes on computers argue that digital notes are much faster, and they are easier to organize and manage. Students can quickly sort, edit, and search their notes, which can be helpful when reviewing large amounts of information. Thus, this efficiency can save time and make studying more productive.",
+              "text_kr": "대조적으로 컴퓨터에 필기를 타이핑하는 것의 지지자들은 디지털 필기가 훨씬 더 빠르고, 정리하고 관리하기에 더 쉽다고 주장한다. 학생들은 자신의 필기를 빠르게 분류하고, 수정하고, 검색할 수 있으며, 이는 많은 양의 정보를 복습할 때 도움이 될 수 있다. 따라서 이러한 효율성은 시간을 절약하고 공부를 더 생산적으로 만들 수 있다."
+            },
+            {
+              "pid": "S1P6",
+              "text_with_placeholders": "Critics of writing notes on paper also point out that computers allow students to include multimedia elements in their notes. Digital notes can contain images, audio recordings, videos, and links to additional resources. Furthermore, students can store notes on a computer or cloud service, making them accessible at any time or place.",
+              "text_kr": "종이에 필기하는 것에 대한 비판자들은 또한 컴퓨터가 학생들이 필기에 멀티미디어 요소들을 포함하도록 해준다는 점을 지적한다. 디지털 필기는 이미지들, 오디오 녹음들, 비디오들, 그리고 추가 자료들에 대한 링크들을 포함할 수 있다. 더욱이 학생들은 컴퓨터나 클라우드 서비스에 필기를 저장할 수 있으며, 그것들을 언제 어디서나 이용 가능하게 만든다."
+            }
           ]
         }
       ],
@@ -367,18 +595,38 @@
       "kr_match_status": "OK",
       "type": "나열형",
       "imageUrl": "http://upfile.neungyule.com/upload_admin/2026/05/1074_p03-1.jpg",
-      "wordsUrl": "http://upfile.neungyule.com/upload_admin/2026/05/times_voca_1074_p03_01.mp3",
-      "mp3Url": "http://upfile.neungyule.com/upload_admin/2026/05/times_1074_p03_01.mp3",
+      "wordsUrl": "https://upfile.neungyule.com/upload_admin/2026/05/times_voca_1074_p03_01.mp3",
+      "mp3Url": "https://upfile.neungyule.com/upload_admin/2026/05/times_1074_p03_01.mp3",
       "sections": [
         {
           "sid": "S1",
           "heading": null,
           "paragraphs": [
-            { "pid": "S1P1", "text_with_placeholders": "On April 8th, a male wolf named Neukgu escaped from the Daejeon O-World zoo. The incident quickly drew national attention. Many worried about both the health of the wolf and the dangers it might pose to the public.", "text_kr": "4월 8일, '늑구'라는 이름의 수컷 늑대 한 마리가 대전 오월드 동물원에서 탈출했다. 이 사건은 빠르게 전국적인 관심을 끌었다. 많은 이가 늑대의 건강과 그것이 대중에게 가할 수 있는 위험들 모두에 대해 걱정했다." },
-            { "pid": "S1P2", "text_with_placeholders": "Zoo officials explained that the wolf slipped through a damaged fence. This sparked a large search effort across the city. Authorities and zoo staff worked together to track Neukgu. Patrol teams, drones, and thermal cameras were used to scan nearby forests and hills.", "text_kr": "동물원 관계자들은 그 늑대가 손상된 울타리를 통해 빠져나갔다고 설명했다. 이것은 도시 전역에 걸친 대대적인 수색 노력을 촉발했다. 당국과 동물원 직원들은 늑구를 추적하기 위해 협력했다. 인근 숲과 언덕들을 훑기 위해 순찰팀들, 드론들, 그리고 열화상 카메라들이 사용되었다." },
-            { "pid": "S1P3", "text_with_placeholders": "For nine days, the wolf evaded capture, while many took to social media to post concerns about the search. Finally, on April 17th, Neukgu was safely caught near Anyeong Interchange in Daejeon. He was sedated and returned to the zoo without harming any residents.", "text_kr": "9일 동안, 그 늑대는 포획을 피했으며, 그동안 많은 이가 수색에 관한 우려 사항들을 게시하기 위해 소셜 미디어로 향했다. 마침내 4월 17일, 늑구는 대전 안영 나들목 근처에서 안전하게 잡혔다. 그는 진정제를 맞았고 어떠한 주민에게도 해를 끼치지 않고 동물원으로 돌아갔다." },
-            { "pid": "S1P4", "text_with_placeholders": "After his capture, veterinarians discovered a fishing hook lodged inside Neukgu. The wolf underwent a minor surgery to remove it and recovered quickly, reassuring the public that he was healthy.", "text_kr": "그의 포획 이후, 수의사들은 늑구의 몸 안에 박혀 있는 낚싯바늘 하나를 발견했다. 그 늑대는 그것을 제거하기 위해 가벼운 수술을 받았고 빠르게 회복했으며, 그가 건강하다는 점을 대중에게 안심시켰다." },
-            { "pid": "S1P5", "text_with_placeholders": "Following the ordeal, Neukgu became a viral figure, inspiring bakeries to sell \"Neukgu bread\" shaped like wolves. Sports teams adopted wolf imagery for promotional events. Merchandise featuring Neukgu also appeared across Korea, showing how a serious event transformed into a cultural trend.", "text_kr": "이 시련 이후, 늑구는 빠르게 인기를 얻은 대상이 되었고, 빵집들이 늑대 모양의 '늑구 빵'을 판매하도록 영감을 주었다. 스포츠팀들은 홍보 행사들을 위해 늑대 이미지를 채택했다. 늑구를 특징으로 하는 상품들 또한 한국 전역에 등장하며, 어떻게 심각한 사건이 문화적 유행으로 변했는지를 보여주었다." }
+            {
+              "pid": "S1P1",
+              "text_with_placeholders": "On April 8th, a male wolf named Neukgu escaped from the Daejeon O-World zoo. The incident quickly drew national attention. Many worried about both the health of the wolf and the dangers it might pose to the public.",
+              "text_kr": "4월 8일, '늑구'라는 이름의 수컷 늑대 한 마리가 대전 오월드 동물원에서 탈출했다. 이 사건은 빠르게 전국적인 관심을 끌었다. 많은 이가 늑대의 건강과 그것이 대중에게 가할 수 있는 위험들 모두에 대해 걱정했다."
+            },
+            {
+              "pid": "S1P2",
+              "text_with_placeholders": "Zoo officials explained that the wolf slipped through a damaged fence. This sparked a large search effort across the city. Authorities and zoo staff worked together to track Neukgu. Patrol teams, drones, and thermal cameras were used to scan nearby forests and hills.",
+              "text_kr": "동물원 관계자들은 그 늑대가 손상된 울타리를 통해 빠져나갔다고 설명했다. 이것은 도시 전역에 걸친 대대적인 수색 노력을 촉발했다. 당국과 동물원 직원들은 늑구를 추적하기 위해 협력했다. 인근 숲과 언덕들을 훑기 위해 순찰팀들, 드론들, 그리고 열화상 카메라들이 사용되었다."
+            },
+            {
+              "pid": "S1P3",
+              "text_with_placeholders": "For nine days, the wolf evaded capture, while many took to social media to post concerns about the search. Finally, on April 17th, Neukgu was safely caught near Anyeong Interchange in Daejeon. He was sedated and returned to the zoo without harming any residents.",
+              "text_kr": "9일 동안, 그 늑대는 포획을 피했으며, 그동안 많은 이가 수색에 관한 우려 사항들을 게시하기 위해 소셜 미디어로 향했다. 마침내 4월 17일, 늑구는 대전 안영 나들목 근처에서 안전하게 잡혔다. 그는 진정제를 맞았고 어떠한 주민에게도 해를 끼치지 않고 동물원으로 돌아갔다."
+            },
+            {
+              "pid": "S1P4",
+              "text_with_placeholders": "After his capture, veterinarians discovered a fishing hook lodged inside Neukgu. The wolf underwent a minor surgery to remove it and recovered quickly, reassuring the public that he was healthy.",
+              "text_kr": "그의 포획 이후, 수의사들은 늑구의 몸 안에 박혀 있는 낚싯바늘 하나를 발견했다. 그 늑대는 그것을 제거하기 위해 가벼운 수술을 받았고 빠르게 회복했으며, 그가 건강하다는 점을 대중에게 안심시켰다."
+            },
+            {
+              "pid": "S1P5",
+              "text_with_placeholders": "Following the ordeal, Neukgu became a viral figure, inspiring bakeries to sell \"Neukgu bread\" shaped like wolves. Sports teams adopted wolf imagery for promotional events. Merchandise featuring Neukgu also appeared across Korea, showing how a serious event transformed into a cultural trend.",
+              "text_kr": "이 시련 이후, 늑구는 빠르게 인기를 얻은 대상이 되었고, 빵집들이 늑대 모양의 '늑구 빵'을 판매하도록 영감을 주었다. 스포츠팀들은 홍보 행사들을 위해 늑대 이미지를 채택했다. 늑구를 특징으로 하는 상품들 또한 한국 전역에 등장하며, 어떻게 심각한 사건이 문화적 유행으로 변했는지를 보여주었다."
+            }
           ]
         }
       ],
@@ -399,20 +647,48 @@
       "kr_match_status": "OK",
       "type": "나열형",
       "imageUrl": "http://upfile.neungyule.com/upload_admin/2026/05/1074_p08.jpg",
-      "wordsUrl": "http://upfile.neungyule.com/upload_admin/2026/05/times_voca_1074_p08_01.mp3",
-      "mp3Url": "http://upfile.neungyule.com/upload_admin/2026/05/times_1074_p08_01.mp3",
+      "wordsUrl": "https://upfile.neungyule.com/upload_admin/2026/05/times_voca_1074_p08_01.mp3",
+      "mp3Url": "https://upfile.neungyule.com/upload_admin/2026/05/times_1074_p08_01.mp3",
       "sections": [
         {
           "sid": "S1",
           "heading": null,
           "paragraphs": [
-            { "pid": "S1P1", "text_with_placeholders": "For many years, the identity of Banksy, the world-famous street artist, remained a mystery. Recently, however, journalists reported that they had uncovered the real identity of the elusive artist.", "text_kr": "여러 해 동안, 세계적으로 유명한 거리 예술가인 뱅크시의 정체는 수수께끼로 남아 있었다. 하지만, 최근 기자들은 그들이 정체를 알기 어려운 이 예술가의 진짜 정체를 밝혀냈다고 보도했다." },
-            { "pid": "S1P2", "text_with_placeholders": "According to the news agency, Reuters, Banksy's real name may be Robin Gunningham, who reportedly used aliases to avoid detection. Journalists traced his identity using public records, interviews, and patterns in the locations of his artworks.", "text_kr": "뉴스 기관인 로이터에 따르면, 뱅크시의 본명은 로빈 거닝엄일 수 있으며, 들리는 바에 의하면 그는 발각을 피하기 위해 가명들을 사용했다. 기자들은 공적 기록들, 인터뷰들, 그리고 그의 예술 작품들 위치의 패턴들을 사용하여 그의 정체를 추적했다." },
-            { "pid": "S1P3", "text_with_placeholders": "Banksy is known for keeping his identity hidden while creating bold and often political street art. He is famous for his graffiti-style works, including \"Girl with Balloon\" and \"Love Is in the Bin,\" both of which are valued at over 25 million dollars.", "text_kr": "뱅크시는 대담하고 종종 정치적인 거리 예술을 만들면서 그의 정체를 숨긴 상태로 유지하는 것으로 알려져 있다. 그는 \"풍선을 든 소녀\"와 \"사랑은 쓰레기통에\"를 포함한 그의 그래피티 양식의 작품들로 유명하며, 이 두 작품 모두 2,500만 달러 이상의 가치로 평가된다." },
-            { "pid": "S1P4", "text_with_placeholders": "Being anonymous has always been a key part of Banksy's appeal and public image. Experts say he has avoided revealing himself to escape possible legal troubles and to avoid threats linked to the controversial messages in his art.", "text_kr": "익명인 것은 항상 뱅크시의 매력과 대중적 이미지의 핵심적인 부분이었다. 전문가들은 그가 발생 가능한 법적 문제들을 피하고 그의 미술 작품 속 논란이 되는 메시지들과 연결된 위협들을 피하고자 자신을 드러내는 것을 피해 왔다고 말한다." },
-            { "pid": "S1P5", "text_with_placeholders": "Reports also suggest he used the name David Jones, a very common British name, to blend in and avoid attention. This strategy made it harder for the police and the public to track his identity over the years.", "text_kr": "보도들은 또한 그가 사람들과 섞이고 관심을 피하기 위해 매우 흔한 영국식 이름인 데이비드 존스라는 이름을 사용했음을 시사한다. 이 전략은 수년 동안 경찰과 대중이 그의 정체를 추적하는 것을 더 어렵게 만들었다." },
-            { "pid": "S1P6", "text_with_placeholders": "Banksy first became widely known in the late 1990s and early 2000s. He gained attention for his stencil-based graffiti, which often appeared suddenly on public walls and the sides of buildings. His work critiqued political issues, social inequality, war, and consumer culture. These themes helped him build a global reputation as an artist.", "text_kr": "뱅크시는 1990년대 후반과 2000년대 초반에 처음으로 널리 알려지게 되었다. 그는 그의 스텐실 기반 그래피티로 관심을 얻었는데, 그것들은 종종 공공장소의 벽들과 건물들의 측면들에 갑자기 나타났다. 그의 작품은 정치적 문제들, 사회적 불평등, 전쟁, 그리고 소비 문화 등을 비판했다. 이러한 주제들은 그가 예술가로서 세계적인 명성을 쌓는 데 도움을 주었다." },
-            { "pid": "S1P7", "text_with_placeholders": "Some art experts believe revealing his identity could increase the value of his work because it adds authenticity. Others argue that losing his anonymity could reduce the uniqueness that made his art so desirable.", "text_kr": "일부 예술 전문가들은 그의 정체를 드러내는 것이 진품임을 더하기 때문에 그의 작품 가치를 높일 수 있다고 믿는다. 다른 이들은 그의 익명성을 잃는 것이 그의 예술을 그토록 매력적으로 만들었던 독특함을 줄일 수 있다고 주장한다." }
+            {
+              "pid": "S1P1",
+              "text_with_placeholders": "For many years, the identity of Banksy, the world-famous street artist, remained a mystery. Recently, however, journalists reported that they had uncovered the real identity of the elusive artist.",
+              "text_kr": "여러 해 동안, 세계적으로 유명한 거리 예술가인 뱅크시의 정체는 수수께끼로 남아 있었다. 하지만, 최근 기자들은 그들이 정체를 알기 어려운 이 예술가의 진짜 정체를 밝혀냈다고 보도했다."
+            },
+            {
+              "pid": "S1P2",
+              "text_with_placeholders": "According to the news agency, Reuters, Banksy's real name may be Robin Gunningham, who reportedly used aliases to avoid detection. Journalists traced his identity using public records, interviews, and patterns in the locations of his artworks.",
+              "text_kr": "뉴스 기관인 로이터에 따르면, 뱅크시의 본명은 로빈 거닝엄일 수 있으며, 들리는 바에 의하면 그는 발각을 피하기 위해 가명들을 사용했다. 기자들은 공적 기록들, 인터뷰들, 그리고 그의 예술 작품들 위치의 패턴들을 사용하여 그의 정체를 추적했다."
+            },
+            {
+              "pid": "S1P3",
+              "text_with_placeholders": "Banksy is known for keeping his identity hidden while creating bold and often political street art. He is famous for his graffiti-style works, including \"Girl with Balloon\" and \"Love Is in the Bin,\" both of which are valued at over 25 million dollars.",
+              "text_kr": "뱅크시는 대담하고 종종 정치적인 거리 예술을 만들면서 그의 정체를 숨긴 상태로 유지하는 것으로 알려져 있다. 그는 \"풍선을 든 소녀\"와 \"사랑은 쓰레기통에\"를 포함한 그의 그래피티 양식의 작품들로 유명하며, 이 두 작품 모두 2,500만 달러 이상의 가치로 평가된다."
+            },
+            {
+              "pid": "S1P4",
+              "text_with_placeholders": "Being anonymous has always been a key part of Banksy's appeal and public image. Experts say he has avoided revealing himself to escape possible legal troubles and to avoid threats linked to the controversial messages in his art.",
+              "text_kr": "익명인 것은 항상 뱅크시의 매력과 대중적 이미지의 핵심적인 부분이었다. 전문가들은 그가 발생 가능한 법적 문제들을 피하고 그의 미술 작품 속 논란이 되는 메시지들과 연결된 위협들을 피하고자 자신을 드러내는 것을 피해 왔다고 말한다."
+            },
+            {
+              "pid": "S1P5",
+              "text_with_placeholders": "Reports also suggest he used the name David Jones, a very common British name, to blend in and avoid attention. This strategy made it harder for the police and the public to track his identity over the years.",
+              "text_kr": "보도들은 또한 그가 사람들과 섞이고 관심을 피하기 위해 매우 흔한 영국식 이름인 데이비드 존스라는 이름을 사용했음을 시사한다. 이 전략은 수년 동안 경찰과 대중이 그의 정체를 추적하는 것을 더 어렵게 만들었다."
+            },
+            {
+              "pid": "S1P6",
+              "text_with_placeholders": "Banksy first became widely known in the late 1990s and early 2000s. He gained attention for his stencil-based graffiti, which often appeared suddenly on public walls and the sides of buildings. His work critiqued political issues, social inequality, war, and consumer culture. These themes helped him build a global reputation as an artist.",
+              "text_kr": "뱅크시는 1990년대 후반과 2000년대 초반에 처음으로 널리 알려지게 되었다. 그는 그의 스텐실 기반 그래피티로 관심을 얻었는데, 그것들은 종종 공공장소의 벽들과 건물들의 측면들에 갑자기 나타났다. 그의 작품은 정치적 문제들, 사회적 불평등, 전쟁, 그리고 소비 문화 등을 비판했다. 이러한 주제들은 그가 예술가로서 세계적인 명성을 쌓는 데 도움을 주었다."
+            },
+            {
+              "pid": "S1P7",
+              "text_with_placeholders": "Some art experts believe revealing his identity could increase the value of his work because it adds authenticity. Others argue that losing his anonymity could reduce the uniqueness that made his art so desirable.",
+              "text_kr": "일부 예술 전문가들은 그의 정체를 드러내는 것이 진품임을 더하기 때문에 그의 작품 가치를 높일 수 있다고 믿는다. 다른 이들은 그의 익명성을 잃는 것이 그의 예술을 그토록 매력적으로 만들었던 독특함을 줄일 수 있다고 주장한다."
+            }
           ]
         }
       ],
