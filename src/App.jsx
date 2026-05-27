@@ -1285,6 +1285,7 @@ export default function App() {
   const sentenceSourceRef = useRef(null);
   const audioCtxRef = useRef(null);
   const sentenceAudioCacheRef = useRef({});
+  const sentenceAudioPendingRef = useRef({});
   const [va, setVa] = useState({});
   const [vchecked, setVchecked] = useState({});
   const [vd, setVd] = useState(false);
@@ -1590,26 +1591,45 @@ export default function App() {
     const cached = sentenceAudioCacheRef.current[cA.seq];
     if (cached) return cached;
 
-    const res = await fetch(cA.mp3);
-    const arr = await res.arrayBuffer();
-    if (!audioCtxRef.current) audioCtxRef.current = new (window.AudioContext || window.webkitAudioContext)();
-    const ctx = audioCtxRef.current;
-    const buffer = await ctx.decodeAudioData(arr.slice(0));
-    const speechAnalysis = detectSpeechSegments(buffer);
-    // MP3는 "기사 제목 + 기사 본문" 순서로 구성되어 있으므로,
-    // 재생용 문장 매핑에는 제목 문장도 앞에 포함시킨다.
-    const titleRanges = splitSentenceRanges(cA.title).map((r, idx) => ({
-      ...r,
-      key: `__title_${idx}`,
-      pid: null,
-      pIdx: -1,
-      sIdx: idx,
-    }));
-    const audioSentences = [...titleRanges, ...sentenceMeta.all];
-    const sentenceMap = mapSentenceSegments(audioSentences, speechAnalysis, buffer.duration);
-    const packed = { buffer, sentenceMap };
-    sentenceAudioCacheRef.current[cA.seq] = packed;
-    return packed;
+    // 동시 호출 중복 방지 — 진행 중인 Promise가 있으면 그것을 재사용
+    if (sentenceAudioPendingRef.current[cA.seq]) {
+      return sentenceAudioPendingRef.current[cA.seq];
+    }
+
+    const seq = cA.seq;
+    const promise = (async () => {
+      try {
+        const res = await fetch(cA.mp3);
+        const arr = await res.arrayBuffer();
+        if (!audioCtxRef.current) audioCtxRef.current = new (window.AudioContext || window.webkitAudioContext)();
+        const ctx = audioCtxRef.current;
+        // 삼성 인터넷 등 모바일 브라우저에서 suspended 상태 해제
+        if (ctx.state === "suspended") await ctx.resume();
+        const buffer = await ctx.decodeAudioData(arr.slice(0));
+        const speechAnalysis = detectSpeechSegments(buffer);
+        // MP3는 "기사 제목 + 기사 본문" 순서로 구성되어 있으므로,
+        // 재생용 문장 매핑에는 제목 문장도 앞에 포함시킨다.
+        const titleRanges = splitSentenceRanges(cA.title).map((r, idx) => ({
+          ...r,
+          key: `__title_${idx}`,
+          pid: null,
+          pIdx: -1,
+          sIdx: idx,
+        }));
+        const audioSentences = [...titleRanges, ...sentenceMeta.all];
+        const sentenceMap = mapSentenceSegments(audioSentences, speechAnalysis, buffer.duration);
+        const packed = { buffer, sentenceMap };
+        sentenceAudioCacheRef.current[seq] = packed;
+        return packed;
+      } catch {
+        return null;
+      } finally {
+        delete sentenceAudioPendingRef.current[seq];
+      }
+    })();
+
+    sentenceAudioPendingRef.current[seq] = promise;
+    return promise;
   };
 
   const playSentenceByKey = async (key) => {
@@ -1656,14 +1676,18 @@ export default function App() {
 
   const syncArticleHighlightByTime = async (audioEl) => {
     if (!audioEl || !cA?.mp3 || cA.mp3 === "#") return;
-    const prepared = await ensureSentenceAudio();
-    if (!prepared || artAudioRef.current !== audioEl) return;
-    const { sentenceMap } = prepared;
-    const current = sentenceMeta.all.find((s) => {
-      const seg = sentenceMap[s.key];
-      return seg && audioEl.currentTime >= seg.start && audioEl.currentTime < seg.end;
-    });
-    setArticlePlayingSentenceKey(current ? current.key : null);
+    try {
+      const prepared = await ensureSentenceAudio();
+      if (!prepared || artAudioRef.current !== audioEl) return;
+      const { sentenceMap } = prepared;
+      const current = sentenceMeta.all.find((s) => {
+        const seg = sentenceMap[s.key];
+        return seg && audioEl.currentTime >= seg.start && audioEl.currentTime < seg.end;
+      });
+      setArticlePlayingSentenceKey(current ? current.key : null);
+    } catch {
+      // 하이라이트 동기화 실패 시 무시
+    }
   };
 
   const cR = () => {
