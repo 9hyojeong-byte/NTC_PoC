@@ -6,73 +6,87 @@
   "items": [
     {
       "articleSeq": "101",
-      "wordCount": 10,
+      "wordCount": 12,
       "words": [
         {
           "wordIndex": 1,
+          "english": "new",
+          "meaning_kr": "새로운",
+          "mp3File": "",
+          "pid": null
+        },
+        {
+          "wordIndex": 2,
           "english": "park",
           "meaning_kr": "공원",
           "mp3File": "",
           "pid": null
         },
         {
-          "wordIndex": 2,
-          "english": "opened",
-          "meaning_kr": "열렸다, 개장했다",
-          "mp3File": "",
-          "pid": null
-        },
-        {
           "wordIndex": 3,
-          "english": "Disneyland",
-          "meaning_kr": "디즈니랜드",
+          "english": "open",
+          "meaning_kr": "개장하다",
           "mp3File": "",
           "pid": null
         },
         {
           "wordIndex": 4,
-          "english": "Paris",
-          "meaning_kr": "파리",
-          "mp3File": "",
-          "pid": null
-        },
-        {
-          "wordIndex": 5,
-          "english": "World of Frozen",
-          "meaning_kr": "겨울왕국 월드",
-          "mp3File": "",
-          "pid": null
-        },
-        {
-          "wordIndex": 6,
           "english": "mountain",
           "meaning_kr": "산",
           "mp3File": "",
           "pid": null
         },
         {
-          "wordIndex": 7,
+          "wordIndex": 5,
+          "english": "ice",
+          "meaning_kr": "얼음",
+          "mp3File": "",
+          "pid": null
+        },
+        {
+          "wordIndex": 6,
           "english": "palace",
           "meaning_kr": "궁전",
           "mp3File": "",
           "pid": null
         },
         {
-          "wordIndex": 8,
+          "wordIndex": 7,
           "english": "ride",
           "meaning_kr": "타다",
           "mp3File": "",
           "pid": null
         },
         {
+          "wordIndex": 8,
+          "english": "fun",
+          "meaning_kr": "재미있는",
+          "mp3File": "",
+          "pid": null
+        },
+        {
           "wordIndex": 9,
+          "english": "meet",
+          "meaning_kr": "만나다",
+          "mp3File": "",
+          "pid": null
+        },
+        {
+          "wordIndex": 10,
           "english": "magical",
           "meaning_kr": "마법 같은",
           "mp3File": "",
           "pid": null
         },
         {
-          "wordIndex": 10,
+          "wordIndex": 11,
+          "english": "everyone",
+          "meaning_kr": "모든 사람",
+          "mp3File": "",
+          "pid": null
+        },
+        {
+          "wordIndex": 12,
           "english": "happy",
           "meaning_kr": "행복한",
           "mp3File": "",
@@ -82,75 +96,82 @@
     },
     {
       "articleSeq": "102",
-      "wordCount": 10,
+      "wordCount": 11,
       "words": [
         {
           "wordIndex": 1,
-          "english": "artist",
-          "meaning_kr": "예술가, 화가",
+          "english": "great",
+          "meaning_kr": "훌륭한",
           "mp3File": "",
           "pid": null
         },
         {
           "wordIndex": 2,
-          "english": "born",
-          "meaning_kr": "태어난",
+          "english": "artist",
+          "meaning_kr": "화가, 예술가 (art 예술)",
           "mp3File": "",
           "pid": null
         },
         {
           "wordIndex": 3,
-          "english": "painted",
-          "meaning_kr": "그렸다",
+          "english": "be born",
+          "meaning_kr": "태어나다",
           "mp3File": "",
           "pid": null
         },
         {
           "wordIndex": 4,
-          "english": "pictures",
-          "meaning_kr": "그림들",
+          "english": "paint",
+          "meaning_kr": "그리다 (painting 그림)",
           "mp3File": "",
           "pid": null
         },
         {
           "wordIndex": 5,
-          "english": "colors",
-          "meaning_kr": "색깔들",
+          "english": "picture",
+          "meaning_kr": "그림",
           "mp3File": "",
           "pid": null
         },
         {
           "wordIndex": 6,
-          "english": "flowers",
-          "meaning_kr": "꽃들",
+          "english": "use",
+          "meaning_kr": "사용하다",
           "mp3File": "",
           "pid": null
         },
         {
           "wordIndex": 7,
-          "english": "stars",
-          "meaning_kr": "별들",
+          "english": "flower",
+          "meaning_kr": "꽃",
           "mp3File": "",
           "pid": null
         },
         {
           "wordIndex": 8,
-          "english": "famous",
-          "meaning_kr": "유명한",
+          "english": "star",
+          "meaning_kr": "별",
           "mp3File": "",
           "pid": null
         },
         {
           "wordIndex": 9,
-          "english": "paintings",
-          "meaning_kr": "그림, 회화 작품",
+          "english": "himself",
+          "meaning_kr": "그 자신",
           "mp3File": "",
           "pid": null
         },
         {
           "wordIndex": 10,
+          "english": "famous",
+          "meaning_kr": "유명한 (most famous 가장 유명한)",
+          "mp3File": "",
+          "pid": null
+        },
+        {
+          "wordIndex": 11,
           "english": "life",
-          "meaning_kr": "삶, 생애",
+          "meaning_kr": "시절",
           "mp3File": "",
           "pid": null
         }
@@ -158,73 +179,87 @@
     },
     {
       "articleSeq": "103",
-      "wordCount": 10,
+      "wordCount": 12,
       "words": [
         {
           "wordIndex": 1,
+          "english": "visit",
+          "meaning_kr": "방문하다",
+          "mp3File": "",
+          "pid": null
+        },
+        {
+          "wordIndex": 2,
           "english": "house",
           "meaning_kr": "집",
           "mp3File": "",
           "pid": null
         },
         {
-          "wordIndex": 2,
+          "wordIndex": 3,
           "english": "best friend",
           "meaning_kr": "가장 친한 친구",
           "mp3File": "",
           "pid": null
         },
         {
-          "wordIndex": 3,
-          "english": "brought",
-          "meaning_kr": "가져왔다",
-          "mp3File": "",
-          "pid": null
-        },
-        {
           "wordIndex": 4,
-          "english": "cookies",
-          "meaning_kr": "쿠키",
+          "english": "bring",
+          "meaning_kr": "가져오다 (brought 가져왔다)",
           "mp3File": "",
           "pid": null
         },
         {
           "wordIndex": 5,
           "english": "share",
-          "meaning_kr": "나누다",
+          "meaning_kr": "나눠 주다",
           "mp3File": "",
           "pid": null
         },
         {
           "wordIndex": 6,
-          "english": "together",
-          "meaning_kr": "함께",
+          "english": "eat",
+          "meaning_kr": "먹다 (ate 먹었다)",
           "mp3File": "",
           "pid": null
         },
         {
           "wordIndex": 7,
-          "english": "built",
-          "meaning_kr": "쌓았다, 만들었다",
+          "english": "build",
+          "meaning_kr": "쌓다 (built 쌓았다)",
           "mp3File": "",
           "pid": null
         },
         {
           "wordIndex": 8,
-          "english": "blocks",
-          "meaning_kr": "블록",
+          "english": "tall",
+          "meaning_kr": "높은",
           "mp3File": "",
           "pid": null
         },
         {
           "wordIndex": 9,
-          "english": "board games",
-          "meaning_kr": "보드게임",
+          "english": "play",
+          "meaning_kr": "(게임)을 하다",
           "mp3File": "",
           "pid": null
         },
         {
           "wordIndex": 10,
+          "english": "fun",
+          "meaning_kr": "재미있는",
+          "mp3File": "",
+          "pid": null
+        },
+        {
+          "wordIndex": 11,
+          "english": "have a great time",
+          "meaning_kr": "즐거운 시간을 보내다",
+          "mp3File": "",
+          "pid": null
+        },
+        {
+          "wordIndex": 12,
           "english": "invite",
           "meaning_kr": "초대하다",
           "mp3File": "",
@@ -238,43 +273,43 @@
       "words": [
         {
           "wordIndex": 1,
+          "english": "open",
+          "meaning_kr": "열다, 뜯다",
+          "mp3File": "",
+          "pid": null
+        },
+        {
+          "wordIndex": 2,
           "english": "package",
           "meaning_kr": "소포, 택배",
           "mp3File": "",
           "pid": null
         },
         {
-          "wordIndex": 2,
+          "wordIndex": 3,
           "english": "inside",
-          "meaning_kr": "안에",
+          "meaning_kr": "~안의",
           "mp3File": "",
           "pid": null
         },
         {
-          "wordIndex": 3,
+          "wordIndex": 4,
           "english": "box",
           "meaning_kr": "상자",
           "mp3File": "",
           "pid": null
         },
         {
-          "wordIndex": 4,
-          "english": "ordered",
-          "meaning_kr": "주문했다",
-          "mp3File": "",
-          "pid": null
-        },
-        {
           "wordIndex": 5,
-          "english": "open",
-          "meaning_kr": "열다",
+          "english": "order",
+          "meaning_kr": "주문하다",
           "mp3File": "",
           "pid": null
         },
         {
           "wordIndex": 6,
-          "english": "together",
-          "meaning_kr": "함께",
+          "english": "something",
+          "meaning_kr": "어떤 것",
           "mp3File": "",
           "pid": null
         },
@@ -288,7 +323,7 @@
         {
           "wordIndex": 8,
           "english": "surprise",
-          "meaning_kr": "깜짝 선물",
+          "meaning_kr": "깜짝선물",
           "mp3File": "",
           "pid": null
         },
@@ -302,7 +337,7 @@
         {
           "wordIndex": 10,
           "english": "best",
-          "meaning_kr": "최고의",
+          "meaning_kr": "최고",
           "mp3File": "",
           "pid": null
         }
@@ -310,12 +345,12 @@
     },
     {
       "articleSeq": "202",
-      "wordCount": 10,
+      "wordCount": 13,
       "words": [
         {
           "wordIndex": 1,
           "english": "owl",
-          "meaning_kr": "올빼미",
+          "meaning_kr": "부엉이",
           "mp3File": "",
           "pid": null
         },
@@ -328,22 +363,22 @@
         },
         {
           "wordIndex": 3,
+          "english": "see",
+          "meaning_kr": "보다 (saw 보았다)",
+          "mp3File": "",
+          "pid": null
+        },
+        {
+          "wordIndex": 4,
           "english": "shelf",
           "meaning_kr": "선반",
           "mp3File": "",
           "pid": null
         },
         {
-          "wordIndex": 4,
-          "english": "thought",
-          "meaning_kr": "생각했다",
-          "mp3File": "",
-          "pid": null
-        },
-        {
           "wordIndex": 5,
-          "english": "toy",
-          "meaning_kr": "장난감",
+          "english": "think",
+          "meaning_kr": "생각하다 (thought 생각했다)",
           "mp3File": "",
           "pid": null
         },
@@ -356,8 +391,8 @@
         },
         {
           "wordIndex": 7,
-          "english": "sleeping",
-          "meaning_kr": "자고 있는",
+          "english": "sleep",
+          "meaning_kr": "자다",
           "mp3File": "",
           "pid": null
         },
@@ -377,8 +412,29 @@
         },
         {
           "wordIndex": 10,
-          "english": "flew away",
-          "meaning_kr": "날아갔다",
+          "english": "police officer",
+          "meaning_kr": "경찰관",
+          "mp3File": "",
+          "pid": null
+        },
+        {
+          "wordIndex": 11,
+          "english": "take",
+          "meaning_kr": "데리고 가다 (took 데리고 갔다)",
+          "mp3File": "",
+          "pid": null
+        },
+        {
+          "wordIndex": 12,
+          "english": "outside",
+          "meaning_kr": "밖으로",
+          "mp3File": "",
+          "pid": null
+        },
+        {
+          "wordIndex": 13,
+          "english": "fly away",
+          "meaning_kr": "날아가다 (flew away 날아갔다)",
           "mp3File": "",
           "pid": null
         }
@@ -386,75 +442,96 @@
     },
     {
       "articleSeq": "301",
-      "wordCount": 10,
+      "wordCount": 13,
       "words": [
         {
           "wordIndex": 1,
-          "english": "jewelry designer",
-          "meaning_kr": "보석 디자이너",
+          "english": "material",
+          "meaning_kr": "재료, 물질",
           "mp3File": "",
           "pid": null
         },
         {
           "wordIndex": 2,
-          "english": "materials",
-          "meaning_kr": "재료",
+          "english": "latest",
+          "meaning_kr": "최근의",
           "mp3File": "",
           "pid": null
         },
         {
           "wordIndex": 3,
-          "english": "collection",
-          "meaning_kr": "컬렉션, 작품 모음",
+          "english": "discard",
+          "meaning_kr": "버리다",
           "mp3File": "",
           "pid": null
         },
         {
           "wordIndex": 4,
-          "english": "discarded",
-          "meaning_kr": "버려진",
+          "english": "lab-grown",
+          "meaning_kr": "실험실에서 배양한",
           "mp3File": "",
           "pid": null
         },
         {
           "wordIndex": 5,
-          "english": "vegetables",
-          "meaning_kr": "채소",
-          "mp3File": "",
-          "pid": null
-        },
-        {
-          "wordIndex": 6,
-          "english": "lab-grown",
-          "meaning_kr": "실험실에서 만든",
-          "mp3File": "",
-          "pid": null
-        },
-        {
-          "wordIndex": 7,
-          "english": "gemstones",
+          "english": "gemstone",
           "meaning_kr": "보석",
           "mp3File": "",
           "pid": null
         },
         {
+          "wordIndex": 6,
+          "english": "luxury",
+          "meaning_kr": "고급의, 화려한; 사치품",
+          "mp3File": "",
+          "pid": null
+        },
+        {
+          "wordIndex": 7,
+          "english": "alternative",
+          "meaning_kr": "대안",
+          "mp3File": "",
+          "pid": null
+        },
+        {
           "wordIndex": 8,
+          "english": "mining",
+          "meaning_kr": "채굴",
+          "mp3File": "",
+          "pid": null
+        },
+        {
+          "wordIndex": 9,
           "english": "ethical",
           "meaning_kr": "윤리적인",
           "mp3File": "",
           "pid": null
         },
         {
-          "wordIndex": 9,
-          "english": "sustainability",
-          "meaning_kr": "지속 가능성",
+          "wordIndex": 10,
+          "english": "gain attention",
+          "meaning_kr": "관심을 얻다",
           "mp3File": "",
           "pid": null
         },
         {
-          "wordIndex": 10,
-          "english": "luxury",
-          "meaning_kr": "고급스러움, 사치품",
+          "wordIndex": 11,
+          "english": "innovative",
+          "meaning_kr": "혁신적인",
+          "mp3File": "",
+          "pid": null
+        },
+        {
+          "wordIndex": 12,
+          "english": "inspire",
+          "meaning_kr": "영감을 주다",
+          "mp3File": "",
+          "pid": null
+        },
+        {
+          "wordIndex": 13,
+          "english": "sustainability",
+          "meaning_kr": "지속 가능성",
           "mp3File": "",
           "pid": null
         }
@@ -462,75 +539,166 @@
     },
     {
       "articleSeq": "302",
-      "wordCount": 10,
+      "wordCount": 23,
       "words": [
         {
           "wordIndex": 1,
-          "english": "handwritten",
-          "meaning_kr": "손으로 쓴",
+          "english": "available",
+          "meaning_kr": "이용 가능한",
           "mp3File": "",
           "pid": null
         },
         {
           "wordIndex": 2,
-          "english": "digital",
-          "meaning_kr": "디지털의",
+          "english": "debate",
+          "meaning_kr": "논쟁",
           "mp3File": "",
           "pid": null
         },
         {
           "wordIndex": 3,
-          "english": "retain",
-          "meaning_kr": "유지하다, 기억하다",
+          "english": "argue",
+          "meaning_kr": "주장하다",
           "mp3File": "",
           "pid": null
         },
         {
           "wordIndex": 4,
-          "english": "memory retention",
-          "meaning_kr": "기억 보존",
+          "english": "retain",
+          "meaning_kr": "간직하다",
           "mp3File": "",
           "pid": null
         },
         {
           "wordIndex": 5,
-          "english": "recall",
-          "meaning_kr": "기억해 내기",
+          "english": "advocate",
+          "meaning_kr": "옹호자",
           "mp3File": "",
           "pid": null
         },
         {
           "wordIndex": 6,
-          "english": "focus",
-          "meaning_kr": "집중하다",
-          "mp3File": "",
-          "pid": null
-        },
-        {
-          "wordIndex": 7,
           "english": "efficient",
           "meaning_kr": "효율적인",
           "mp3File": "",
           "pid": null
         },
         {
+          "wordIndex": 7,
+          "english": "access",
+          "meaning_kr": "접근",
+          "mp3File": "",
+          "pid": null
+        },
+        {
           "wordIndex": 8,
-          "english": "organize",
-          "meaning_kr": "정리하다",
+          "english": "force",
+          "meaning_kr": "강요하다",
           "mp3File": "",
           "pid": null
         },
         {
           "wordIndex": 9,
-          "english": "multimedia",
-          "meaning_kr": "멀티미디어",
+          "english": "process",
+          "meaning_kr": "처리하다",
           "mp3File": "",
           "pid": null
         },
         {
           "wordIndex": 10,
-          "english": "accessible",
-          "meaning_kr": "접근 가능한",
+          "english": "material",
+          "meaning_kr": "자료",
+          "mp3File": "",
+          "pid": null
+        },
+        {
+          "wordIndex": 11,
+          "english": "effectively",
+          "meaning_kr": "효과적으로",
+          "mp3File": "",
+          "pid": null
+        },
+        {
+          "wordIndex": 12,
+          "english": "assignment",
+          "meaning_kr": "과제",
+          "mp3File": "",
+          "pid": null
+        },
+        {
+          "wordIndex": 13,
+          "english": "take notes",
+          "meaning_kr": "필기하다",
+          "mp3File": "",
+          "pid": null
+        },
+        {
+          "wordIndex": 14,
+          "english": "distract",
+          "meaning_kr": "방해하다",
+          "mp3File": "",
+          "pid": null
+        },
+        {
+          "wordIndex": 15,
+          "english": "notification",
+          "meaning_kr": "알림",
+          "mp3File": "",
+          "pid": null
+        },
+        {
+          "wordIndex": 16,
+          "english": "pay attention",
+          "meaning_kr": "집중하다",
+          "mp3File": "",
+          "pid": null
+        },
+        {
+          "wordIndex": 17,
+          "english": "obtain",
+          "meaning_kr": "얻다",
+          "mp3File": "",
+          "pid": null
+        },
+        {
+          "wordIndex": 18,
+          "english": "sort",
+          "meaning_kr": "분류하다",
+          "mp3File": "",
+          "pid": null
+        },
+        {
+          "wordIndex": 19,
+          "english": "edit",
+          "meaning_kr": "수정하다",
+          "mp3File": "",
+          "pid": null
+        },
+        {
+          "wordIndex": 20,
+          "english": "critic",
+          "meaning_kr": "비판자",
+          "mp3File": "",
+          "pid": null
+        },
+        {
+          "wordIndex": 21,
+          "english": "element",
+          "meaning_kr": "요소",
+          "mp3File": "",
+          "pid": null
+        },
+        {
+          "wordIndex": 22,
+          "english": "additional",
+          "meaning_kr": "추가의",
+          "mp3File": "",
+          "pid": null
+        },
+        {
+          "wordIndex": 23,
+          "english": "furthermore",
+          "meaning_kr": "더욱이",
           "mp3File": "",
           "pid": null
         }
@@ -538,75 +706,110 @@
     },
     {
       "articleSeq": "401",
-      "wordCount": 10,
+      "wordCount": 15,
       "words": [
         {
           "wordIndex": 1,
-          "english": "escaped",
-          "meaning_kr": "탈출했다",
+          "english": "escape",
+          "meaning_kr": "탈출하다",
           "mp3File": "",
           "pid": null
         },
         {
           "wordIndex": 2,
-          "english": "incident",
-          "meaning_kr": "사건",
+          "english": "draw attention",
+          "meaning_kr": "관심을 끌다",
           "mp3File": "",
           "pid": null
         },
         {
           "wordIndex": 3,
-          "english": "damaged fence",
-          "meaning_kr": "손상된 울타리",
+          "english": "spark",
+          "meaning_kr": "촉발하다",
           "mp3File": "",
           "pid": null
         },
         {
           "wordIndex": 4,
-          "english": "authorities",
-          "meaning_kr": "당국",
+          "english": "effort",
+          "meaning_kr": "노력",
           "mp3File": "",
           "pid": null
         },
         {
           "wordIndex": 5,
-          "english": "patrol teams",
-          "meaning_kr": "순찰팀",
+          "english": "patrol",
+          "meaning_kr": "순찰",
           "mp3File": "",
           "pid": null
         },
         {
           "wordIndex": 6,
-          "english": "thermal cameras",
+          "english": "thermal camera",
           "meaning_kr": "열화상 카메라",
           "mp3File": "",
           "pid": null
         },
         {
           "wordIndex": 7,
-          "english": "evaded capture",
-          "meaning_kr": "포획을 피했다",
+          "english": "evade",
+          "meaning_kr": "피하다",
           "mp3File": "",
           "pid": null
         },
         {
           "wordIndex": 8,
-          "english": "sedated",
-          "meaning_kr": "진정제를 맞은",
+          "english": "sedate",
+          "meaning_kr": "진정시키다",
           "mp3File": "",
           "pid": null
         },
         {
           "wordIndex": 9,
-          "english": "veterinarians",
-          "meaning_kr": "수의사들",
+          "english": "lodge",
+          "meaning_kr": "박다",
           "mp3File": "",
           "pid": null
         },
         {
           "wordIndex": 10,
-          "english": "viral figure",
-          "meaning_kr": "화제의 인물",
+          "english": "reassure",
+          "meaning_kr": "안심시키다",
+          "mp3File": "",
+          "pid": null
+        },
+        {
+          "wordIndex": 11,
+          "english": "ordeal",
+          "meaning_kr": "시련",
+          "mp3File": "",
+          "pid": null
+        },
+        {
+          "wordIndex": 12,
+          "english": "viral",
+          "meaning_kr": "빠르게 인기를 얻은",
+          "mp3File": "",
+          "pid": null
+        },
+        {
+          "wordIndex": 13,
+          "english": "inspire",
+          "meaning_kr": "영감을 주다",
+          "mp3File": "",
+          "pid": null
+        },
+        {
+          "wordIndex": 14,
+          "english": "adopt",
+          "meaning_kr": "채택하다",
+          "mp3File": "",
+          "pid": null
+        },
+        {
+          "wordIndex": 15,
+          "english": "promotional",
+          "meaning_kr": "홍보의",
           "mp3File": "",
           "pid": null
         }
@@ -614,75 +817,166 @@
     },
     {
       "articleSeq": "402",
-      "wordCount": 10,
+      "wordCount": 23,
       "words": [
         {
           "wordIndex": 1,
           "english": "identity",
-          "meaning_kr": "정체, 신원",
+          "meaning_kr": "정체",
           "mp3File": "",
           "pid": null
         },
         {
           "wordIndex": 2,
-          "english": "elusive",
-          "meaning_kr": "찾기 힘든, 정체를 알기 어려운",
+          "english": "reveal",
+          "meaning_kr": "드러내다",
           "mp3File": "",
           "pid": null
         },
         {
           "wordIndex": 3,
-          "english": "aliases",
-          "meaning_kr": "가명들",
+          "english": "elusive",
+          "meaning_kr": "정체를 알기 어려운",
           "mp3File": "",
           "pid": null
         },
         {
           "wordIndex": 4,
-          "english": "detection",
-          "meaning_kr": "발견, 탐지",
+          "english": "reportedly",
+          "meaning_kr": "보도에 따르면",
           "mp3File": "",
           "pid": null
         },
         {
           "wordIndex": 5,
+          "english": "alias",
+          "meaning_kr": "가명",
+          "mp3File": "",
+          "pid": null
+        },
+        {
+          "wordIndex": 6,
+          "english": "detection",
+          "meaning_kr": "발각",
+          "mp3File": "",
+          "pid": null
+        },
+        {
+          "wordIndex": 7,
+          "english": "graffiti",
+          "meaning_kr": "그래피티, 벽낙서",
+          "mp3File": "",
+          "pid": null
+        },
+        {
+          "wordIndex": 8,
+          "english": "value",
+          "meaning_kr": "(가치를) 평가하다",
+          "mp3File": "",
+          "pid": null
+        },
+        {
+          "wordIndex": 9,
           "english": "anonymous",
           "meaning_kr": "익명의",
           "mp3File": "",
           "pid": null
         },
         {
-          "wordIndex": 6,
+          "wordIndex": 10,
           "english": "appeal",
           "meaning_kr": "매력",
           "mp3File": "",
           "pid": null
         },
         {
-          "wordIndex": 7,
+          "wordIndex": 11,
+          "english": "expert",
+          "meaning_kr": "전문가",
+          "mp3File": "",
+          "pid": null
+        },
+        {
+          "wordIndex": 12,
+          "english": "escape",
+          "meaning_kr": "피하다",
+          "mp3File": "",
+          "pid": null
+        },
+        {
+          "wordIndex": 13,
+          "english": "legal",
+          "meaning_kr": "법적인",
+          "mp3File": "",
+          "pid": null
+        },
+        {
+          "wordIndex": 14,
           "english": "controversial",
-          "meaning_kr": "논란이 많은",
+          "meaning_kr": "논란이 되는",
           "mp3File": "",
           "pid": null
         },
         {
-          "wordIndex": 8,
-          "english": "stencil-based",
-          "meaning_kr": "스텐실 기반의",
+          "wordIndex": 15,
+          "english": "blend in",
+          "meaning_kr": "섞이다",
           "mp3File": "",
           "pid": null
         },
         {
-          "wordIndex": 9,
+          "wordIndex": 16,
+          "english": "attention",
+          "meaning_kr": "관심",
+          "mp3File": "",
+          "pid": null
+        },
+        {
+          "wordIndex": 17,
+          "english": "strategy",
+          "meaning_kr": "전략",
+          "mp3File": "",
+          "pid": null
+        },
+        {
+          "wordIndex": 18,
+          "english": "appear",
+          "meaning_kr": "나타나다",
+          "mp3File": "",
+          "pid": null
+        },
+        {
+          "wordIndex": 19,
+          "english": "critique",
+          "meaning_kr": "비판하다",
+          "mp3File": "",
+          "pid": null
+        },
+        {
+          "wordIndex": 20,
           "english": "inequality",
           "meaning_kr": "불평등",
           "mp3File": "",
           "pid": null
         },
         {
-          "wordIndex": 10,
+          "wordIndex": 21,
+          "english": "reputation",
+          "meaning_kr": "명성",
+          "mp3File": "",
+          "pid": null
+        },
+        {
+          "wordIndex": 22,
           "english": "authenticity",
           "meaning_kr": "진정성",
+          "mp3File": "",
+          "pid": null
+        },
+        {
+          "wordIndex": 23,
+          "english": "desirable",
+          "meaning_kr": "매력적인",
           "mp3File": "",
           "pid": null
         }
@@ -1332,73 +1626,87 @@
   "byArticleSeq": {
     "101": {
       "articleSeq": "101",
-      "wordCount": 10,
+      "wordCount": 12,
       "words": [
         {
           "wordIndex": 1,
+          "english": "new",
+          "meaning_kr": "새로운",
+          "mp3File": "",
+          "pid": null
+        },
+        {
+          "wordIndex": 2,
           "english": "park",
           "meaning_kr": "공원",
           "mp3File": "",
           "pid": null
         },
         {
-          "wordIndex": 2,
-          "english": "opened",
-          "meaning_kr": "열렸다, 개장했다",
-          "mp3File": "",
-          "pid": null
-        },
-        {
           "wordIndex": 3,
-          "english": "Disneyland",
-          "meaning_kr": "디즈니랜드",
+          "english": "open",
+          "meaning_kr": "개장하다",
           "mp3File": "",
           "pid": null
         },
         {
           "wordIndex": 4,
-          "english": "Paris",
-          "meaning_kr": "파리",
-          "mp3File": "",
-          "pid": null
-        },
-        {
-          "wordIndex": 5,
-          "english": "World of Frozen",
-          "meaning_kr": "겨울왕국 월드",
-          "mp3File": "",
-          "pid": null
-        },
-        {
-          "wordIndex": 6,
           "english": "mountain",
           "meaning_kr": "산",
           "mp3File": "",
           "pid": null
         },
         {
-          "wordIndex": 7,
+          "wordIndex": 5,
+          "english": "ice",
+          "meaning_kr": "얼음",
+          "mp3File": "",
+          "pid": null
+        },
+        {
+          "wordIndex": 6,
           "english": "palace",
           "meaning_kr": "궁전",
           "mp3File": "",
           "pid": null
         },
         {
-          "wordIndex": 8,
+          "wordIndex": 7,
           "english": "ride",
           "meaning_kr": "타다",
           "mp3File": "",
           "pid": null
         },
         {
+          "wordIndex": 8,
+          "english": "fun",
+          "meaning_kr": "재미있는",
+          "mp3File": "",
+          "pid": null
+        },
+        {
           "wordIndex": 9,
+          "english": "meet",
+          "meaning_kr": "만나다",
+          "mp3File": "",
+          "pid": null
+        },
+        {
+          "wordIndex": 10,
           "english": "magical",
           "meaning_kr": "마법 같은",
           "mp3File": "",
           "pid": null
         },
         {
-          "wordIndex": 10,
+          "wordIndex": 11,
+          "english": "everyone",
+          "meaning_kr": "모든 사람",
+          "mp3File": "",
+          "pid": null
+        },
+        {
+          "wordIndex": 12,
           "english": "happy",
           "meaning_kr": "행복한",
           "mp3File": "",
@@ -1408,75 +1716,82 @@
     },
     "102": {
       "articleSeq": "102",
-      "wordCount": 10,
+      "wordCount": 11,
       "words": [
         {
           "wordIndex": 1,
-          "english": "artist",
-          "meaning_kr": "예술가, 화가",
+          "english": "great",
+          "meaning_kr": "훌륭한",
           "mp3File": "",
           "pid": null
         },
         {
           "wordIndex": 2,
-          "english": "born",
-          "meaning_kr": "태어난",
+          "english": "artist",
+          "meaning_kr": "화가, 예술가 (art 예술)",
           "mp3File": "",
           "pid": null
         },
         {
           "wordIndex": 3,
-          "english": "painted",
-          "meaning_kr": "그렸다",
+          "english": "be born",
+          "meaning_kr": "태어나다",
           "mp3File": "",
           "pid": null
         },
         {
           "wordIndex": 4,
-          "english": "pictures",
-          "meaning_kr": "그림들",
+          "english": "paint",
+          "meaning_kr": "그리다 (painting 그림)",
           "mp3File": "",
           "pid": null
         },
         {
           "wordIndex": 5,
-          "english": "colors",
-          "meaning_kr": "색깔들",
+          "english": "picture",
+          "meaning_kr": "그림",
           "mp3File": "",
           "pid": null
         },
         {
           "wordIndex": 6,
-          "english": "flowers",
-          "meaning_kr": "꽃들",
+          "english": "use",
+          "meaning_kr": "사용하다",
           "mp3File": "",
           "pid": null
         },
         {
           "wordIndex": 7,
-          "english": "stars",
-          "meaning_kr": "별들",
+          "english": "flower",
+          "meaning_kr": "꽃",
           "mp3File": "",
           "pid": null
         },
         {
           "wordIndex": 8,
-          "english": "famous",
-          "meaning_kr": "유명한",
+          "english": "star",
+          "meaning_kr": "별",
           "mp3File": "",
           "pid": null
         },
         {
           "wordIndex": 9,
-          "english": "paintings",
-          "meaning_kr": "그림, 회화 작품",
+          "english": "himself",
+          "meaning_kr": "그 자신",
           "mp3File": "",
           "pid": null
         },
         {
           "wordIndex": 10,
+          "english": "famous",
+          "meaning_kr": "유명한 (most famous 가장 유명한)",
+          "mp3File": "",
+          "pid": null
+        },
+        {
+          "wordIndex": 11,
           "english": "life",
-          "meaning_kr": "삶, 생애",
+          "meaning_kr": "시절",
           "mp3File": "",
           "pid": null
         }
@@ -1484,73 +1799,87 @@
     },
     "103": {
       "articleSeq": "103",
-      "wordCount": 10,
+      "wordCount": 12,
       "words": [
         {
           "wordIndex": 1,
+          "english": "visit",
+          "meaning_kr": "방문하다",
+          "mp3File": "",
+          "pid": null
+        },
+        {
+          "wordIndex": 2,
           "english": "house",
           "meaning_kr": "집",
           "mp3File": "",
           "pid": null
         },
         {
-          "wordIndex": 2,
+          "wordIndex": 3,
           "english": "best friend",
           "meaning_kr": "가장 친한 친구",
           "mp3File": "",
           "pid": null
         },
         {
-          "wordIndex": 3,
-          "english": "brought",
-          "meaning_kr": "가져왔다",
-          "mp3File": "",
-          "pid": null
-        },
-        {
           "wordIndex": 4,
-          "english": "cookies",
-          "meaning_kr": "쿠키",
+          "english": "bring",
+          "meaning_kr": "가져오다 (brought 가져왔다)",
           "mp3File": "",
           "pid": null
         },
         {
           "wordIndex": 5,
           "english": "share",
-          "meaning_kr": "나누다",
+          "meaning_kr": "나눠 주다",
           "mp3File": "",
           "pid": null
         },
         {
           "wordIndex": 6,
-          "english": "together",
-          "meaning_kr": "함께",
+          "english": "eat",
+          "meaning_kr": "먹다 (ate 먹었다)",
           "mp3File": "",
           "pid": null
         },
         {
           "wordIndex": 7,
-          "english": "built",
-          "meaning_kr": "쌓았다, 만들었다",
+          "english": "build",
+          "meaning_kr": "쌓다 (built 쌓았다)",
           "mp3File": "",
           "pid": null
         },
         {
           "wordIndex": 8,
-          "english": "blocks",
-          "meaning_kr": "블록",
+          "english": "tall",
+          "meaning_kr": "높은",
           "mp3File": "",
           "pid": null
         },
         {
           "wordIndex": 9,
-          "english": "board games",
-          "meaning_kr": "보드게임",
+          "english": "play",
+          "meaning_kr": "(게임)을 하다",
           "mp3File": "",
           "pid": null
         },
         {
           "wordIndex": 10,
+          "english": "fun",
+          "meaning_kr": "재미있는",
+          "mp3File": "",
+          "pid": null
+        },
+        {
+          "wordIndex": 11,
+          "english": "have a great time",
+          "meaning_kr": "즐거운 시간을 보내다",
+          "mp3File": "",
+          "pid": null
+        },
+        {
+          "wordIndex": 12,
           "english": "invite",
           "meaning_kr": "초대하다",
           "mp3File": "",
@@ -1564,43 +1893,43 @@
       "words": [
         {
           "wordIndex": 1,
+          "english": "open",
+          "meaning_kr": "열다, 뜯다",
+          "mp3File": "",
+          "pid": null
+        },
+        {
+          "wordIndex": 2,
           "english": "package",
           "meaning_kr": "소포, 택배",
           "mp3File": "",
           "pid": null
         },
         {
-          "wordIndex": 2,
+          "wordIndex": 3,
           "english": "inside",
-          "meaning_kr": "안에",
+          "meaning_kr": "~안의",
           "mp3File": "",
           "pid": null
         },
         {
-          "wordIndex": 3,
+          "wordIndex": 4,
           "english": "box",
           "meaning_kr": "상자",
           "mp3File": "",
           "pid": null
         },
         {
-          "wordIndex": 4,
-          "english": "ordered",
-          "meaning_kr": "주문했다",
-          "mp3File": "",
-          "pid": null
-        },
-        {
           "wordIndex": 5,
-          "english": "open",
-          "meaning_kr": "열다",
+          "english": "order",
+          "meaning_kr": "주문하다",
           "mp3File": "",
           "pid": null
         },
         {
           "wordIndex": 6,
-          "english": "together",
-          "meaning_kr": "함께",
+          "english": "something",
+          "meaning_kr": "어떤 것",
           "mp3File": "",
           "pid": null
         },
@@ -1614,7 +1943,7 @@
         {
           "wordIndex": 8,
           "english": "surprise",
-          "meaning_kr": "깜짝 선물",
+          "meaning_kr": "깜짝선물",
           "mp3File": "",
           "pid": null
         },
@@ -1628,7 +1957,7 @@
         {
           "wordIndex": 10,
           "english": "best",
-          "meaning_kr": "최고의",
+          "meaning_kr": "최고",
           "mp3File": "",
           "pid": null
         }
@@ -1636,12 +1965,12 @@
     },
     "202": {
       "articleSeq": "202",
-      "wordCount": 10,
+      "wordCount": 13,
       "words": [
         {
           "wordIndex": 1,
           "english": "owl",
-          "meaning_kr": "올빼미",
+          "meaning_kr": "부엉이",
           "mp3File": "",
           "pid": null
         },
@@ -1654,22 +1983,22 @@
         },
         {
           "wordIndex": 3,
+          "english": "see",
+          "meaning_kr": "보다 (saw 보았다)",
+          "mp3File": "",
+          "pid": null
+        },
+        {
+          "wordIndex": 4,
           "english": "shelf",
           "meaning_kr": "선반",
           "mp3File": "",
           "pid": null
         },
         {
-          "wordIndex": 4,
-          "english": "thought",
-          "meaning_kr": "생각했다",
-          "mp3File": "",
-          "pid": null
-        },
-        {
           "wordIndex": 5,
-          "english": "toy",
-          "meaning_kr": "장난감",
+          "english": "think",
+          "meaning_kr": "생각하다 (thought 생각했다)",
           "mp3File": "",
           "pid": null
         },
@@ -1682,8 +2011,8 @@
         },
         {
           "wordIndex": 7,
-          "english": "sleeping",
-          "meaning_kr": "자고 있는",
+          "english": "sleep",
+          "meaning_kr": "자다",
           "mp3File": "",
           "pid": null
         },
@@ -1703,8 +2032,29 @@
         },
         {
           "wordIndex": 10,
-          "english": "flew away",
-          "meaning_kr": "날아갔다",
+          "english": "police officer",
+          "meaning_kr": "경찰관",
+          "mp3File": "",
+          "pid": null
+        },
+        {
+          "wordIndex": 11,
+          "english": "take",
+          "meaning_kr": "데리고 가다 (took 데리고 갔다)",
+          "mp3File": "",
+          "pid": null
+        },
+        {
+          "wordIndex": 12,
+          "english": "outside",
+          "meaning_kr": "밖으로",
+          "mp3File": "",
+          "pid": null
+        },
+        {
+          "wordIndex": 13,
+          "english": "fly away",
+          "meaning_kr": "날아가다 (flew away 날아갔다)",
           "mp3File": "",
           "pid": null
         }
@@ -1712,75 +2062,96 @@
     },
     "301": {
       "articleSeq": "301",
-      "wordCount": 10,
+      "wordCount": 13,
       "words": [
         {
           "wordIndex": 1,
-          "english": "jewelry designer",
-          "meaning_kr": "보석 디자이너",
+          "english": "material",
+          "meaning_kr": "재료, 물질",
           "mp3File": "",
           "pid": null
         },
         {
           "wordIndex": 2,
-          "english": "materials",
-          "meaning_kr": "재료",
+          "english": "latest",
+          "meaning_kr": "최근의",
           "mp3File": "",
           "pid": null
         },
         {
           "wordIndex": 3,
-          "english": "collection",
-          "meaning_kr": "컬렉션, 작품 모음",
+          "english": "discard",
+          "meaning_kr": "버리다",
           "mp3File": "",
           "pid": null
         },
         {
           "wordIndex": 4,
-          "english": "discarded",
-          "meaning_kr": "버려진",
+          "english": "lab-grown",
+          "meaning_kr": "실험실에서 배양한",
           "mp3File": "",
           "pid": null
         },
         {
           "wordIndex": 5,
-          "english": "vegetables",
-          "meaning_kr": "채소",
-          "mp3File": "",
-          "pid": null
-        },
-        {
-          "wordIndex": 6,
-          "english": "lab-grown",
-          "meaning_kr": "실험실에서 만든",
-          "mp3File": "",
-          "pid": null
-        },
-        {
-          "wordIndex": 7,
-          "english": "gemstones",
+          "english": "gemstone",
           "meaning_kr": "보석",
           "mp3File": "",
           "pid": null
         },
         {
+          "wordIndex": 6,
+          "english": "luxury",
+          "meaning_kr": "고급의, 화려한; 사치품",
+          "mp3File": "",
+          "pid": null
+        },
+        {
+          "wordIndex": 7,
+          "english": "alternative",
+          "meaning_kr": "대안",
+          "mp3File": "",
+          "pid": null
+        },
+        {
           "wordIndex": 8,
+          "english": "mining",
+          "meaning_kr": "채굴",
+          "mp3File": "",
+          "pid": null
+        },
+        {
+          "wordIndex": 9,
           "english": "ethical",
           "meaning_kr": "윤리적인",
           "mp3File": "",
           "pid": null
         },
         {
-          "wordIndex": 9,
-          "english": "sustainability",
-          "meaning_kr": "지속 가능성",
+          "wordIndex": 10,
+          "english": "gain attention",
+          "meaning_kr": "관심을 얻다",
           "mp3File": "",
           "pid": null
         },
         {
-          "wordIndex": 10,
-          "english": "luxury",
-          "meaning_kr": "고급스러움, 사치품",
+          "wordIndex": 11,
+          "english": "innovative",
+          "meaning_kr": "혁신적인",
+          "mp3File": "",
+          "pid": null
+        },
+        {
+          "wordIndex": 12,
+          "english": "inspire",
+          "meaning_kr": "영감을 주다",
+          "mp3File": "",
+          "pid": null
+        },
+        {
+          "wordIndex": 13,
+          "english": "sustainability",
+          "meaning_kr": "지속 가능성",
           "mp3File": "",
           "pid": null
         }
@@ -1788,75 +2159,166 @@
     },
     "302": {
       "articleSeq": "302",
-      "wordCount": 10,
+      "wordCount": 23,
       "words": [
         {
           "wordIndex": 1,
-          "english": "handwritten",
-          "meaning_kr": "손으로 쓴",
+          "english": "available",
+          "meaning_kr": "이용 가능한",
           "mp3File": "",
           "pid": null
         },
         {
           "wordIndex": 2,
-          "english": "digital",
-          "meaning_kr": "디지털의",
+          "english": "debate",
+          "meaning_kr": "논쟁",
           "mp3File": "",
           "pid": null
         },
         {
           "wordIndex": 3,
-          "english": "retain",
-          "meaning_kr": "유지하다, 기억하다",
+          "english": "argue",
+          "meaning_kr": "주장하다",
           "mp3File": "",
           "pid": null
         },
         {
           "wordIndex": 4,
-          "english": "memory retention",
-          "meaning_kr": "기억 보존",
+          "english": "retain",
+          "meaning_kr": "간직하다",
           "mp3File": "",
           "pid": null
         },
         {
           "wordIndex": 5,
-          "english": "recall",
-          "meaning_kr": "기억해 내기",
+          "english": "advocate",
+          "meaning_kr": "옹호자",
           "mp3File": "",
           "pid": null
         },
         {
           "wordIndex": 6,
-          "english": "focus",
-          "meaning_kr": "집중하다",
-          "mp3File": "",
-          "pid": null
-        },
-        {
-          "wordIndex": 7,
           "english": "efficient",
           "meaning_kr": "효율적인",
           "mp3File": "",
           "pid": null
         },
         {
+          "wordIndex": 7,
+          "english": "access",
+          "meaning_kr": "접근",
+          "mp3File": "",
+          "pid": null
+        },
+        {
           "wordIndex": 8,
-          "english": "organize",
-          "meaning_kr": "정리하다",
+          "english": "force",
+          "meaning_kr": "강요하다",
           "mp3File": "",
           "pid": null
         },
         {
           "wordIndex": 9,
-          "english": "multimedia",
-          "meaning_kr": "멀티미디어",
+          "english": "process",
+          "meaning_kr": "처리하다",
           "mp3File": "",
           "pid": null
         },
         {
           "wordIndex": 10,
-          "english": "accessible",
-          "meaning_kr": "접근 가능한",
+          "english": "material",
+          "meaning_kr": "자료",
+          "mp3File": "",
+          "pid": null
+        },
+        {
+          "wordIndex": 11,
+          "english": "effectively",
+          "meaning_kr": "효과적으로",
+          "mp3File": "",
+          "pid": null
+        },
+        {
+          "wordIndex": 12,
+          "english": "assignment",
+          "meaning_kr": "과제",
+          "mp3File": "",
+          "pid": null
+        },
+        {
+          "wordIndex": 13,
+          "english": "take notes",
+          "meaning_kr": "필기하다",
+          "mp3File": "",
+          "pid": null
+        },
+        {
+          "wordIndex": 14,
+          "english": "distract",
+          "meaning_kr": "방해하다",
+          "mp3File": "",
+          "pid": null
+        },
+        {
+          "wordIndex": 15,
+          "english": "notification",
+          "meaning_kr": "알림",
+          "mp3File": "",
+          "pid": null
+        },
+        {
+          "wordIndex": 16,
+          "english": "pay attention",
+          "meaning_kr": "집중하다",
+          "mp3File": "",
+          "pid": null
+        },
+        {
+          "wordIndex": 17,
+          "english": "obtain",
+          "meaning_kr": "얻다",
+          "mp3File": "",
+          "pid": null
+        },
+        {
+          "wordIndex": 18,
+          "english": "sort",
+          "meaning_kr": "분류하다",
+          "mp3File": "",
+          "pid": null
+        },
+        {
+          "wordIndex": 19,
+          "english": "edit",
+          "meaning_kr": "수정하다",
+          "mp3File": "",
+          "pid": null
+        },
+        {
+          "wordIndex": 20,
+          "english": "critic",
+          "meaning_kr": "비판자",
+          "mp3File": "",
+          "pid": null
+        },
+        {
+          "wordIndex": 21,
+          "english": "element",
+          "meaning_kr": "요소",
+          "mp3File": "",
+          "pid": null
+        },
+        {
+          "wordIndex": 22,
+          "english": "additional",
+          "meaning_kr": "추가의",
+          "mp3File": "",
+          "pid": null
+        },
+        {
+          "wordIndex": 23,
+          "english": "furthermore",
+          "meaning_kr": "더욱이",
           "mp3File": "",
           "pid": null
         }
@@ -1864,75 +2326,110 @@
     },
     "401": {
       "articleSeq": "401",
-      "wordCount": 10,
+      "wordCount": 15,
       "words": [
         {
           "wordIndex": 1,
-          "english": "escaped",
-          "meaning_kr": "탈출했다",
+          "english": "escape",
+          "meaning_kr": "탈출하다",
           "mp3File": "",
           "pid": null
         },
         {
           "wordIndex": 2,
-          "english": "incident",
-          "meaning_kr": "사건",
+          "english": "draw attention",
+          "meaning_kr": "관심을 끌다",
           "mp3File": "",
           "pid": null
         },
         {
           "wordIndex": 3,
-          "english": "damaged fence",
-          "meaning_kr": "손상된 울타리",
+          "english": "spark",
+          "meaning_kr": "촉발하다",
           "mp3File": "",
           "pid": null
         },
         {
           "wordIndex": 4,
-          "english": "authorities",
-          "meaning_kr": "당국",
+          "english": "effort",
+          "meaning_kr": "노력",
           "mp3File": "",
           "pid": null
         },
         {
           "wordIndex": 5,
-          "english": "patrol teams",
-          "meaning_kr": "순찰팀",
+          "english": "patrol",
+          "meaning_kr": "순찰",
           "mp3File": "",
           "pid": null
         },
         {
           "wordIndex": 6,
-          "english": "thermal cameras",
+          "english": "thermal camera",
           "meaning_kr": "열화상 카메라",
           "mp3File": "",
           "pid": null
         },
         {
           "wordIndex": 7,
-          "english": "evaded capture",
-          "meaning_kr": "포획을 피했다",
+          "english": "evade",
+          "meaning_kr": "피하다",
           "mp3File": "",
           "pid": null
         },
         {
           "wordIndex": 8,
-          "english": "sedated",
-          "meaning_kr": "진정제를 맞은",
+          "english": "sedate",
+          "meaning_kr": "진정시키다",
           "mp3File": "",
           "pid": null
         },
         {
           "wordIndex": 9,
-          "english": "veterinarians",
-          "meaning_kr": "수의사들",
+          "english": "lodge",
+          "meaning_kr": "박다",
           "mp3File": "",
           "pid": null
         },
         {
           "wordIndex": 10,
-          "english": "viral figure",
-          "meaning_kr": "화제의 인물",
+          "english": "reassure",
+          "meaning_kr": "안심시키다",
+          "mp3File": "",
+          "pid": null
+        },
+        {
+          "wordIndex": 11,
+          "english": "ordeal",
+          "meaning_kr": "시련",
+          "mp3File": "",
+          "pid": null
+        },
+        {
+          "wordIndex": 12,
+          "english": "viral",
+          "meaning_kr": "빠르게 인기를 얻은",
+          "mp3File": "",
+          "pid": null
+        },
+        {
+          "wordIndex": 13,
+          "english": "inspire",
+          "meaning_kr": "영감을 주다",
+          "mp3File": "",
+          "pid": null
+        },
+        {
+          "wordIndex": 14,
+          "english": "adopt",
+          "meaning_kr": "채택하다",
+          "mp3File": "",
+          "pid": null
+        },
+        {
+          "wordIndex": 15,
+          "english": "promotional",
+          "meaning_kr": "홍보의",
           "mp3File": "",
           "pid": null
         }
@@ -1940,75 +2437,166 @@
     },
     "402": {
       "articleSeq": "402",
-      "wordCount": 10,
+      "wordCount": 23,
       "words": [
         {
           "wordIndex": 1,
           "english": "identity",
-          "meaning_kr": "정체, 신원",
+          "meaning_kr": "정체",
           "mp3File": "",
           "pid": null
         },
         {
           "wordIndex": 2,
-          "english": "elusive",
-          "meaning_kr": "찾기 힘든, 정체를 알기 어려운",
+          "english": "reveal",
+          "meaning_kr": "드러내다",
           "mp3File": "",
           "pid": null
         },
         {
           "wordIndex": 3,
-          "english": "aliases",
-          "meaning_kr": "가명들",
+          "english": "elusive",
+          "meaning_kr": "정체를 알기 어려운",
           "mp3File": "",
           "pid": null
         },
         {
           "wordIndex": 4,
-          "english": "detection",
-          "meaning_kr": "발견, 탐지",
+          "english": "reportedly",
+          "meaning_kr": "보도에 따르면",
           "mp3File": "",
           "pid": null
         },
         {
           "wordIndex": 5,
+          "english": "alias",
+          "meaning_kr": "가명",
+          "mp3File": "",
+          "pid": null
+        },
+        {
+          "wordIndex": 6,
+          "english": "detection",
+          "meaning_kr": "발각",
+          "mp3File": "",
+          "pid": null
+        },
+        {
+          "wordIndex": 7,
+          "english": "graffiti",
+          "meaning_kr": "그래피티, 벽낙서",
+          "mp3File": "",
+          "pid": null
+        },
+        {
+          "wordIndex": 8,
+          "english": "value",
+          "meaning_kr": "(가치를) 평가하다",
+          "mp3File": "",
+          "pid": null
+        },
+        {
+          "wordIndex": 9,
           "english": "anonymous",
           "meaning_kr": "익명의",
           "mp3File": "",
           "pid": null
         },
         {
-          "wordIndex": 6,
+          "wordIndex": 10,
           "english": "appeal",
           "meaning_kr": "매력",
           "mp3File": "",
           "pid": null
         },
         {
-          "wordIndex": 7,
+          "wordIndex": 11,
+          "english": "expert",
+          "meaning_kr": "전문가",
+          "mp3File": "",
+          "pid": null
+        },
+        {
+          "wordIndex": 12,
+          "english": "escape",
+          "meaning_kr": "피하다",
+          "mp3File": "",
+          "pid": null
+        },
+        {
+          "wordIndex": 13,
+          "english": "legal",
+          "meaning_kr": "법적인",
+          "mp3File": "",
+          "pid": null
+        },
+        {
+          "wordIndex": 14,
           "english": "controversial",
-          "meaning_kr": "논란이 많은",
+          "meaning_kr": "논란이 되는",
           "mp3File": "",
           "pid": null
         },
         {
-          "wordIndex": 8,
-          "english": "stencil-based",
-          "meaning_kr": "스텐실 기반의",
+          "wordIndex": 15,
+          "english": "blend in",
+          "meaning_kr": "섞이다",
           "mp3File": "",
           "pid": null
         },
         {
-          "wordIndex": 9,
+          "wordIndex": 16,
+          "english": "attention",
+          "meaning_kr": "관심",
+          "mp3File": "",
+          "pid": null
+        },
+        {
+          "wordIndex": 17,
+          "english": "strategy",
+          "meaning_kr": "전략",
+          "mp3File": "",
+          "pid": null
+        },
+        {
+          "wordIndex": 18,
+          "english": "appear",
+          "meaning_kr": "나타나다",
+          "mp3File": "",
+          "pid": null
+        },
+        {
+          "wordIndex": 19,
+          "english": "critique",
+          "meaning_kr": "비판하다",
+          "mp3File": "",
+          "pid": null
+        },
+        {
+          "wordIndex": 20,
           "english": "inequality",
           "meaning_kr": "불평등",
           "mp3File": "",
           "pid": null
         },
         {
-          "wordIndex": 10,
+          "wordIndex": 21,
+          "english": "reputation",
+          "meaning_kr": "명성",
+          "mp3File": "",
+          "pid": null
+        },
+        {
+          "wordIndex": 22,
           "english": "authenticity",
           "meaning_kr": "진정성",
+          "mp3File": "",
+          "pid": null
+        },
+        {
+          "wordIndex": 23,
+          "english": "desirable",
+          "meaning_kr": "매력적인",
           "mp3File": "",
           "pid": null
         }
