@@ -2351,7 +2351,9 @@ export default function App() {
             <Cd key={cls.id} style={{ padding: 0, overflow: "hidden", display: "flex", flexDirection: "column" }}>
               <div style={{ padding: "12px 16px", background: bBg, borderBottom: `1px solid ${X.bdr}`, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                 <div style={{ display: "flex", alignItems: "center", gap: 7, minWidth: 0 }}>
-                  <span style={{ fontFamily: F.h, fontWeight: 700, fontSize: 15, color: bColor, whiteSpace: "nowrap" }}>{cls.nm}</span>
+                  <span style={{ fontFamily: F.h, fontWeight: 700, fontSize: 15, color: bColor, whiteSpace: "nowrap" }}>
+                    {cls.sts.length === 0 && cls.nm.length > 6 ? cls.nm.slice(0, 6) + ".." : cls.nm}
+                  </span>
                   {levelKey && BANDS[levelKey] && <span style={{ fontSize: 10, fontWeight: 700, color: bColor, background: "rgba(255,255,255,0.7)", border: `1px solid ${band.r}`, borderRadius: 20, padding: "1px 7px", whiteSpace: "nowrap" }}>{levelKey}</span>}
                   <span style={{ fontSize: 10, fontWeight: 600, color: bColor, background: "rgba(255,255,255,0.5)", borderRadius: 20, padding: "1px 7px", whiteSpace: "nowrap" }}>{clsFreq[cls.id] || "주2회"}</span>
                 </div>
@@ -4155,10 +4157,16 @@ export default function App() {
                   <label style={{ display: "block", fontSize: 12, fontWeight: 700, color: X.sub, marginBottom: 8 }}>반 이름</label>
                   <input
                     value={nm}
-                    onChange={e => setAddClsModal(p => ({ ...p, nm: e.target.value }))}
+                    onChange={e => setAddClsModal(p => ({ ...p, nm: e.target.value.slice(0, 10) }))}
                     placeholder="예: 월수금반"
-                    style={{ width: "100%", padding: "10px 14px", borderRadius: 10, border: `1px solid ${X.bdr}`, fontSize: 14, fontFamily: F.b, outline: "none", boxSizing: "border-box" }}
+                    maxLength={10}
+                    style={{ width: "100%", padding: "10px 14px", borderRadius: 10, border: `1px solid ${nm.length >= 10 ? X.rd : X.bdr}`, fontSize: 14, fontFamily: F.b, outline: "none", boxSizing: "border-box" }}
                   />
+                  <div style={{ display: "flex", justifyContent: "flex-end", marginTop: 5 }}>
+                    <span style={{ fontSize: 11, color: nm.length >= 10 ? X.rd : X.mt, fontWeight: nm.length >= 10 ? 700 : 400 }}>
+                      {nm.length}/10자
+                    </span>
+                  </div>
                 </div>
                 {/* 기사 레벨 */}
                 <div>
@@ -4327,8 +4335,14 @@ export default function App() {
               <div style={{ padding: 24 }}>
                 <div style={{ marginBottom: 20 }}>
                   <label style={{ display: "block", fontSize: 12, fontWeight: 700, color: X.sub, marginBottom: 8 }}>반 이름</label>
-                  <input value={nm} onChange={e => setClsSettingsModal(p => ({ ...p, nm: e.target.value }))}
-                    style={{ width: "100%", padding: "10px 14px", borderRadius: 10, border: `1px solid ${X.bdr}`, fontSize: 14, fontFamily: F.b, boxSizing: "border-box", outline: "none" }} />
+                  <input value={nm} onChange={e => setClsSettingsModal(p => ({ ...p, nm: e.target.value.slice(0, 10) }))}
+                    maxLength={10}
+                    style={{ width: "100%", padding: "10px 14px", borderRadius: 10, border: `1px solid ${nm.length >= 10 ? X.rd : X.bdr}`, fontSize: 14, fontFamily: F.b, boxSizing: "border-box", outline: "none" }} />
+                  <div style={{ display: "flex", justifyContent: "flex-end", marginTop: 5 }}>
+                    <span style={{ fontSize: 11, color: nm.length >= 10 ? X.rd : X.mt, fontWeight: nm.length >= 10 ? 700 : 400 }}>
+                      {nm.length}/10자
+                    </span>
+                  </div>
                 </div>
                 <div style={{ marginBottom: 20 }}>
                   <label style={{ display: "block", fontSize: 12, fontWeight: 700, color: X.sub, marginBottom: 8 }}>난이도</label>
