@@ -1303,6 +1303,8 @@ export default function App() {
   const [sbRetrying, setSbRetrying] = useState(false);
   const [dtRetrying, setDtRetrying] = useState(false);
   const [rvShowAll, setRvShowAll] = useState(false);
+  const [progOpen, setProgOpen] = useState({ cls: true, summary: true, detail: true });
+  const toggleProg = key => setProgOpen(p => ({ ...p, [key]: !p[key] }));
   const [wa, setWa] = useState({});
   const [wd, setWd] = useState(false);
   const [scores, setScores] = useState(() => {
@@ -1399,6 +1401,9 @@ export default function App() {
   const removeStudent = (stId) => {
     const next = clsData.map(c => ({ ...c, sts: c.sts.filter(s => s.id !== stId) }));
     saveCls(next);
+  };
+  const deleteCls = (cId) => {
+    saveCls(clsData.filter(c => c.id !== cId));
   };
 
   /* ─── STUDENT ADD MODAL STATE ─── */
@@ -2134,10 +2139,22 @@ export default function App() {
           <span style={{ fontSize: 12, color: X.sub }}>{_fmt(viewedMonday)} – {_fmt(viewedFriday)}</span>
         </div>
 
+        {/* ── 반 관리 ── */}
+        <div>
+          <button onClick={() => toggleProg("cls")} style={{ display: "flex", alignItems: "center", gap: 8, background: "none", border: "none", cursor: "pointer", padding: 0, marginBottom: progOpen.cls ? 12 : 0, fontFamily: F.h, fontWeight: 800, fontSize: 16, color: X.tx }}>
+            <span style={{ fontSize: 11, color: X.sub, transition: "transform .2s", display: "inline-block", transform: progOpen.cls ? "rotate(90deg)" : "rotate(0deg)" }}>▶</span>
+            반 관리
+          </button>
+          {progOpen.cls && <TStudents />}
+        </div>
+
         {/* ── 요약 ── */}
         <div>
-          <div style={{ fontFamily: F.h, fontWeight: 800, fontSize: 16, color: X.tx, marginBottom: 12 }}>요약</div>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(300px,1fr))", gap: 16 }}>
+          <button onClick={() => toggleProg("summary")} style={{ display: "flex", alignItems: "center", gap: 8, background: "none", border: "none", cursor: "pointer", padding: 0, marginBottom: progOpen.summary ? 12 : 0, fontFamily: F.h, fontWeight: 800, fontSize: 16, color: X.tx }}>
+            <span style={{ fontSize: 11, color: X.sub, transition: "transform .2s", display: "inline-block", transform: progOpen.summary ? "rotate(90deg)" : "rotate(0deg)" }}>▶</span>
+            요약
+          </button>
+          {progOpen.summary && <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(300px,1fr))", gap: 16 }}>
             {clsWithSts.map(cls => {
               const levelKey = cls.level || cls.nm.replace("반", "");
               const band = BANDS[levelKey] || { c: X.ac, bg: X.abg, r: "#bfdbfe" };
@@ -2196,13 +2213,16 @@ export default function App() {
                 </Cd>
               );
             })}
-          </div>
+          </div>}
         </div>
 
         {/* ── 상세 ── */}
         <div>
-          <div style={{ fontFamily: F.h, fontWeight: 800, fontSize: 16, color: X.tx, marginBottom: 12 }}>상세</div>
-          <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
+          <button onClick={() => toggleProg("detail")} style={{ display: "flex", alignItems: "center", gap: 8, background: "none", border: "none", cursor: "pointer", padding: 0, marginBottom: progOpen.detail ? 12 : 0, fontFamily: F.h, fontWeight: 800, fontSize: 16, color: X.tx }}>
+            <span style={{ fontSize: 11, color: X.sub, transition: "transform .2s", display: "inline-block", transform: progOpen.detail ? "rotate(90deg)" : "rotate(0deg)" }}>▶</span>
+            상세
+          </button>
+          {progOpen.detail && <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
             {clsWithSts.map(cls => {
               const levelKey = cls.level || cls.nm.replace("반", "");
               const band = BANDS[levelKey] || { c: X.ac, bg: X.abg, r: "#bfdbfe" };
@@ -2301,7 +2321,7 @@ export default function App() {
                 </Cd>
               );
             })}
-          </div>
+          </div>}
         </div>
       </div>
     );
@@ -2341,10 +2361,17 @@ export default function App() {
                   <span style={{ fontSize: 12, color: bColor, fontWeight: 600 }}>{cls.sts.length}명</span>
                   <button onClick={() => setClsSettingsModal({ cls, nm: cls.nm, level: cls.level || "", freq: clsFreq[cls.id] || "주2회" })}
                     style={{ border: "none", background: "rgba(255,255,255,0.6)", borderRadius: 8, width: 26, height: 26, display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", fontSize: 14, color: bColor }}>⚙</button>
+                  {cls.sts.length === 0 && (
+                    <button
+                      onClick={() => { if (window.confirm(`'${cls.nm}'을(를) 삭제할까요?`)) deleteCls(cls.id); }}
+                      title="반 삭제"
+                      style={{ border: "none", background: "rgba(239,68,68,0.15)", borderRadius: 8, width: 26, height: 26, display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", fontSize: 13, color: X.rd }}
+                    >🗑</button>
+                  )}
                 </div>
               </div>
               {cls.sts.length === 0 ? (
-                <div style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                <div style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", padding: "24px 0" }}>
                   <button
                     onClick={() => openAddModal(cls.id)}
                     style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "8px 18px", borderRadius: 10, border: `1px dashed ${X.bdr}`, background: "#f8f9fa", color: X.sub, fontSize: 13, fontWeight: 700, fontFamily: F.b, cursor: "pointer" }}
