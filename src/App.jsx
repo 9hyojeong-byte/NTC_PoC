@@ -10,8 +10,8 @@ import { playWordAudio } from "./lib/audio.js";
    ═══════════════════════════════════════════ */
 const gP = (p, s, q) => {
   const x = p[`${s}_${q}`];
-  if (!x) return { r: false, wl: false, v: false, sb: false, w: false };
-  return { r: !!x.r, wl: !!x.wl, v: !!x.v, sb: !!x.sb, w: !!x.w };
+  if (!x) return { r: false, wl: false, v: false, sb: false, w: false, rv: false, dt: false };
+  return { r: !!x.r, wl: !!x.wl, v: !!x.v, sb: !!x.sb, w: !!x.w, rv: !!x.rv, dt: !!x.dt };
 };
 const iD = (p, s, q) => {
   const x = gP(p, s, q);
@@ -581,6 +581,7 @@ function SentenceBuildStep({ sentences, onComplete, onBack }) {
   const [correct, setCorrect] = useState(false);
   const [correctCount, setCorrectCount] = useState(0);
   const [wrongSentences, setWrongSentences] = useState([]);
+  const [allItems, setAllItems] = useState([]);
   const [draggingIdx, setDraggingIdx] = useState(null);
   const [dragOverIdx, setDragOverIdx] = useState(null);
   const dragSrcIdx = useRef(null);
@@ -679,8 +680,9 @@ function SentenceBuildStep({ sentences, onComplete, onBack }) {
   const nextSentence = () => {
     const newCor = correctCount + (correct ? 1 : 0);
     const newWrongs = correct ? wrongSentences : [...wrongSentences, { en: cur.en, kr: cur.kr }];
-    if (idx + 1 >= sentences.length) onComplete(newCor, sentences.length, newWrongs);
-    else { setCorrectCount(newCor); setWrongSentences(newWrongs); setIdx(i => i + 1); }
+    const newAllItems = [...allItems, { en: cur.en, kr: cur.kr, correct }];
+    if (idx + 1 >= sentences.length) onComplete(newCor, sentences.length, newWrongs, newAllItems);
+    else { setCorrectCount(newCor); setWrongSentences(newWrongs); setAllItems(newAllItems); setIdx(i => i + 1); }
   };
   const retry = () => {
     setPool(shuffleArr(tokenizeSentence(cur.en)));
@@ -1286,10 +1288,21 @@ export default function App() {
   const audioCtxRef = useRef(null);
   const sentenceAudioCacheRef = useRef({});
   const sentenceAudioPendingRef = useRef({});
+  const dtSourceRef = useRef(null);
+  const dtAllItemsRef = useRef([]);
   const [va, setVa] = useState({});
   const [vchecked, setVchecked] = useState({});
   const [vd, setVd] = useState(false);
   const [vo, setVo] = useState({});
+  const [dtIdx, setDtIdx] = useState(0);
+  const [dtInput, setDtInput] = useState("");
+  const [dtSubmitted, setDtSubmitted] = useState(false);
+  const [dtIsPlaying, setDtIsPlaying] = useState(false);
+  const [dtWrongs, setDtWrongs] = useState([]);
+  const [vocRetrying, setVocRetrying] = useState(false);
+  const [sbRetrying, setSbRetrying] = useState(false);
+  const [dtRetrying, setDtRetrying] = useState(false);
+  const [rvShowAll, setRvShowAll] = useState(false);
   const [wa, setWa] = useState({});
   const [wd, setWd] = useState(false);
   const [scores, setScores] = useState(() => {
@@ -1586,6 +1599,22 @@ export default function App() {
     return result.filter((_, i) => [1, 4, 6, 7].includes(i));
   }, [cA]);
 
+  // 딕테이션용 문장 (기사 전체 문장 중 2, 5번째)
+  const dtSentences = useMemo(() => {
+    if (!cA) return [];
+    const result = [];
+    cA.ps.forEach(pa => {
+      const enSents = splitSentenceRanges(pa.en);
+      const krSents = splitSentenceRanges(pa.kr);
+      enSents.forEach((es, i) => {
+        result.push({ en: es.text.trim(), kr: krSents[i]?.text.trim() || pa.kr });
+      });
+    });
+    return result.filter((_, i) => [2, 5].includes(i));
+  }, [cA]);
+  // sentenceMeta.all 기준 오디오 키 매핑용
+  const dtAudioSentences = useMemo(() => sentenceMeta.all.filter((_, i) => [2, 5].includes(i)), [sentenceMeta]);
+
   const ensureSentenceAudio = async () => {
     if (!cA?.mp3 || cA.mp3 === "#") return null;
     const cached = sentenceAudioCacheRef.current[cA.seq];
@@ -1727,21 +1756,26 @@ export default function App() {
     const _wp2 = cW.filter(w => w.pid);
     const ws = (_wp2.length > 0 ? _wp2 : cW).slice(0, 4);
     const cor = ws.filter(w => va[w.i] === w.kr).length;
-    const wrongs = ws.filter(w => va[w.i] !== w.kr).map(w => ({ en: w.en, kr: w.kr, ans: va[w.i] || "" }));
+    const items = ws.map(w => ({ en: w.en, kr: w.kr, ans: va[w.i] || "", correct: va[w.i] === w.kr }));
+    const wrongs = items.filter(i => !i.correct);
     const k = `${sSt}_${sArt}`;
-    setScores(p => ({ ...p, [k]: { ...(p[k] || {}), voc: { cor, tot: ws.length, wrongs } } }));
+    setScores(p => ({ ...p, [k]: { ...(p[k] || {}), voc: { cor, tot: ws.length, items, wrongs } } }));
     uP(sSt, sArt, "v");
     setSv("ssb");
   };
-  const cSb = (cor, tot, wrongs = []) => {
+  const cSb = (cor, tot, wrongs = [], items = []) => {
     const k = `${sSt}_${sArt}`;
-    setScores(p => ({ ...p, [k]: { ...(p[k] || {}), sb: { cor, tot, wrongs } } }));
+    setScores(p => ({ ...p, [k]: { ...(p[k] || {}), sb: { cor, tot, wrongs, items } } }));
     uP(sSt, sArt, "sb");
-    setSv("rec");
+    setSbRetrying(false);
+    // 딕테이션 상태 초기화 (다음 단계 진입 시 바로 시작 가능하도록)
+    setDtIdx(0); setDtInput(""); setDtSubmitted(false); setDtIsPlaying(false); setDtWrongs([]); dtAllItemsRef.current = [];
+    if (dtSourceRef.current) { try { dtSourceRef.current.stop(); } catch(_) {} dtSourceRef.current = null; }
+    // ssb 결과 뷰에서 "딕테이션 →" 버튼으로 이동 (자동 이동 없음)
   };
   const cRecSubmit = () => {
     uP(sSt, sArt, "w");
-    setSv("dn");
+    setSv("rv");
   };
   const cWk = () => {
     const autoTypes = ["wc", "mc", "tf", "us", "mt"];
@@ -2413,7 +2447,7 @@ export default function App() {
       else if (p.wl && p.r && !p.v) { const _aw = W[entry.seq] || []; const _awp = _aw.filter(w => w.pid); initVocOptions((_awp.length > 0 ? _awp : _aw).slice(0, 4), _aw); setSv("voc"); }
       else if (p.wl && !p.r) setSv("rd");
       else setSv("wl");
-      setVa({}); setWa({}); setVd(false); setWd(false);
+      setVa({}); setWa({}); setVd(false); setWd(false); setWlIdx(0); setWlRevealIdx(-1);
     };
 
     // 보여지는 주의 weekIdx (추가배정 기사 매칭용)
@@ -2966,37 +3000,44 @@ export default function App() {
     const _wpV = cW.filter(w => w.pid);
     const ws = (_wpV.length > 0 ? _wpV : cW).slice(0, 4);
     const isLast = vocIdx >= ws.length - 1;
+    const scVoc = scores[`${sSt}_${sArt}`]?.voc;
 
-    /* 전체 결과 요약 화면 */
-    if (vd) {
-      const cor = ws.filter(w => va[w.i] === w.kr).length;
+    /* 전체 결과 요약 화면 — 방금 완료(vd) 또는 이전 제출 결과(scVoc) 있을 때 */
+    if (vd || (scVoc && !vocRetrying)) {
+      // 방금 완료: va에서 계산 / 복귀 시: scVoc.items 사용
+      const allItems = vd
+        ? ws.map(w => ({ en: w.en, kr: w.kr, ans: va[w.i] || "", correct: va[w.i] === w.kr }))
+        : (scVoc.items || scVoc.wrongs?.map(w => ({ ...w, correct: false })) || []);
+      const cor = allItems.filter(i => i.correct).length;
+      const tot = vd ? ws.length : scVoc.tot;
+      const doRetry = () => {
+        setVocRetrying(true); setVd(false); setVa({}); setVchecked({}); setVocIdx(0);
+        initVocOptions(ws, cW);
+      };
       return (
         <div>
           <Bt v="ghost" onClick={bk} style={{ marginBottom: 12 }}>← 과제 목록</Bt>
           <div style={{ maxWidth: 560, margin: "0 auto" }}>
             <div style={{ textAlign: "center", padding: "32px 24px", marginBottom: 20, borderRadius: 20, background: "#fff", border: `1px solid ${X.bdr}`, boxShadow: "0 4px 24px rgba(0,0,0,.07)" }}>
-              <div style={{ fontSize: 40, marginBottom: 12 }}>{cor === ws.length ? "🎉" : cor >= ws.length * 0.8 ? "👍" : "📚"}</div>
-              <div style={{ fontFamily: F.h, fontWeight: 800, fontSize: 32, color: cor === ws.length ? X.gn : X.am, marginBottom: 4 }}>{cor} / {ws.length}</div>
+              <div style={{ fontSize: 40, marginBottom: 12 }}>{cor === tot ? "🎉" : cor >= tot * 0.8 ? "👍" : "📚"}</div>
+              <div style={{ fontFamily: F.h, fontWeight: 800, fontSize: 32, color: cor === tot ? X.gn : X.am, marginBottom: 4 }}>{cor} / {tot}</div>
               <div style={{ fontSize: 14, color: X.sub }}>정답</div>
             </div>
             <div style={{ display: "flex", flexDirection: "column", gap: 10, marginBottom: 24 }}>
-              {ws.map((w, i) => {
-                const ans = va[w.i]; const ok = ans === w.kr;
-                return (
-                  <div key={w.i} style={{ padding: "14px 16px", borderRadius: 12, background: ok ? "#f0fdf4" : "#fef2f2", border: `1px solid ${ok ? "#a7f3d0" : "#fecaca"}`, display: "flex", alignItems: "center", gap: 12 }}>
-                    <span style={{ fontWeight: 700, fontSize: 13, color: ok ? X.gn : X.rd, flexShrink: 0 }}>{ok ? "✓" : "✗"}</span>
-                    <div style={{ flex: 1 }}>
-                      <div style={{ fontWeight: 700, fontSize: 14 }}>{i + 1}. {w.en}</div>
-                      {!ok && <div style={{ fontSize: 12, color: X.sub, marginTop: 2 }}>내 답: <span style={{ color: X.rd }}>{ans || "미선택"}</span> / 정답: <span style={{ color: X.gn, fontWeight: 600 }}>{w.kr}</span></div>}
-                    </div>
-                    {(w.mp3 || w.en) && <button onClick={() => playWordAudio(cA.seq, w.mp3, w.en)} style={{ border: `1px solid ${X.bdr}`, background: "#fff", borderRadius: 7, width: 28, height: 28, cursor: "pointer", fontSize: 13 }}>🔊</button>}
+              {allItems.map((w, i) => (
+                <div key={i} style={{ padding: "14px 16px", borderRadius: 12, background: w.correct ? "#f0fdf4" : "#fef2f2", border: `1px solid ${w.correct ? "#a7f3d0" : "#fecaca"}`, display: "flex", alignItems: "center", gap: 12 }}>
+                  <span style={{ fontWeight: 700, fontSize: 15, color: w.correct ? X.gn : X.rd, flexShrink: 0 }}>{w.correct ? "✓" : "✗"}</span>
+                  <div style={{ flex: 1 }}>
+                    <div style={{ fontWeight: 700, fontSize: 14 }}>{w.en}</div>
+                    {!w.correct && <div style={{ fontSize: 12, color: X.sub, marginTop: 2 }}>내 답: <span style={{ color: X.rd }}>{w.ans || "미선택"}</span> / 정답: <span style={{ color: X.gn, fontWeight: 600 }}>{w.kr}</span></div>}
+                    {w.correct && <div style={{ fontSize: 12, color: X.gn, marginTop: 2 }}>{w.kr}</div>}
                   </div>
-                );
-              })}
+                </div>
+              ))}
             </div>
             <div style={{ display: "flex", gap: 10, justifyContent: "center" }}>
-              <Bt v="outline" size="lg" onClick={() => { setVd(false); setVa({}); setVchecked({}); setVocIdx(0); }}>다시 풀어보기</Bt>
-              <Bt v="success" size="lg" onClick={cV}>문장만들기 →</Bt>
+              <Bt v="outline" size="lg" onClick={doRetry}>🔄 다시 하기</Bt>
+              <Bt v="success" size="lg" onClick={vd ? cV : () => setSv("ssb")}>문장만들기 →</Bt>
             </div>
           </div>
         </div>
@@ -3242,6 +3283,475 @@ export default function App() {
     );
   };
 
+  /* ─── STUDENT DICTATION (딕테이션) ─── */
+  const SDt = () => {
+    const scDt = scores[`${sSt}_${sArt}`]?.dt;
+
+    /* 결과 뷰 — 이전 제출 결과가 있고 retry 중이 아닐 때 */
+    if (scDt && !dtRetrying) {
+      const dtAllItems = scDt.items || scDt.wrongs?.map(d => ({ ...d, correct: false })) || [];
+      const total = dtSentences.length;
+      const rights = dtAllItems.filter(d => d.correct).length;
+      const doRetry = () => {
+        setDtRetrying(true);
+        setDtIdx(0); setDtInput(""); setDtSubmitted(false); setDtIsPlaying(false); setDtWrongs([]); dtAllItemsRef.current = [];
+        if (dtSourceRef.current) { try { dtSourceRef.current.stop(); } catch(_) {} dtSourceRef.current = null; }
+      };
+      return (
+        <div className="fade-up" style={{ maxWidth: 640, margin: "0 auto" }}>
+          <Bt v="ghost" onClick={bk} style={{ marginBottom: 12 }}>← 과제 목록</Bt>
+          <div style={{ textAlign: "center", padding: "32px 24px", marginBottom: 20, borderRadius: 20, background: "#fff", border: `1px solid ${X.bdr}`, boxShadow: "0 4px 24px rgba(0,0,0,.07)" }}>
+            <div style={{ fontSize: 40, marginBottom: 12 }}>{rights === total ? "🎉" : rights >= total * 0.8 ? "👍" : "📚"}</div>
+            <div style={{ fontFamily: F.h, fontWeight: 800, fontSize: 32, color: rights === total ? X.gn : X.am, marginBottom: 4 }}>{rights} / {total}</div>
+            <div style={{ fontSize: 14, color: X.sub, marginBottom: 4 }}>정답</div>
+            <h2 style={{ fontFamily: F.h, fontWeight: 800, fontSize: 18, marginTop: 8 }}>딕테이션</h2>
+          </div>
+          <div style={{ display: "flex", flexDirection: "column", gap: 10, marginBottom: 20 }}>
+            {dtAllItems.map((d, i) => (
+              <div key={i} style={{ background: d.correct ? "#f0fdf4" : X.rbg, border: `1px solid ${d.correct ? "#a7f3d0" : "#fecaca"}`, borderRadius: 12, padding: "14px 16px" }}>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                    <span style={{ fontWeight: 700, fontSize: 15, color: d.correct ? X.gn : X.rd }}>{d.correct ? "✓" : "✗"}</span>
+                    <div style={{ fontSize: 11, color: X.sub, fontWeight: 600 }}>문장 {i + 1}</div>
+                  </div>
+                  <span style={{ fontSize: 12, fontWeight: 700, color: d.correct ? X.gn : X.rd }}>일치율 {d.sim}%</span>
+                </div>
+                <div style={{ fontWeight: 700, fontSize: 14, color: X.tx, marginBottom: 4, lineHeight: 1.6 }}>{d.en}</div>
+                <div style={{ fontSize: 12, color: X.sub, marginBottom: d.correct ? 0 : 8 }}>{d.kr}</div>
+                {!d.correct && (
+                  <div style={{ borderTop: `1px solid ${d.correct ? "#a7f3d0" : "#fecaca"}`, paddingTop: 8 }}>
+                    <div style={{ fontSize: 11, color: X.sub, fontWeight: 600, marginBottom: 4 }}>내가 쓴 답</div>
+                    <div style={{ fontSize: 13, color: X.rd }}>{d.input || "(미입력)"}</div>
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+          <div style={{ display: "flex", gap: 10, justifyContent: "center" }}>
+            <Bt v="outline" size="lg" onClick={doRetry}>🔄 다시 하기</Bt>
+            <Bt v="success" size="lg" onClick={() => setSv("rec")}>녹음 →</Bt>
+          </div>
+        </div>
+      );
+    }
+
+    const cur = dtSentences[dtIdx];
+    const total = dtSentences.length;
+    const hasAudio = !!(cA?.mp3 && cA.mp3 !== "#");
+
+    // 유사도 계산 (문자 수준 Levenshtein)
+    const calcSim = (typed, answer) => {
+      const clean = s => s.toLowerCase().replace(/[^a-z0-9\s]/g, "").replace(/\s+/g, " ").trim();
+      const a = clean(typed), b = clean(answer);
+      if (!a && !b) return 1;
+      if (!a || !b) return 0;
+      const m = a.length, n = b.length;
+      const dp = Array.from({ length: m + 1 }, (_, i) =>
+        Array.from({ length: n + 1 }, (_, j) => (i === 0 ? j : j === 0 ? i : 0))
+      );
+      for (let i = 1; i <= m; i++)
+        for (let j = 1; j <= n; j++)
+          dp[i][j] = a[i-1] === b[j-1] ? dp[i-1][j-1] : 1 + Math.min(dp[i-1][j], dp[i][j-1], dp[i-1][j-1]);
+      return 1 - dp[m][n] / Math.max(m, n);
+    };
+
+    // 단어별 정오 비교 — 시퀀스 정렬(DP) 기반
+    // 빠진 단어만 빨간색, 유사 단어(sim≥0.7)는 초록색으로 처리
+    const wordDiff = (typed, answer) => {
+      const cw = w => w.toLowerCase().replace(/[^a-z0-9']/g, "");
+      const ansWords = answer.trim().split(/\s+/);
+      const typedCw = typed.trim().split(/\s+/).map(cw).filter(Boolean);
+      const ansCw = ansWords.map(cw);
+      const m = ansCw.length, n = typedCw.length;
+
+      // 두 단어의 문자 수준 유사도 (Levenshtein)
+      const wSim = (a, b) => {
+        if (!a || !b) return 0;
+        if (a === b) return 1;
+        const la = a.length, lb = b.length;
+        const d = Array.from({length: la + 1}, (_, i) =>
+          Array.from({length: lb + 1}, (_, j) => i === 0 ? j : j === 0 ? i : 0));
+        for (let i = 1; i <= la; i++)
+          for (let j = 1; j <= lb; j++)
+            d[i][j] = a[i-1] === b[j-1] ? d[i-1][j-1] : 1 + Math.min(d[i-1][j], d[i][j-1], d[i-1][j-1]);
+        return 1 - d[la][lb] / Math.max(la, lb);
+      };
+
+      // 비용: 정확 매칭=0, 유사 매칭=1, 대체/삽입/삭제=2 (유사 매칭 우선)
+      const EXACT=0, FUZZY=1, GAP=2, SUB=2;
+      const THRESH = 0.7;
+
+      const dp = Array.from({length: m+1}, (_, i) =>
+        Array.from({length: n+1}, (_, j) => i===0 ? j*GAP : j===0 ? i*GAP : 0));
+      const op = Array.from({length: m+1}, () => new Array(n+1).fill(""));
+
+      for (let i = 1; i <= m; i++) {
+        for (let j = 1; j <= n; j++) {
+          const exact = ansCw[i-1] === typedCw[j-1];
+          const sim = exact ? 1 : wSim(ansCw[i-1], typedCw[j-1]);
+          const fuzzy = !exact && sim >= THRESH;
+          const diagCost = dp[i-1][j-1] + (exact ? EXACT : fuzzy ? FUZZY : SUB);
+          const upCost   = dp[i-1][j] + GAP;
+          const leftCost = dp[i][j-1] + GAP;
+          const best = Math.min(diagCost, upCost, leftCost);
+          dp[i][j] = best;
+          op[i][j] = best === diagCost ? (exact ? "match" : fuzzy ? "fuzzy" : "sub")
+                   : best === upCost   ? "del" : "ins";
+        }
+      }
+
+      // 역추적 — 정답 단어 기준으로 결과 생성
+      const result = [];
+      let i = m, j = n;
+      while (i > 0 || j > 0) {
+        if (i === 0) { j--; continue; }
+        if (j === 0) { result.unshift({ word: ansWords[i-1], correct: false }); i--; continue; }
+        const o = op[i][j];
+        if (o === "match" || o === "fuzzy") {
+          result.unshift({ word: ansWords[i-1], correct: true }); i--; j--;
+        } else if (o === "sub") {
+          result.unshift({ word: ansWords[i-1], correct: false }); i--; j--;
+        } else if (o === "del") {
+          result.unshift({ word: ansWords[i-1], correct: false }); i--; // 빠진 단어
+        } else {
+          j--; // 학생이 추가로 입력한 단어 → 무시
+        }
+      }
+      return result;
+    };
+
+    // AudioContext로 해당 문장 구간만 재생
+    const playDtSentence = async () => {
+      if (dtIsPlaying) {
+        if (dtSourceRef.current) { try { dtSourceRef.current.stop(); } catch(_) {} dtSourceRef.current = null; }
+        setDtIsPlaying(false);
+        return;
+      }
+      if (!hasAudio) return;
+      setDtIsPlaying(true);
+      try {
+        const prepared = await ensureSentenceAudio();
+        if (!prepared) { setDtIsPlaying(false); return; }
+        const { buffer, sentenceMap } = prepared;
+        const audioSent = dtAudioSentences[dtIdx];
+        const seg = audioSent ? sentenceMap[audioSent.key] : null;
+        if (!seg) { setDtIsPlaying(false); return; }
+        const ctx = audioCtxRef.current;
+        if (!ctx) { setDtIsPlaying(false); return; }
+        if (ctx.state === "suspended") await ctx.resume();
+        if (dtSourceRef.current) { try { dtSourceRef.current.stop(); } catch(_) {} dtSourceRef.current = null; }
+        const source = ctx.createBufferSource();
+        source.buffer = buffer;
+        source.connect(ctx.destination);
+        source.start(0, seg.start, seg.end - seg.start);
+        dtSourceRef.current = source;
+        source.onended = () => { setDtIsPlaying(false); dtSourceRef.current = null; };
+      } catch { setDtIsPlaying(false); }
+    };
+
+    const handleSubmit = () => {
+      if (dtIsPlaying) {
+        if (dtSourceRef.current) { try { dtSourceRef.current.stop(); } catch(_) {} dtSourceRef.current = null; }
+        setDtIsPlaying(false);
+      }
+      setDtSubmitted(true);
+    };
+
+    const handleNext = () => {
+      // 현재 문장 오답 여부 판단 후 누적
+      const sim = calcSim(dtInput, cur.en);
+      const simPctVal = Math.round(sim * 100);
+      const isCorr = sim >= 0.8;
+      const newItem = { en: cur.en, kr: cur.kr, input: dtInput, sim: simPctVal, correct: isCorr };
+      const newAllItems = [...(dtAllItemsRef.current || []), newItem];
+      dtAllItemsRef.current = newAllItems;
+      const newWrongs = isCorr
+        ? dtWrongs
+        : [...dtWrongs, { en: cur.en, kr: cur.kr, input: dtInput, sim: simPctVal }];
+
+      if (dtIdx + 1 >= total) {
+        // 딕테이션 완료 — scores에 저장
+        const k = `${sSt}_${sArt}`;
+        setScores(p => ({ ...p, [k]: { ...(p[k] || {}), dt: { wrongs: newWrongs, items: newAllItems } } }));
+        setDtWrongs([]);
+        dtAllItemsRef.current = [];
+        setDtRetrying(false);
+        uP(sSt, sArt, "dt");
+        // dt 결과 뷰에서 "녹음 →" 버튼으로 이동 (자동 이동 없음)
+      } else {
+        setDtWrongs(newWrongs);
+        setDtIdx(i => i + 1);
+        setDtInput("");
+        setDtSubmitted(false);
+        setDtIsPlaying(false);
+        if (dtSourceRef.current) { try { dtSourceRef.current.stop(); } catch(_) {} dtSourceRef.current = null; }
+      }
+    };
+
+    if (!cur) return <div style={{ textAlign: "center", color: X.mt, padding: 40 }}>문장 데이터가 없습니다.</div>;
+
+    const sim = dtSubmitted ? calcSim(dtInput, cur.en) : 0;
+    const isCorrect = sim >= 0.8;
+    const simPct = Math.round(sim * 100);
+    const diff = dtSubmitted ? wordDiff(dtInput, cur.en) : [];
+
+    return (
+      <div className="fade-up" style={{ maxWidth: 640, margin: "0 auto" }}>
+        <Bt v="ghost" onClick={bk} style={{ marginBottom: 12 }}>← 과제 목록</Bt>
+
+        {/* 헤더 & 진행 */}
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10 }}>
+          <h2 style={{ fontFamily: F.h, fontWeight: 800, fontSize: 20, color: X.tx }}>딕테이션</h2>
+          <span style={{ fontSize: 13, color: X.sub, fontWeight: 600 }}>{dtIdx + 1} / {total}</span>
+        </div>
+        <div style={{ display: "flex", gap: 4, marginBottom: 24 }}>
+          {dtSentences.map((_, i) => (
+            <div key={i} style={{ flex: 1, height: 8, borderRadius: 4, background: i < dtIdx ? X.ac : i === dtIdx ? "#93c5fd" : X.bdr, transition: "background .3s" }} />
+          ))}
+        </div>
+
+        {/* 음원 재생 버튼 */}
+        <div style={{ textAlign: "center", marginBottom: 20 }}>
+          <button
+            onClick={playDtSentence}
+            disabled={!hasAudio}
+            style={{ display: "inline-flex", alignItems: "center", gap: 10, padding: "14px 32px", borderRadius: 50, border: "none", background: hasAudio ? (dtIsPlaying ? X.ac : X.dk) : X.bdr, color: hasAudio ? "#fff" : X.mt, fontSize: 15, fontWeight: 700, cursor: hasAudio ? "pointer" : "not-allowed", fontFamily: F.b, transition: "all .2s" }}
+          >
+            {dtIsPlaying ? "⏹ 정지" : "🔊 문장 듣기"}
+          </button>
+          {!hasAudio && <div style={{ fontSize: 12, color: X.mt, marginTop: 8 }}>이 기사는 음원이 없습니다.</div>}
+        </div>
+
+        {/* 뜻 힌트 */}
+        <div style={{ background: "#f8fafc", border: `1px solid ${X.bdr}`, borderRadius: 12, padding: "10px 16px", marginBottom: 20, display: "flex", alignItems: "center", gap: 8 }}>
+          <span style={{ fontSize: 11, color: X.mt, fontWeight: 600, flexShrink: 0 }}>뜻</span>
+          <span style={{ fontSize: 13, color: X.sub }}>{cur.kr}</span>
+        </div>
+
+        {/* 입력 영역 또는 결과 */}
+        {!dtSubmitted ? (
+          <>
+            <textarea
+              value={dtInput}
+              onChange={e => setDtInput(e.target.value)}
+              placeholder="들은 문장을 그대로 입력하세요..."
+              rows={3}
+              style={{ width: "100%", padding: "14px 16px", fontSize: 15, borderRadius: 14, border: `2px solid ${X.bdr}`, fontFamily: F.b, resize: "none", outline: "none", color: X.tx, background: "#fff", boxSizing: "border-box", marginBottom: 14, lineHeight: 1.6 }}
+              onFocus={e => { e.target.style.borderColor = X.ac; }}
+              onBlur={e => { e.target.style.borderColor = X.bdr; }}
+            />
+            <Bt v="primary" size="lg" style={{ width: "100%" }} onClick={handleSubmit} disabled={!dtInput.trim()}>제출하기</Bt>
+          </>
+        ) : (
+          <>
+            {/* 채점 결과 배지 */}
+            <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 16, padding: "12px 18px", borderRadius: 14, background: isCorrect ? X.gbg : X.rbg, border: `1px solid ${isCorrect ? "#a7f3d0" : "#fecaca"}` }}>
+              <span style={{ fontSize: 22 }}>{isCorrect ? "✅" : "❌"}</span>
+              <div>
+                <div style={{ fontWeight: 700, fontSize: 15, color: isCorrect ? X.gn : X.rd }}>{isCorrect ? "정답!" : "오답"}</div>
+                <div style={{ fontSize: 13, color: X.sub }}>일치율 <strong style={{ color: isCorrect ? X.gn : X.rd }}>{simPct}%</strong> {isCorrect ? "(80% 이상)" : "(80% 미만)"}</div>
+              </div>
+            </div>
+
+            {/* 정답 문장 (단어별 하이라이트) */}
+            <Cd style={{ marginBottom: 12 }}>
+              <div style={{ fontSize: 12, color: X.sub, fontWeight: 600, marginBottom: 8 }}>정답 문장</div>
+              <div style={{ fontSize: 15, lineHeight: 1.8, display: "flex", flexWrap: "wrap", gap: "0 4px" }}>
+                {diff.map((d, i) => (
+                  <span key={i} style={{ fontWeight: 700, color: d.correct ? X.gn : X.rd, textDecoration: d.correct ? "none" : "underline wavy", textDecorationColor: X.rd }}>
+                    {d.word}
+                  </span>
+                ))}
+              </div>
+            </Cd>
+
+            {/* 내가 쓴 답 */}
+            <Cd style={{ marginBottom: 20 }}>
+              <div style={{ fontSize: 12, color: X.sub, fontWeight: 600, marginBottom: 8 }}>내가 쓴 답</div>
+              <div style={{ fontSize: 14, color: X.tx, lineHeight: 1.7 }}>{dtInput}</div>
+            </Cd>
+
+            <Bt v="primary" size="lg" style={{ width: "100%" }} onClick={handleNext}>
+              {dtIdx + 1 >= total ? "완료하기 →" : "다음 문장 →"}
+            </Bt>
+          </>
+        )}
+      </div>
+    );
+  };
+
+  /* ─── STUDENT REVIEW (오답 복습) ─── */
+  const SRv = () => {
+    const k = `${sSt}_${sArt}`;
+    const scVoc = scores[k]?.voc;
+    const scSb  = scores[k]?.sb;
+    const scDt  = scores[k]?.dt;
+    const vocDone = !!scVoc;
+    const sbDone  = !!scSb;
+    const dtDone  = !!scDt;
+
+    // 단어퀴즈 전체 단어 목록 재구성
+    const _wpRv = cW.filter(w => w.pid);
+    const vocAllWords = (_wpRv.length > 0 ? _wpRv : cW).slice(0, 4);
+    const vocWrongSet = new Set((scVoc?.wrongs || []).map(w => w.en));
+    const vocItems = vocAllWords.map(w => ({
+      en: w.en, kr: w.kr,
+      correct: !vocWrongSet.has(w.en),
+      ans: (scVoc?.wrongs || []).find(x => x.en === w.en)?.ans || "",
+    }));
+
+    // 문장만들기 전체 문장 목록
+    const sbWrongSet = new Set((scSb?.wrongs || []).map(s => s.en));
+    const sbItems = sbSentences.map(s => ({ ...s, correct: !sbWrongSet.has(s.en) }));
+
+    // 딕테이션 전체 문장 목록
+    const dtWrongMap = new Map((scDt?.wrongs || []).map(d => [d.en, d]));
+    const dtItems = dtSentences.map(s => ({
+      ...s,
+      correct: !dtWrongMap.has(s.en),
+      sim: dtWrongMap.get(s.en)?.sim ?? null,
+      input: dtWrongMap.get(s.en)?.input ?? null,
+    }));
+
+    const goVoc = () => {
+      const _aw = W[sArt] || [];
+      const _awp = _aw.filter(w => w.pid);
+      initVocOptions((_awp.length > 0 ? _awp : _aw).slice(0, 4), _aw);
+      setSv("voc");
+    };
+    const complete = () => { uP(sSt, sArt, "rv"); setSv("dn"); };
+
+    const SectionHeader = ({ label, cor, tot }) => (
+      <div style={{ fontWeight: 700, fontSize: 15, marginBottom: 14, display: "flex", alignItems: "center", gap: 8 }}>
+        <span>{label}</span>
+        <span style={{ fontSize: 12, fontWeight: 600, color: cor === tot ? X.gn : X.rd, background: cor === tot ? X.gbg : X.rbg, borderRadius: 20, padding: "2px 10px" }}>
+          {cor} / {tot} 정답
+        </span>
+      </div>
+    );
+
+    const ItemCard = ({ correct, children }) => (
+      <div style={{ borderRadius: 12, padding: "12px 16px", border: `1px solid ${correct ? "#a7f3d0" : "#fecaca"}`, background: correct ? "#f0fdf4" : X.rbg, display: "flex", gap: 12, alignItems: "flex-start" }}>
+        <span style={{ fontSize: 14, fontWeight: 700, color: correct ? X.gn : X.rd, flexShrink: 0, marginTop: 1 }}>{correct ? "✓" : "✗"}</span>
+        <div style={{ flex: 1 }}>{children}</div>
+      </div>
+    );
+
+    const visVoc = rvShowAll ? vocItems : vocItems.filter(w => !w.correct);
+    const visSb  = rvShowAll ? sbItems  : sbItems.filter(s => !s.correct);
+    const visDt  = rvShowAll ? dtItems  : dtItems.filter(d => !d.correct);
+
+    return (
+      <div className="fade-up" style={{ maxWidth: 640, margin: "0 auto" }}>
+        <Bt v="ghost" onClick={bk} style={{ marginBottom: 12 }}>← 과제 목록</Bt>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 20 }}>
+          <div style={{ fontFamily: F.h, fontWeight: 800, fontSize: 22, color: X.tx }}>🔍 오답 복습</div>
+          <div style={{ display: "inline-flex", background: "#f1f5f9", borderRadius: 10, padding: 3, gap: 2 }}>
+            {[{ v: true, label: "모든 문제" }, { v: false, label: "틀린 문제만" }].map(({ v, label }) => (
+              <button key={label} onClick={() => setRvShowAll(v)}
+                style={{ padding: "6px 12px", borderRadius: 8, border: "none", fontSize: 12, fontWeight: 700, fontFamily: F.b, cursor: "pointer", transition: "all .15s", background: rvShowAll === v ? "#fff" : "transparent", color: rvShowAll === v ? X.tx : X.sub, boxShadow: rvShowAll === v ? "0 1px 4px rgba(0,0,0,.1)" : "none" }}>
+                {label}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* 단어퀴즈 */}
+        <Cd style={{ marginBottom: 14 }}>
+          {!vocDone ? (
+            <>
+              <div style={{ fontWeight: 700, fontSize: 15, marginBottom: 14 }}>📝 단어퀴즈</div>
+              <div style={{ textAlign: "center", padding: "16px 0" }}>
+                <div style={{ fontSize: 13, color: X.sub, marginBottom: 14 }}>아직 단어퀴즈를 완료하지 않았어요.</div>
+                <Bt v="primary" onClick={goVoc}>📝 단어퀴즈 하러 가기</Bt>
+              </div>
+            </>
+          ) : (
+            <>
+              <SectionHeader label="📝 단어퀴즈" cor={scVoc.cor} tot={scVoc.tot} />
+              <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                {visVoc.length === 0 ? <div style={{ textAlign: "center", padding: "12px 0", fontSize: 13, color: X.sub }}>틀린 문제가 없어요 🎉</div> : visVoc.map((w, i) => (
+                  <ItemCard key={i} correct={w.correct}>
+                    <div style={{ fontWeight: 700, fontSize: 14, color: X.tx, marginBottom: w.correct ? 0 : 4 }}>{w.en}</div>
+                    {w.correct ? (
+                      <div style={{ fontSize: 13, color: X.gn, fontWeight: 600 }}>{w.kr}</div>
+                    ) : (
+                      <>
+                        <div style={{ fontSize: 12, color: X.sub }}>내 답: <span style={{ color: X.rd, fontWeight: 600 }}>{w.ans || "미선택"}</span></div>
+                        <div style={{ fontSize: 12, color: X.sub }}>정답: <span style={{ color: X.gn, fontWeight: 600 }}>{w.kr}</span></div>
+                      </>
+                    )}
+                  </ItemCard>
+                ))}
+              </div>
+            </>
+          )}
+        </Cd>
+
+        {/* 문장만들기 */}
+        <Cd style={{ marginBottom: 14 }}>
+          {!sbDone ? (
+            <>
+              <div style={{ fontWeight: 700, fontSize: 15, marginBottom: 14 }}>✏️ 문장만들기</div>
+              <div style={{ textAlign: "center", padding: "16px 0" }}>
+                <div style={{ fontSize: 13, color: X.sub, marginBottom: 14 }}>아직 문장만들기를 완료하지 않았어요.</div>
+                <Bt v="primary" onClick={() => setSv("ssb")}>✏️ 문장만들기 하러 가기</Bt>
+              </div>
+            </>
+          ) : (
+            <>
+              <SectionHeader label="✏️ 문장만들기" cor={scSb.cor} tot={scSb.tot} />
+              <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                {visSb.length === 0 ? <div style={{ textAlign: "center", padding: "12px 0", fontSize: 13, color: X.sub }}>틀린 문제가 없어요 🎉</div> : visSb.map((s, i) => (
+                  <ItemCard key={i} correct={s.correct}>
+                    <div style={{ fontWeight: 700, fontSize: 14, color: X.tx, marginBottom: 4, lineHeight: 1.5 }}>{s.en}</div>
+                    <div style={{ fontSize: 12, color: X.sub }}>{s.kr}</div>
+                  </ItemCard>
+                ))}
+              </div>
+            </>
+          )}
+        </Cd>
+
+        {/* 딕테이션 */}
+        <Cd style={{ marginBottom: 28 }}>
+          {!dtDone ? (
+            <>
+              <div style={{ fontWeight: 700, fontSize: 15, marginBottom: 14 }}>🎧 딕테이션</div>
+              <div style={{ textAlign: "center", padding: "16px 0" }}>
+                <div style={{ fontSize: 13, color: X.sub, marginBottom: 14 }}>아직 딕테이션을 완료하지 않았어요.</div>
+                <Bt v="primary" onClick={() => { setDtIdx(0); setDtInput(""); setDtSubmitted(false); setDtIsPlaying(false); setDtWrongs([]); setSv("dt"); }}>🎧 딕테이션 하러 가기</Bt>
+              </div>
+            </>
+          ) : (
+            <>
+              <SectionHeader label="🎧 딕테이션" cor={dtSentences.length - (scDt.wrongs?.length || 0)} tot={dtSentences.length} />
+              <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                {visDt.length === 0 ? <div style={{ textAlign: "center", padding: "12px 0", fontSize: 13, color: X.sub }}>틀린 문제가 없어요 🎉</div> : visDt.map((d, i) => (
+                  <ItemCard key={i} correct={d.correct}>
+                    <div style={{ fontWeight: 700, fontSize: 14, color: X.tx, marginBottom: 4, lineHeight: 1.5 }}>{d.en}</div>
+                    <div style={{ fontSize: 12, color: X.sub, marginBottom: d.correct ? 0 : 6 }}>{d.kr}</div>
+                    {!d.correct && (
+                      <div style={{ borderTop: "1px solid #fecaca", paddingTop: 6 }}>
+                        <span style={{ fontSize: 12, color: X.sub }}>내가 쓴 답: </span>
+                        <span style={{ fontSize: 12, color: X.rd, fontWeight: 600 }}>{d.input || "(미입력)"}</span>
+                        <span style={{ fontSize: 11, color: X.rd, marginLeft: 8 }}>({d.sim}% 일치)</span>
+                      </div>
+                    )}
+                  </ItemCard>
+                ))}
+              </div>
+            </>
+          )}
+        </Cd>
+
+        <div style={{ display: "flex", justifyContent: "center" }}>
+          <Bt v="primary" size="lg" onClick={complete}>✅ 완료하기</Bt>
+        </div>
+      </div>
+    );
+  };
+
   /* ─── STUDENT DONE ─── */
   const SDn = () => {
     const _wpD = cW.filter(w => w.pid);
@@ -3300,13 +3810,13 @@ export default function App() {
 
   /* ─── STEP BAR ─── */
   const SB = () => {
-    const ss = ["wl", "rd", "voc", "ssb", "rec", "dn"];
-    const ls = ["📋 단어보기", "📖 읽기", "📝 단어퀴즈", "✏️ 문장만들기", "🎤 녹음", "✅ 완료"];
+    const ss = ["wl", "rd", "voc", "ssb", "dt", "rec", "rv", "dn"];
+    const ls = ["📋 단어보기", "📖 읽기", "📝 단어퀴즈", "✏️ 문장만들기", "🎧 딕테이션", "🎤 녹음", "🔍 오답복습", "✅ 완료"];
     const ci = ss.indexOf(sv);
     const pg = sArt ? gP(prog, sSt, sArt) : { r: false, wl: false, v: false, sb: false, w: false };
     const done = pg.r && pg.wl && pg.v && pg.sb && pg.w;
     // 각 스텝의 실제 완료 여부 (녹색 표시 기준)
-    const stepDone = { wl: pg.wl, rd: pg.r, voc: pg.v, ssb: pg.sb, rec: pg.w, dn: done };
+    const stepDone = { wl: pg.wl, rd: pg.r, voc: pg.v, ssb: pg.sb, dt: pg.dt, rec: pg.w, rv: pg.rv, dn: done };
     const canGo = () => true;
     return (
       <div className="ntc-step-bar" style={{ marginBottom: 20, background: X.card, borderRadius: 14, padding: 4, border: `1px solid ${X.bdr}` }}>
@@ -3320,9 +3830,20 @@ export default function App() {
               onClick={() => {
                 if (allowed && !active) {
                   if (s === "voc") {
-                    const _aw = W[sArt] || [];
-                    const _awp = _aw.filter(w => w.pid);
-                    initVocOptions((_awp.length > 0 ? _awp : _aw).slice(0, 4), _aw);
+                    setVocRetrying(false);
+                    if (!scores[`${sSt}_${sArt}`]?.voc) {
+                      const _aw = W[sArt] || [];
+                      const _awp = _aw.filter(w => w.pid);
+                      initVocOptions((_awp.length > 0 ? _awp : _aw).slice(0, 4), _aw);
+                    }
+                  }
+                  if (s === "ssb") { setSbRetrying(false); }
+                  if (s === "dt") {
+                    setDtRetrying(false);
+                    if (!scores[`${sSt}_${sArt}`]?.dt) {
+                      setDtIdx(0); setDtInput(""); setDtSubmitted(false); setDtIsPlaying(false); setDtWrongs([]);
+                      if (dtSourceRef.current) { try { dtSourceRef.current.stop(); } catch(_) {} dtSourceRef.current = null; }
+                    }
                   }
                   setSv(s);
                 }
@@ -3349,7 +3870,43 @@ export default function App() {
     wl: <SWl />,
     rd: <SRead />,
     voc: <SVoc />,
-    ssb: <SentenceBuildStep sentences={sbSentences} onComplete={cSb} onBack={bk} />,
+    ssb: (() => {
+      const _scSb = scores[`${sSt}_${sArt}`]?.sb;
+      if (_scSb && !sbRetrying) {
+        const sbAllItems = _scSb.items || _scSb.wrongs?.map(w => ({ ...w, correct: false })) || [];
+        const rights = sbAllItems.filter(i => i.correct).length;
+        const tot = _scSb.tot;
+        return (
+          <div className="fade-up" style={{ maxWidth: 640, margin: "0 auto" }}>
+            <Bt v="ghost" onClick={bk} style={{ marginBottom: 12 }}>← 과제 목록</Bt>
+            <div style={{ textAlign: "center", padding: "32px 24px", marginBottom: 20, borderRadius: 20, background: "#fff", border: `1px solid ${X.bdr}`, boxShadow: "0 4px 24px rgba(0,0,0,.07)" }}>
+              <div style={{ fontSize: 40, marginBottom: 12 }}>{rights === tot ? "🎉" : rights >= tot * 0.8 ? "👍" : "📚"}</div>
+              <div style={{ fontFamily: F.h, fontWeight: 800, fontSize: 32, color: rights === tot ? X.gn : X.am, marginBottom: 4 }}>{rights} / {tot}</div>
+              <div style={{ fontSize: 14, color: X.sub, marginBottom: 4 }}>정답</div>
+              <h2 style={{ fontFamily: F.h, fontWeight: 800, fontSize: 18, marginTop: 8 }}>문장 만들기</h2>
+            </div>
+            <div style={{ display: "flex", flexDirection: "column", gap: 10, marginBottom: 20 }}>
+              {sbAllItems.map((s, i) => (
+                <div key={i} style={{ background: s.correct ? "#f0fdf4" : X.rbg, border: `1px solid ${s.correct ? "#a7f3d0" : "#fecaca"}`, borderRadius: 12, padding: "14px 16px" }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6 }}>
+                    <span style={{ fontWeight: 700, fontSize: 15, color: s.correct ? X.gn : X.rd }}>{s.correct ? "✓" : "✗"}</span>
+                    <div style={{ fontSize: 11, color: X.sub, fontWeight: 600 }}>문장 {i + 1}</div>
+                  </div>
+                  <div style={{ fontWeight: 700, fontSize: 14, color: X.tx, lineHeight: 1.5 }}>{s.en}</div>
+                  <div style={{ fontSize: 12, color: X.sub, marginTop: 4 }}>{s.kr}</div>
+                </div>
+              ))}
+            </div>
+            <div style={{ display: "flex", gap: 10, justifyContent: "center" }}>
+              <Bt v="outline" size="lg" onClick={() => setSbRetrying(true)}>🔄 다시 하기</Bt>
+              <Bt v="success" size="lg" onClick={() => setSv("dt")}>딕테이션 →</Bt>
+            </div>
+          </div>
+        );
+      }
+      return <SentenceBuildStep sentences={sbSentences} onComplete={cSb} onBack={bk} />;
+    })(),
+    dt: SDt(),
     rec: (
       <StudentRecordingStep
         sSt={sSt}
@@ -3359,6 +3916,7 @@ export default function App() {
         onBack={bk}
       />
     ),
+    rv: <SRv />,
     dn: <SDn />,
   };
 
