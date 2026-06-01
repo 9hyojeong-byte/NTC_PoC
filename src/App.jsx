@@ -2143,7 +2143,7 @@ export default function App() {
         <div>
           <button onClick={() => toggleProg("cls")} style={{ display: "flex", alignItems: "center", gap: 8, background: "none", border: "none", cursor: "pointer", padding: 0, marginBottom: progOpen.cls ? 12 : 0, fontFamily: F.h, fontWeight: 800, fontSize: 16, color: X.tx }}>
             <span style={{ fontSize: 11, color: X.sub, transition: "transform .2s", display: "inline-block", transform: progOpen.cls ? "rotate(90deg)" : "rotate(0deg)" }}>▶</span>
-            반 관리
+            학생 진행현황
           </button>
           {progOpen.cls && <TStudents />}
         </div>
@@ -2152,7 +2152,7 @@ export default function App() {
         <div>
           <button onClick={() => toggleProg("summary")} style={{ display: "flex", alignItems: "center", gap: 8, background: "none", border: "none", cursor: "pointer", padding: 0, marginBottom: progOpen.summary ? 12 : 0, fontFamily: F.h, fontWeight: 800, fontSize: 16, color: X.tx }}>
             <span style={{ fontSize: 11, color: X.sub, transition: "transform .2s", display: "inline-block", transform: progOpen.summary ? "rotate(90deg)" : "rotate(0deg)" }}>▶</span>
-            요약
+            기사 발행 현황
           </button>
           {progOpen.summary && <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(300px,1fr))", gap: 16 }}>
             {clsWithSts.map(cls => {
@@ -2331,8 +2331,7 @@ export default function App() {
   const TStudents = () => (
     <div>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
-        <p style={{ fontSize: 13, color: X.sub }}>학생을 등록하고 반을 지정합니다.</p>
-        <div style={{ display: "flex", gap: 8 }}>
+<div style={{ display: "flex", gap: 8 }}>
           <button
             onClick={() => setAddClsModal({ nm: "", level: "", freq: "주2회" })}
             style={{ display: "flex", alignItems: "center", gap: 6, padding: "8px 18px", borderRadius: 10, border: `1px solid ${X.bdr}`, background: "#fff", color: X.tx, fontSize: 13, fontWeight: 700, fontFamily: F.b, cursor: "pointer" }}
