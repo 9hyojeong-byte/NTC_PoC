@@ -2330,8 +2330,8 @@ export default function App() {
   /* ─── TEACHER STUDENTS ─── */
   const TStudents = () => (
     <div>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
-<div style={{ display: "flex", gap: 8 }}>
+      <div style={{ display: "flex", justifyContent: "flex-end", alignItems: "center", marginBottom: 16 }}>
+        <div style={{ display: "flex", gap: 8 }}>
           <button
             onClick={() => setAddClsModal({ nm: "", level: "", freq: "주2회" })}
             style={{ display: "flex", alignItems: "center", gap: 6, padding: "8px 18px", borderRadius: 10, border: `1px solid ${X.bdr}`, background: "#fff", color: X.tx, fontSize: 13, fontWeight: 700, fontFamily: F.b, cursor: "pointer" }}
