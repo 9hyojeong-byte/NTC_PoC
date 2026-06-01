@@ -2145,7 +2145,7 @@ export default function App() {
             <span style={{ fontSize: 11, color: X.sub, transition: "transform .2s", display: "inline-block", transform: progOpen.cls ? "rotate(90deg)" : "rotate(0deg)" }}>▶</span>
             학생 진행현황
           </button>
-          {progOpen.cls && <TStudents />}
+          {progOpen.cls && <TStudents getWeekSeqs={getWeekSeqs} />}
         </div>
 
         {/* ── 요약 ── */}
@@ -2193,10 +2193,9 @@ export default function App() {
                               {bmLabel && BANDS[bmLabel] && <div style={{ fontSize: 11, color: X.sub, fontWeight: 500 }}>{BANDS[bmLabel].min}L–{BANDS[bmLabel].max}L</div>}
                             </div>
                             <div style={{ display: "flex", alignItems: "center", gap: 6, flexShrink: 0 }}>
-                              {allDone
-                                ? <span style={{ fontSize: 11, fontWeight: 700, color: X.gn, background: X.gbg, borderRadius: 20, padding: "3px 10px" }}>✓ 전원완료</span>
-                                : <span style={{ fontSize: 11, fontWeight: 700, color: X.sub, background: "#f1f5f9", borderRadius: 20, padding: "3px 10px" }}>{total - doneCount}명 진행중</span>
-                              }
+                              {allDone && (
+                                <span style={{ fontSize: 11, fontWeight: 700, color: X.gn, background: X.gbg, borderRadius: 20, padding: "3px 10px" }}>✓ 전원완료</span>
+                              )}
                               <span style={{ fontSize: 16, color: X.mt, lineHeight: 1 }}>›</span>
                             </div>
                           </div>
@@ -2328,7 +2327,7 @@ export default function App() {
   };
 
   /* ─── TEACHER STUDENTS ─── */
-  const TStudents = () => (
+  const TStudents = ({ getWeekSeqs } = {}) => (
     <div>
       <div style={{ display: "flex", justifyContent: "flex-end", alignItems: "center", marginBottom: 16 }}>
         <div style={{ display: "flex", gap: 8 }}>
@@ -2379,7 +2378,10 @@ export default function App() {
               ) : (
                 <div style={{ padding: "8px 0" }}>
                   {cls.sts.map(st => {
-                    const stSeqs = (asgn[st.id] || []).map(a => a.seq);
+                    const stAllSeqs = (asgn[st.id] || []).map(a => a.seq);
+                    // getWeekSeqs가 있으면(학습현황 컨텍스트) 해당 주차 기사만 필터링
+                    const weekSeqs = getWeekSeqs ? getWeekSeqs(cls) : null;
+                    const stSeqs = weekSeqs ? stAllSeqs.filter(seq => weekSeqs.includes(seq)) : stAllSeqs;
                     const doneCnt = stSeqs.filter(seq => iD(effProg, st.id, seq)).length;
                     return (
                       <div
